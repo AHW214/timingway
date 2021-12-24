@@ -1,7 +1,10 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (..)
+import Css
+import Css.Colors as Colors
+import Html.Styled as Html exposing (Html)
+import Html.Styled.Attributes as Html
 import Time
 import Round
 
@@ -13,7 +16,7 @@ main : Program Flags Model Msg
 main =
   Browser.element
     { init = init
-    , view = view
+    , view = Html.toUnstyled << view
     , update = update
     , subscriptions = subscriptions
     }
@@ -24,6 +27,7 @@ type alias Field =
   { attackName: String
   , resolveType: String
   , millisLeft : Int
+  , millisTotal : Int
   }
 
 type alias Model =
@@ -31,12 +35,16 @@ type alias Model =
   , graceMillis: Int
   }
 
+makeField : String -> String -> Int -> Field
+makeField attackName resolveType millisTotal =
+  Field attackName resolveType millisTotal millisTotal
+
 init : Flags -> (Model, Cmd Msg)
 init _ =
   ( Model
-    [ Field "Levinstrike Pinax" "Proximity" 13000
-    , Field "Acid Mekhane" "KB" 25000
-    , Field "Elegant Evisceration" "TB" 49000
+    [ makeField "Levinstrike Pinax" "Proximity" 13000
+    , makeField "Acid Mekhane" "KB" 25000
+    , makeField "Elegant Evisceration" "TB" 49000
     ]
     -5000
   , Cmd.none
@@ -82,20 +90,50 @@ decrement tick model =
 -- VIEW
 
 viewField : Field -> Html Msg
-viewField { attackName, resolveType, millisLeft } =
+viewField { attackName, resolveType, millisLeft, millisTotal } =
   let
-    secondsLeft = (toFloat millisLeft) / 1000
+    ( percentLeft, secondsLeft, backgroundColor ) =
+      if millisLeft > 0 then
+        ( 100 * (toFloat millisLeft) / (toFloat millisTotal)
+        , Round.round 1 ((toFloat millisLeft) / 1000)
+        , Colors.lightgray
+        )
+      else
+        ( 0
+        , "Active!"
+        , Colors.green
+        )
   in
-    Html.text <|
-      String.join " "
-        [ Round.round 1 secondsLeft
-        , attackName
-        , resolveType
-        ]
+    Html.div
+      [ Html.css
+          [ Css.position Css.relative
+          , Css.backgroundColor backgroundColor
+          , Css.width <| Css.rem 30
+          , Css.height <| Css.rem 3
+          ]
+      ]
+      [ Html.div
+          [ Html.css
+            [ Css.position Css.absolute
+            , Css.backgroundColor Colors.red
+            , Css.width <| Css.pct percentLeft
+            , Css.height <| Css.rem 3
+            ]
+          ]
+          []
+      , Html.div
+          [ Html.css
+              [ Css.position Css.absolute
+              ]
+          ]
+          [ Html.div [] [ Html.text (attackName ++ " | " ++ resolveType ) ]
+          , Html.div [] [ Html.text secondsLeft ]
+          ]
+      ]
 
 view : Model -> Html Msg
 view { fields } =
   let
     countdowns = List.map viewField fields
   in
-    div [] <| List.intersperse (br [] []) countdowns
+    Html.div [] countdowns
