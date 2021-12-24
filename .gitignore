@@ -5,3 +5,37 @@ elm-stuff
 
 # elm-repl generated files
 repl-temp-*
+
+### Server ###
+
+# Haskell
+dist
+dist-*
+cabal-dev
+*.o
+*.hi
+*.hie
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+.hpc
+.hsenv
+.cabal-sandbox/
+cabal.sandbox.config
+*.prof
+*.aux
+*.hp
+*.eventlog
+cabal.project.local
+cabal.project.local~
+.HTF/
+.ghc.environment.*
+
+# Haskell Stack
+.stack-work/
+timingway.cabal
+*~
+
+# Haskell IDE Engine
+hie.yaml
