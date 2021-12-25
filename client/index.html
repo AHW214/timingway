@@ -5246,17 +5246,13 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$Model = F4(
-	function (fields, graceMillis, millisTotal, millisPassed) {
-		return {fields: fields, graceMillis: graceMillis, millisPassed: millisPassed, millisTotal: millisTotal};
-	});
-var $author$project$Main$Field = F3(
+var $author$project$Field$Field = F3(
 	function (attackName, resolveType, millisLeft) {
 		return {attackName: attackName, millisLeft: millisLeft, resolveType: resolveType};
 	});
-var $author$project$Main$makeField = F3(
-	function (attackName, resolveType, millisLeft) {
-		return A3($author$project$Main$Field, attackName, resolveType, millisLeft);
+var $author$project$Main$Model = F4(
+	function (fields, graceMillis, millisTotal, millisPassed) {
+		return {fields: fields, graceMillis: graceMillis, millisPassed: millisPassed, millisTotal: millisTotal};
 	});
 var $elm$core$Basics$negate = function (n) {
 	return -n;
@@ -5275,32 +5271,32 @@ var $author$project$Main$init = function (_v0) {
 			_List_fromArray(
 				[
 					A3(
-					$author$project$Main$makeField,
+					$author$project$Field$Field,
 					'Gaoler\'s Flail',
 					'Left/right',
 					$author$project$Main$timeToMillis(10)),
 					A3(
-					$author$project$Main$makeField,
+					$author$project$Field$Field,
 					'Gaoler\'s Flail',
 					'Left/right',
 					$author$project$Main$timeToMillis(15)),
 					A3(
-					$author$project$Main$makeField,
+					$author$project$Field$Field,
 					'Warder\'s Wrath',
 					'Raidwide',
 					$author$project$Main$timeToMillis(18)),
 					A3(
-					$author$project$Main$makeField,
+					$author$project$Field$Field,
 					'Pitiless Flail + True Holy',
 					'KB into stack',
 					$author$project$Main$timeToMillis(24)),
 					A3(
-					$author$project$Main$makeField,
+					$author$project$Field$Field,
 					'Gaoler\'s Flail',
 					'Left/right',
 					$author$project$Main$timeToMillis(37)),
 					A3(
-					$author$project$Main$makeField,
+					$author$project$Field$Field,
 					'Heavy Hand',
 					'TB',
 					$author$project$Main$timeToMillis(115))
@@ -7932,7 +7928,35 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 	}
 };
 var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
-var $author$project$Main$decrementField = F3(
+var $elm$json$Json$Decode$array = _Json_decodeArray;
+var $elm$json$Json$Decode$decodeString = _Json_runOnString;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$map3 = _Json_map3;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Field$decoder = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$Field$Field,
+	A2($elm$json$Json$Decode$field, 'attackName', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'resolveType', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'millisLeft', $elm$json$Json$Decode$int));
+var $elm$core$Result$map = F2(
+	function (func, ra) {
+		if (ra.$ === 'Ok') {
+			var a = ra.a;
+			return $elm$core$Result$Ok(
+				func(a));
+		} else {
+			var e = ra.a;
+			return $elm$core$Result$Err(e);
+		}
+	});
+var $author$project$Main$decodeFields = A2(
+	$elm$core$Basics$composeL,
+	$elm$core$Result$map($elm$core$Array$toList),
+	$elm$json$Json$Decode$decodeString(
+		$elm$json$Json$Decode$array($author$project$Field$decoder)));
+var $author$project$Field$decrement = F3(
 	function (tick, grace, field) {
 		var millisLeft = field.millisLeft - tick;
 		return (_Utils_cmp(millisLeft, grace) > 0) ? $elm$core$Maybe$Just(
@@ -7965,7 +7989,7 @@ var $author$project$Main$decrement = F2(
 			{
 				fields: A2(
 					$elm$core$List$filterMap,
-					A2($author$project$Main$decrementField, tick, model.graceMillis),
+					A2($author$project$Field$decrement, tick, model.graceMillis),
 					model.fields)
 			});
 	});
@@ -7977,13 +8001,30 @@ var $author$project$Main$increment = F2(
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		return _Utils_Tuple2(
-			A2(
-				$author$project$Main$increment,
-				$author$project$Main$tickTimeMillis,
-				A2($author$project$Main$decrement, $author$project$Main$tickTimeMillis, model)),
-			$elm$core$Platform$Cmd$none);
+		var newModel = function () {
+			if (msg.$ === 'Tick') {
+				return A2(
+					$author$project$Main$increment,
+					$author$project$Main$tickTimeMillis,
+					A2($author$project$Main$decrement, $author$project$Main$tickTimeMillis, model));
+			} else {
+				var input = msg.a;
+				var _v1 = $author$project$Main$decodeFields(input);
+				if (_v1.$ === 'Ok') {
+					var fields = _v1.a;
+					return _Utils_update(
+						model,
+						{fields: fields});
+				} else {
+					return model;
+				}
+			}
+		}();
+		return _Utils_Tuple2(newModel, $elm$core$Platform$Cmd$none);
 	});
+var $author$project$Main$Input = function (a) {
+	return {$: 'Input', a: a};
+};
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
 	return {$: 'AppendProperty', a: a};
 };
@@ -8091,42 +8132,47 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 		};
 	});
 var $rtfeldman$elm_css$Css$em = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$EmUnits, 'em');
-var $elm_community$list_extra$List$Extra$reverseAppend = F2(
-	function (list1, list2) {
-		return A3($elm$core$List$foldl, $elm$core$List$cons, list2, list1);
+var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
+var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
+	function (eventName, handler) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
+			_List_Nil,
+			'');
 	});
-var $elm_community$list_extra$List$Extra$interweaveHelp = F3(
-	function (acc, list1, list2) {
-		interweaveHelp:
-		while (true) {
-			var _v0 = _Utils_Tuple2(list1, list2);
-			if (_v0.a.b) {
-				if (_v0.b.b) {
-					var _v1 = _v0.a;
-					var x = _v1.a;
-					var xs = _v1.b;
-					var _v2 = _v0.b;
-					var y = _v2.a;
-					var ys = _v2.b;
-					var $temp$acc = A2(
-						$elm$core$List$cons,
-						y,
-						A2($elm$core$List$cons, x, acc)),
-						$temp$list1 = xs,
-						$temp$list2 = ys;
-					acc = $temp$acc;
-					list1 = $temp$list1;
-					list2 = $temp$list2;
-					continue interweaveHelp;
-				} else {
-					return A2($elm_community$list_extra$List$Extra$reverseAppend, acc, list1);
-				}
-			} else {
-				return A2($elm_community$list_extra$List$Extra$reverseAppend, acc, list2);
-			}
-		}
+var $rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
 	});
-var $elm_community$list_extra$List$Extra$interweave = $elm_community$list_extra$List$Extra$interweaveHelp(_List_Nil);
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
+};
 var $rtfeldman$elm_css$Css$prop1 = F2(
 	function (key, arg) {
 		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
@@ -8264,8 +8310,6 @@ var $author$project$Main$viewClock = function (millisPassed) {
 				$author$project$Main$millisToClock(millisPassed))
 			]));
 };
-var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
-var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
 var $rtfeldman$elm_css$Css$prop3 = F4(
 	function (key, argA, argB, argC) {
 		return A2(
@@ -8278,22 +8322,11 @@ var $rtfeldman$elm_css$Css$prop3 = F4(
 					[argA.value, argB.value, argC.value])));
 	});
 var $rtfeldman$elm_css$Css$border3 = $rtfeldman$elm_css$Css$prop3('border');
-var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
-var $rtfeldman$elm_css$Css$boxShadow3 = $rtfeldman$elm_css$Css$prop3('box-shadow');
-var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
-var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
-var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
-var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
-var $rtfeldman$elm_css$Css$paddingRight = $rtfeldman$elm_css$Css$prop1('padding-right');
 var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
-var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
 var $rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
 var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
-var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
-var $rtfeldman$elm_css$Css$RemUnits = {$: 'RemUnits'};
-var $rtfeldman$elm_css$Css$rem = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$RemUnits, 'rem');
 var $rtfeldman$elm_css$Css$rgba = F4(
 	function (r, g, b, alpha) {
 		return {
@@ -8317,6 +8350,20 @@ var $rtfeldman$elm_css$Css$rgba = F4(
 						])))
 		};
 	});
+var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
+var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
+var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
+var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
+var $rtfeldman$elm_css$Css$boxShadow3 = $rtfeldman$elm_css$Css$prop3('box-shadow');
+var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
+var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
+var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
+var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
+var $rtfeldman$elm_css$Css$paddingRight = $rtfeldman$elm_css$Css$prop1('padding-right');
+var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
+var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
+var $rtfeldman$elm_css$Css$RemUnits = {$: 'RemUnits'};
+var $rtfeldman$elm_css$Css$rem = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$RemUnits, 'rem');
 var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
 var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$abs = function (n) {
@@ -8554,16 +8601,14 @@ var $myrho$elm_round$Round$round = $myrho$elm_round$Round$roundFun(
 				}
 			}
 		}));
-var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
-var $author$project$Main$viewField = F2(
-	function (millisTotal, _v0) {
+var $author$project$Field$view = F3(
+	function (millisTotal, backgroundColor, _v0) {
 		var attackName = _v0.attackName;
 		var resolveType = _v0.resolveType;
 		var millisLeft = _v0.millisLeft;
 		var secondsLeft = A2($myrho$elm_round$Round$round, 0, millisLeft / 1000) + 's';
 		var percentLeft = (_Utils_cmp(millisLeft, millisTotal) > 0) ? 0 : ((millisLeft > 0) ? (100 * (1 - (millisLeft / millisTotal))) : 100);
-		var backgroundColor = A4($rtfeldman$elm_css$Css$rgba, 255, 13, 13, 0.5);
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -8685,18 +8730,51 @@ var $author$project$Main$viewName = function (_v0) {
 				$rtfeldman$elm_css$Html$Styled$text(attackName)
 			]));
 };
+var $author$project$Main$viewCurrentBox = F2(
+	function (millisTotal, field) {
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$div,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$width(
+							$rtfeldman$elm_css$Css$pct(75)),
+							$rtfeldman$elm_css$Css$marginLeft(
+							$rtfeldman$elm_css$Css$pct(10)),
+							A3(
+							$rtfeldman$elm_css$Css$border3,
+							$rtfeldman$elm_css$Css$px(1),
+							$rtfeldman$elm_css$Css$solid,
+							$ursi$elm_css_colors$Css$Colors$white)
+						]))
+				]),
+			_List_fromArray(
+				[
+					$author$project$Main$viewName(field),
+					A3(
+					$author$project$Field$view,
+					millisTotal,
+					A4($rtfeldman$elm_css$Css$rgba, 255, 0, 0, 0.6),
+					field)
+				]));
+	});
 var $author$project$Main$view = function (_v0) {
 	var fields = _v0.fields;
-	var millisTotal = _v0.millisTotal;
 	var millisPassed = _v0.millisPassed;
-	var names = A2($elm$core$List$map, $author$project$Main$viewName, fields);
+	var millisTotal = _v0.millisTotal;
+	var input = A2(
+		$rtfeldman$elm_css$Html$Styled$input,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$Input)
+			]),
+		_List_Nil);
 	var countdowns = A2(
-		$elm_community$list_extra$List$Extra$interweave,
-		names,
-		A2(
-			$elm$core$List$map,
-			$author$project$Main$viewField(millisTotal),
-			fields));
+		$elm$core$List$map,
+		$author$project$Main$viewCurrentBox(millisTotal),
+		fields);
 	var clock = $author$project$Main$viewClock(millisPassed);
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
@@ -8714,7 +8792,7 @@ var $author$project$Main$view = function (_v0) {
 			]),
 		_Utils_ap(
 			_List_fromArray(
-				[clock]),
+				[input, clock]),
 			countdowns));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
