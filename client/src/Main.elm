@@ -70,12 +70,12 @@ makeField attackName resolveType millisLeft  =
 init : Flags -> (Model, Cmd Msg)
 init _ =
   ( Model
-    [ makeField "Gaoler's Flail" "Left/right" (timeToMillis 10)
+    [ makeField "Gaoler's Flail" "Left/right" (timeToMillis 13)
     , makeField "Gaoler's Flail" "Left/right" (timeToMillis 15)
-    , makeField "Warder's Wrath" "Raidwide" (timeToMillis 18)
+    , makeField "Warder's Wrath" "Raidwide" (timeToMillis 17)
     , makeField "Pitiless Flail + True Holy" "KB into stack" (timeToMillis 24)
-    , makeField "Gaoler's Flail" "Left/right" (timeToMillis 37)
-    , makeField "Heavy Hand" "TB" (timeToMillis 115)
+    , makeField "Gaoler's Flail" "Left/right" (timeToMillis 27)
+    , makeField "Heavy Hand" "TB" (timeToMillis 28)
     ]
     -5000 20000 0
   , Cmd.none
@@ -140,11 +140,10 @@ viewField millisTotal backgroundColor { attackName, resolveType, millisLeft }  =
           , Css.backgroundColor <| Css.rgba 50 50 50 0.8
           , Css.margin Css.auto
           , Css.borderRadius <| Css.rem 0.5
-          , Css.border3 (Css.px 1) Css.solid backgroundColor
-          , Css.boxShadow3 (Css.px 0.5) (Css.px 0.5) backgroundColor
-          , Css.marginBottom <| Css.pct 3
-          , Css.width <| Css.pct 50
-          , Css.height <| Css.rem 6
+          , Css.border3 (Css.px 1) Css.solid Colors.white
+          , Css.boxShadow3 (Css.px 0.5) (Css.px 0.5) <| Css.rgba 50 50 50 0.8
+          , Css.width <| Css.pct 90
+          , Css.height <| Css.em 4
           , Css.paddingRight <| Css.rem 1
           ]
       ]
@@ -154,7 +153,7 @@ viewField millisTotal backgroundColor { attackName, resolveType, millisLeft }  =
             , Css.borderRadius <| Css.rem 0.5
             , Css.backgroundColor backgroundColor
             , Css.width <| Css.pct percentLeft
-            , Css.height <| Css.rem 6
+            , Css.height <| Css.em 4
             ]
           ]
           []
@@ -166,18 +165,14 @@ viewField millisTotal backgroundColor { attackName, resolveType, millisLeft }  =
               , Css.textAlign Css.left
               , Css.fontSize <| Css.rem 2
               , Css.marginLeft <| Css.rem 1
-              , Css.marginTop <| Css.rem 1.5
+              , Css.marginTop <| Css.rem 0.75
               ]
           ]
-          [ Html.div [] [ Html.text resolveType ]
-          , Html.div [ Html.css [
-            Css.textAlign Css.right
-            ]
-          ] [
-            Html.text (secondsLeft)
+          [ Html.div []
+            [ Html.text <| resolveType ++ " (" ++ secondsLeft ++ ")"
             ]
           ]
-      ]
+        ]
 
 viewClock : Int -> Html Msg
 viewClock millisPassed =
@@ -199,7 +194,8 @@ viewName { attackName } =
       Css.color Colors.white
     , Css.textAlign Css.left
     , Css.fontSize <| Css.pct 200
-    , Css.marginLeft <| Css.pct 24
+    , Css.marginLeft <| Css.pct 5
+    , Css.marginBottom <| Css.pct 1
     ]
   ] [
     Html.text attackName
@@ -209,12 +205,27 @@ viewCurrentBox : Int -> Field -> Html Msg
 viewCurrentBox millisTotal field =
   Html.div [
     Html.css [
-      Css.width <| Css.pct 75
-    , Css.marginLeft <| Css.pct 10
-    , Css.border3 (Css.px 1) Css.solid Colors.white
+      Css.width <| Css.pct 50
+    , Css.marginLeft <| Css.pct 25
+    , Css.border3 (Css.px 5) Css.outset Colors.white
+    , Css.marginBottom <| Css.pct 3
+    , Css.paddingTop <| Css.pct 2
+    , Css.paddingBottom <| Css.pct 2
     ]
   ] [
     viewName field, viewField millisTotal (Css.rgba 255 0 0 0.6) field
+  ]
+
+viewBox : Int -> Css.Color -> Field -> Html Msg
+viewBox millisTotal boxColor field =
+  Html.div [
+    Html.css [
+      Css.width <| Css.pct 50
+    , Css.marginLeft <| Css.pct 25
+    , Css.marginBottom <| Css.pct 3
+    ]
+  ] [
+    viewName field, viewField millisTotal boxColor field
   ]
 
 
@@ -222,7 +233,12 @@ view : Model -> Html Msg
 view { fields, millisPassed, millisTotal } =
   let
     clock = viewClock millisPassed
-    countdowns = List.map (viewCurrentBox millisTotal) fields
+    current =
+      case List.take 1 <| List.drop 2 fields of
+        x :: _ -> viewCurrentBox millisTotal x
+        [] -> Html.text ""
+    past = List.map (viewBox millisTotal <| Css.rgba 0 200 0 0.6) <| List.take 2 fields
+    future = List.map (viewBox millisTotal <| Css.rgba 0 0 255 0.6) <| List.drop 3 fields
   in
     Html.div [
       Html.css
@@ -231,4 +247,4 @@ view { fields, millisPassed, millisTotal } =
         , Css.paddingTop <| Css.em 5
         , Css.paddingBottom <| Css.em 5
         ]
-    ] <| [clock] ++ countdowns
+    ] <| [clock] ++ past ++ [current] ++ future
