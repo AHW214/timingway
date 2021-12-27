@@ -2,7 +2,8 @@ module Timingway.Field exposing
     ( Config
     , Field
     , decoder
-    , decrement
+    , isExpired
+    , tick
     , view
     )
 
@@ -20,9 +21,14 @@ type alias Field =
     }
 
 
-decrement : Int -> Field -> Field
-decrement tick field =
-    { field | millisLeft = field.millisLeft - tick }
+tick : Int -> Field -> Field
+tick delta field =
+    { field | millisLeft = field.millisLeft - delta }
+
+
+isExpired : Field -> Bool
+isExpired { millisLeft } =
+    millisLeft <= 0
 
 
 decoder : Decoder Field

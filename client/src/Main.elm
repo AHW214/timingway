@@ -107,6 +107,7 @@ type Msg
     = Init Time.Posix
     | Tick Time.Posix
     | Input String
+    | Reset
 
 
 tickTimeMillis : Int
@@ -145,13 +146,16 @@ update msg model =
 
                         _ ->
                             model
+
+                Reset ->
+                    { model | millisPassed = 0 }
     in
     ( newModel, Cmd.none )
 
 
 decrementFields : Int -> Model -> Model
 decrementFields millis model =
-    { model | fields = List.map (Field.decrement millis) model.fields }
+    { model | fields = List.map (Field.tick millis) model.fields }
 
 
 advanceFields : Int -> Model -> Model
@@ -221,6 +225,20 @@ view config { fields, millisPassed, millisTotal } =
         input =
             Html.input [ Html.onInput Input ] []
 
+        reset =
+            Html.button
+                [ Html.onClick Reset
+                , Html.css
+                    [ Css.backgroundColor Colors.whitesmoke
+                    , Css.color Colors.black
+                    , Css.textAlign Css.center
+                    , Css.fontSize <| Css.rem 2
+                    , Css.marginLeft <| Css.rem 5
+                    , Css.marginBottom <| Css.rem 1
+                    ]
+                ]
+                [ Html.text "Reset Timer" ]
+
         clock =
             Clock.view millisPassed
 
@@ -240,9 +258,9 @@ view config { fields, millisPassed, millisTotal } =
             , Css.paddingBottom <| Css.em 5
             ]
         ]
-    <|
-        [ input, clock ]
+        ([ input, reset, clock ]
             ++ fieldViews
+        )
 
 
 viewFields : Int -> List Field -> List FieldConfig -> List (Html Msg)
