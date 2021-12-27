@@ -6,6 +6,9 @@ elm-stuff
 # elm-repl generated files
 repl-temp-*
 
+# Compiled assets
+dist/
+
 ### Server ###
 
 # Haskell
