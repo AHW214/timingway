@@ -1,12 +1,13 @@
 module Main exposing (..)
 
 import Browser
-import Css
+import Css exposing (Color)
 import Css.Colors as Colors
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Html.Styled.Events as Html
 import Json.Decode as Decode
+import List.Extra as List
 import Time
 
 import Field exposing (Field)
@@ -18,18 +19,35 @@ type alias Flags = ()
 
 main : Program Flags Model Msg
 main =
-  Browser.element
-    { init = init
-    , view = Html.toUnstyled << view
-    , update = update
-    , subscriptions = subscriptions
-    }
+  let
+    config =
+      { past =
+          { amount = 2
+          , color = Css.rgba 0 200 0 0.6
+          }
+
+      , present =
+          { amount = 1
+          , color = Css.rgba 255 0 0 0.6
+          }
+
+      , future =
+          { amount = 2
+          , color = Css.rgba 0 0 255 0.6
+          }
+      }
+  in
+    Browser.element
+      { init = init
+      , view = Html.toUnstyled << view config
+      , update = update
+      , subscriptions = subscriptions
+      }
 
 -- MODEL
 
 type alias Model =
   { fields: List Field
-  , graceMillis: Int
   , millisTotal : Int
   , millisPassed: Int
   }
@@ -51,29 +69,31 @@ millisToClock millis =
 
     minutes = String.fromInt <| totalSeconds // 60
 
-    minutesString =
-      case String.length minutes of
-        1 -> "0" ++ minutes
-        _ -> minutes
-
-    secondsString =
-      case String.length seconds of
-        1 -> "0" ++ seconds
-        _ -> seconds
+    -- TODO - use library padding function
+    padTime str =
+      if String.length str == 1
+       then "0" ++ str
+       else str
   in
-     minutesString ++ " : " ++ secondsString
+     padTime minutes ++ " : " ++ padTime seconds
+
+makeField : String -> String -> Int -> Field
+makeField attackName resolveType =
+  Field attackName resolveType << timeToMillis
 
 init : Flags -> (Model, Cmd Msg)
 init _ =
-  ( Model
-    [ Field "Gaoler's Flail" "Left/right" (timeToMillis 10)
-    , Field "Gaoler's Flail" "Left/right" (timeToMillis 15)
-    , Field "Warder's Wrath" "Raidwide" (timeToMillis 18)
-    , Field "Pitiless Flail + True Holy" "KB into stack" (timeToMillis 24)
-    , Field "Gaoler's Flail" "Left/right" (timeToMillis 37)
-    , Field "Heavy Hand" "TB" (timeToMillis 115)
-    ]
-    -5000 20000 0
+  ( { fields =
+        [ makeField "Floating Inaccuracy" "Low Precision" 10
+        , makeField "Gaoler's Flail" "Left/right" 15
+        , makeField "Warder's Wrath" "Raidwide" 18
+        , makeField "Pitiless Flail + True Holy" "KB into stack" 24
+        , makeField "Blase's Bombardment" "Classwide" 37
+        , makeField "Heavy Hand" "TB" 115
+        ]
+    , millisTotal = 20000
+    , millisPassed = 0
+    }
   , Cmd.none
   )
 
@@ -92,8 +112,9 @@ update msg model =
         case msg of
           Tick _ ->
             model
-              |> decrement tickTimeMillis
-              |> increment tickTimeMillis
+              |> incrementTimer tickTimeMillis
+              |> decrementFields tickTimeMillis
+              |> advanceFields 2
 
           Input input ->
             case decodeFields input of
@@ -104,6 +125,28 @@ update msg model =
                 model
   in
     ( newModel, Cmd.none )
+
+decrementFields : Int -> Model -> Model
+decrementFields tick model =
+  { model | fields = List.map (Field.decrement tick) model.fields }
+
+advanceFields : Int -> Model -> Model
+advanceFields ix model =
+  let
+    fields =
+      case List.getAt ix model.fields of
+        Just { millisLeft } ->
+          if millisLeft < 0
+            then List.drop 1 model.fields
+            else model.fields
+
+        Nothing -> model.fields
+  in
+    { model | fields = fields }
+
+incrementTimer : Int -> Model -> Model
+incrementTimer tick model =
+  { model | millisPassed = model.millisPassed + tick}
 
 decodeFields : String -> Result Decode.Error (List Field)
 decodeFields =
@@ -116,19 +159,98 @@ subscriptions : Model -> Sub Msg
 subscriptions _ =
   Time.every (toFloat tickTimeMillis) Tick
 
-decrement : Int -> Model -> Model
-decrement tick model =
-  { model | fields =
-      List.filterMap
-        (Field.decrement tick model.graceMillis)
-        model.fields
+-- VIEW
+
+type alias FieldConfig =
+  { amount : Int
+  , color : Color
   }
 
-increment : Int -> Model -> Model
-increment tick model =
-  { model | millisPassed = model.millisPassed + tick}
+type alias FieldsConfig =
+  { future : FieldConfig
+  , past : FieldConfig
+  , present : FieldConfig
+  }
 
--- VIEW
+view : FieldsConfig -> Model -> Html Msg
+view config { fields, millisPassed, millisTotal } =
+  let
+    input = Html.input [ Html.onInput Input ] []
+
+    clock = viewClock millisPassed
+
+    fieldViews = viewFields
+      millisTotal
+      fields
+      [ config.past
+      , config.present
+      , config.future
+      ]
+
+  in
+    Html.div
+      [ Html.css
+          [ Css.backgroundColor Colors.black
+          , Css.paddingTop <| Css.em 5
+          , Css.paddingBottom <| Css.em 5
+          ]
+      ] <| [input, clock] ++ fieldViews
+
+viewFields : Int -> List Field -> List FieldConfig -> List (Html Msg)
+viewFields millisTotal fields =
+  let
+      f config ( fieldss, views ) =
+        let
+          ( toView, rest ) =
+            List.splitAt config.amount fieldss
+
+          newViews = List.map (viewBox millisTotal config.color) toView
+        in
+          ( rest, views ++ newViews )
+  in
+    Tuple.second << List.foldl f ( fields, [] )
+
+viewName : Field -> Html Msg
+viewName { attackName } =
+  Html.div
+    [ Html.css
+        [ Css.color Colors.white
+        , Css.textAlign Css.left
+        , Css.fontSize <| Css.pct 200
+        , Css.marginLeft <| Css.pct 5
+        , Css.marginBottom <| Css.pct 1
+        ]
+    ]
+    [ Html.text attackName
+    ]
+
+viewCurrentBox : Int -> Field -> Html Msg
+viewCurrentBox millisTotal field =
+  Html.div
+    [ Html.css
+        [ Css.width <| Css.pct 50
+        , Css.border3 (Css.px 5) Css.outset Colors.white
+        , Css.marginBottom <| Css.pct 3
+        , Css.paddingTop <| Css.pct 2
+        , Css.paddingBottom <| Css.pct 2
+        ]
+    ]
+    [ viewName field
+    , Field.view millisTotal (Css.rgba 255 0 0 0.6) field
+    ]
+
+-- HTML for non-current attack box.
+viewBox : Int -> Color -> Field -> Html Msg
+viewBox millisTotal boxColor field =
+  Html.div
+    [ Html.css
+        [ Css.width <| Css.pct 50
+        , Css.marginBottom <| Css.pct 3
+        ]
+    ]
+    [ viewName field
+    , Field.view millisTotal boxColor field
+    ]
 
 viewClock : Int -> Html Msg
 viewClock millisPassed =
@@ -142,44 +264,3 @@ viewClock millisPassed =
     ]
     [ Html.text <| millisToClock millisPassed
     ]
-
-viewName : String -> Html Msg
-viewName attackName =
-  Html.div
-    [ Html.css
-        [ Css.color Colors.white
-        , Css.textAlign Css.left
-        , Css.fontSize <| Css.pct 200
-        , Css.marginLeft <| Css.pct 24
-        ]
-    ]
-    [ Html.text attackName
-    ]
-
-viewCurrentBox : Int -> Field -> Html Msg
-viewCurrentBox millisTotal field =
-  Html.div
-    [ Html.css
-        [ Css.width <| Css.pct 75
-        , Css.marginLeft <| Css.pct 10
-        , Css.border3 (Css.px 1) Css.solid Colors.white
-        ]
-    ]
-    [ viewName field.attackName
-    , Field.view millisTotal (Css.rgba 255 0 0 0.6) field
-    ]
-
-view : Model -> Html Msg
-view { fields, millisPassed, millisTotal } =
-  let
-    input = Html.input [ Html.onInput Input ] []
-    clock = viewClock millisPassed
-    countdowns = List.map (viewCurrentBox millisTotal) fields
-  in
-    Html.div
-      [ Html.css
-          [ Css.backgroundColor Colors.black
-          , Css.paddingTop <| Css.em 5
-          , Css.paddingBottom <| Css.em 5
-          ]
-      ] <| [input, clock] ++ countdowns
