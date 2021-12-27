@@ -8,6 +8,7 @@ import Html.Styled.Attributes as Html
 import Html.Styled.Events as Html
 import Json.Decode as Decode
 import List.Extra as List
+import Task
 import Time
 
 import Field exposing (Field)
@@ -47,9 +48,10 @@ main =
 -- MODEL
 
 type alias Model =
-  { fields: List Field
+  { fields : List Field
+  , lastTick : Maybe Time.Posix
   , millisTotal : Int
-  , millisPassed: Int
+  , millisPassed : Int
   }
 
 timeToMillis : Int -> Int
@@ -91,16 +93,18 @@ init _ =
         , makeField "Blase's Bombardment" "Classwide" 37
         , makeField "Heavy Hand" "TB" 115
         ]
+    , lastTick = Nothing
     , millisTotal = 20000
     , millisPassed = 0
     }
-  , Cmd.none
+  , Task.perform Init Time.now
   )
 
 -- UPDATE
 
 type Msg
-  = Tick Time.Posix
+  = Init Time.Posix
+  | Tick Time.Posix
   | Input String
 
 tickTimeMillis : Int
@@ -110,11 +114,23 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   let newModel =
         case msg of
-          Tick _ ->
-            model
-              |> incrementTimer tickTimeMillis
-              |> decrementFields tickTimeMillis
-              |> advanceFields 2
+          Init time ->
+            setLastTick time model
+
+          Tick time ->
+            let
+              delta =
+                case model.lastTick of
+                  Nothing ->
+                    tickTimeMillis
+                  Just lastTick ->
+                    Time.posixToMillis time - Time.posixToMillis lastTick
+            in
+              model
+                |> setLastTick time
+                |> incrementTimer delta
+                |> decrementFields delta
+                |> advanceFields 2
 
           Input input ->
             case decodeFields input of
@@ -127,8 +143,8 @@ update msg model =
     ( newModel, Cmd.none )
 
 decrementFields : Int -> Model -> Model
-decrementFields tick model =
-  { model | fields = List.map (Field.decrement tick) model.fields }
+decrementFields millis model =
+  { model | fields = List.map (Field.decrement millis) model.fields }
 
 advanceFields : Int -> Model -> Model
 advanceFields ix model =
@@ -145,8 +161,12 @@ advanceFields ix model =
     { model | fields = fields }
 
 incrementTimer : Int -> Model -> Model
-incrementTimer tick model =
-  { model | millisPassed = model.millisPassed + tick}
+incrementTimer millis model =
+  { model | millisPassed = model.millisPassed + millis }
+
+setLastTick : Time.Posix -> Model -> Model
+setLastTick time model =
+  { model | lastTick = Just time }
 
 decodeFields : String -> Result Decode.Error (List Field)
 decodeFields =
