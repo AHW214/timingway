@@ -39,3 +39,7 @@ timingway.cabal
 
 # Haskell IDE Engine
 hie.yaml
+
+### Misc ###
+
+.DS_Store
