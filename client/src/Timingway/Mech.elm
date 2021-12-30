@@ -1,60 +1,48 @@
-module Timingway.Field exposing
-    ( Config
-    , Field
+module Timingway.Mech exposing
+    ( Mech
     , decoder
     , isExpired
     , tick
     , view
     )
 
-import Css exposing (Color)
+import Css
 import Css.Colors as Colors
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Json.Decode as Decode exposing (Decoder)
 import Round
 import Timingway.Util.Basic as Basic
+import Timingway.Config exposing (ViewConfig, GroupConfig)
 
-
-type alias Field =
+type alias Mech =
     { attackName : String
     , resolveType : String
     , millisLeft : Int
     }
 
+tick : Int -> Mech -> Mech
+tick delta mech =
+    { mech | millisLeft = mech.millisLeft - delta }
 
-tick : Int -> Field -> Field
-tick delta field =
-    { field | millisLeft = field.millisLeft - delta }
 
-
-isExpired : Field -> Bool
+isExpired : Mech -> Bool
 isExpired { millisLeft } =
     millisLeft <= 0
 
 
-decoder : Decoder Field
+decoder : Decoder Mech
 decoder =
-    Decode.map3 Field
+    Decode.map3 Mech
         (Decode.field "attackName" Decode.string)
         (Decode.field "resolveType" Decode.string)
         (Decode.field "millisLeft" Decode.int)
 
 
-
 -- VIEW
 
-
-type alias Config =
-    { colorBackground : Color
-    , colorBar : Color
-    , isFocus : Bool
-    , millisTotal : Int
-    }
-
-
-view : Config -> Field -> Html msg
-view config field =
+view : ViewConfig -> GroupConfig -> Mech -> Html msg
+view viewConfig groupConfig mech =
     let
         cssCommon =
             [ Css.marginBottom <| Css.rem 1
@@ -62,7 +50,7 @@ view config field =
             ]
 
         cssOutline =
-            if config.isFocus then
+            if groupConfig.isFocus then
                 [ Css.paddingTop <| Css.rem 1
                 , Css.paddingBottom <| Css.rem 1
                 ]
@@ -74,28 +62,28 @@ view config field =
             [ Html.css
                 (cssCommon ++ cssOutline)
             ]
-            [ viewName config field
-            , viewBar config field
+            [ viewName groupConfig mech
+            , viewBar viewConfig groupConfig mech
             ]
 
 
-viewBar : Config -> Field -> Html msg
-viewBar config { resolveType, millisLeft } =
+viewBar : ViewConfig -> GroupConfig -> Mech -> Html msg
+viewBar viewConfig groupConfig { resolveType, millisLeft } =
     let
         barHeight =
-            Css.rem <| Basic.choose config.isFocus 8 5
+            Css.rem <| Basic.choose groupConfig.isFocus 8 5
         
         barFont =
-            Css.rem <| Basic.choose config.isFocus 3.5 2.5
+            Css.rem <| Basic.choose groupConfig.isFocus 3.5 2.5
 
         barMargin =
-            Css.rem <| Basic.choose config.isFocus 1.5 1
+            Css.rem <| Basic.choose groupConfig.isFocus 1.5 1
 
     in
         Html.div
             [ Html.css
                 [ Css.position Css.relative
-                , Css.backgroundColor config.colorBackground
+                , Css.backgroundColor viewConfig.backgroundColor
                 , Css.borderRadius <| Css.rem 0.5
                 , Css.width <| Css.rem 40
                 , Css.height barHeight
@@ -106,10 +94,10 @@ viewBar config { resolveType, millisLeft } =
                 [ Html.css
                     [ Css.position Css.absolute
                     , Css.borderRadius <| Css.rem 0.5
-                    , Css.backgroundColor config.colorBar
+                    , Css.backgroundColor groupConfig.colorBar
                     , let
                         percentLeft =
-                            100 - computePercent config.millisTotal millisLeft
+                            100 - computePercent viewConfig.millisTotal millisLeft
                     in
                     Css.width <| Css.rem <| 0.4 * percentLeft
                     , Css.height barHeight
@@ -155,11 +143,11 @@ viewBar config { resolveType, millisLeft } =
             ]
 
 
-viewName : Config -> Field -> Html msg
-viewName config { attackName } =
+viewName : GroupConfig -> Mech -> Html msg
+viewName groupConfig { attackName } =
     let
         barFont =
-            Css.rem <| Basic.choose config.isFocus 3 2.5
+            Css.rem <| Basic.choose groupConfig.isFocus 3 2.5
     in
         Html.div
             [ Html.css

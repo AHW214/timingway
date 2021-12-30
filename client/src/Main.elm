@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Array
 import Browser
-import Css exposing (Color)
+import Css
 import Css.Colors as Colors
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
@@ -12,70 +12,39 @@ import List.Extra as List
 import Task
 import Time
 import Timingway.Clock as Clock
-import Timingway.Field as Field exposing (Field)
+import Timingway.Config exposing (ViewConfig)
+import Timingway.Mech as Mech exposing (Mech)
 import Timingway.Util.Basic as Basic
 
-
 -- MAIN
-
 
 type alias Flags =
     ()
 
-pastAmount : Int
-pastAmount = 1
-
-presentAmount : Int
-presentAmount = 1
-
-futureAmount : Int
-futureAmount = 2
-
 main : Program Flags Model Msg
 main =
-    let
-        config =
-            { past =
-                { amount = pastAmount
-                , colorBar = Css.rgba 0 200 0 0.6
-                , isFocus = False
-                }
-            , present =
-                { amount = presentAmount
-                , colorBar = Css.rgba 255 0 0 0.6
-                , isFocus = True
-                }
-            , future =
-                { amount = futureAmount
-                , colorBar = Css.rgba 0 100 255 0.6
-                , isFocus = False
-                }
-            }
-    in
     Browser.element
         { init = init
-        , view = Html.toUnstyled << view config
+        , view = Html.toUnstyled << view
         , update = update
         , subscriptions = subscriptions
         }
 
-
-
 -- MODEL
 
-
 {-| Models have the following attributes:
-    fields: A list of fields, each field representing a currently active timer
+    mechs: A list of mechanics
     lastTick: Posix time of the last tick recorded in the model
     millisTotal: Determines at how many milliseconds timer bars begin to decrement
     millisPassed: Determines the total duration the timer has been active for
+    viewConfig: A ViewConfig which determines its view.
 -}
 type alias Model =
-    { fields : List Field
+    { mechs : List Mech
     , lastTick : Maybe Time.Posix
-    , millisTotal : Int
     , millisPassed : Int
     , isTicking: Bool
+    , viewConfig: ViewConfig
     }
 
 {-| Given time in MMSS format, returns the number of milliseconds.
@@ -91,31 +60,49 @@ timeToMillis time =
     in
     (mins * 60 + seconds) * 1000
 
-{-| Constructs a field given each parameter.
+{-| Constructs a mechanic given each parameter.
     String: Attack name
     String: Resolution of attack
     Int: Time in MMSS format
 -}
-makeField : String -> String -> Int -> Field
-makeField attackName resolveType =
-    Field attackName resolveType << timeToMillis
+makeMech : String -> String -> Int -> Mech
+makeMech attackName resolveType millisLeft =
+    Mech attackName resolveType ( timeToMillis millisLeft )
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { fields =
-            [ makeField "No Previous Mechanics" "" 0
-            , makeField "Gaoler's Flail" "Left/right" 10
-            , makeField "Prismatic Deception" "Sword up = in" 15
-            , makeField "Akh Rhai" "Prepare to move" 18
-            , makeField "Hell's Judgment" "HP to 1" 24
-            , makeField "Decollation" "Raidwide" 37
-            , makeField "Pitiless Rescue" "KB Immunity" 115
+    ( { mechs =
+            [ makeMech "No Previous Mechanics" "" 0
+            , makeMech "Gaoler's Flail" "Left/right" 10
+            , makeMech "Prismatic Deception" "Sword up = in" 15
+            , makeMech "Akh Rhai" "Prepare to move" 18
+            , makeMech "Hell's Judgment" "HP to 1" 24
+            , makeMech "Decollation" "Raidwide" 37
+            , makeMech "Pitiless Rescue" "KB Immunity" 115
             ]
       , lastTick = Nothing
-      , millisTotal = 15000
       , millisPassed = 0
       , isTicking = False
+      , viewConfig = 
+            { past =
+                { amount = 1
+                , colorBar = Css.rgba 0 200 0 0.6
+                , isFocus = False
+                }
+            , present =
+                { amount = 1
+                , colorBar = Css.rgba 255 0 0 0.6
+                , isFocus = True
+                }
+            , future =
+                { amount = 2
+                , colorBar = Css.rgba 0 100 255 0.6
+                , isFocus = False
+                }
+            , millisTotal = 15000
+            , backgroundColor = Css.rgba 150 150 150 0.5
+            }
       }
     , Task.perform Init Time.now
     )
@@ -125,7 +112,7 @@ init _ =
 
 type Msg
     = Init Time.Posix
-    | Tick Time.Posix
+    | Tick ViewConfig Time.Posix
     | Input String
     | Reset
     | Continue
@@ -141,19 +128,12 @@ tickTimeMillis =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        newCommand =
-            if
-                msg == Reset || msg == Continue
-            then
-                Task.perform Init Time.now
-            else
-                Cmd.none
         newModel =
             case msg of
                 Init time ->
                     setLastTick time model
 
-                Tick time ->
+                Tick viewConfig time ->
                     let
                         delta =
                             case model.lastTick of
@@ -166,13 +146,13 @@ update msg model =
                     model
                         |> setLastTick time
                         |> incrementTimer delta
-                        |> decrementFields delta
-                        |> advanceFields pastAmount
+                        |> decrementMechs delta
+                        |> advanceMechs viewConfig.past.amount
 
                 Input input ->
-                    case decodeFields input of
-                        Ok fields ->
-                            { model | fields = fields }
+                    case decodeMechs input of
+                        Ok mechs ->
+                            { model | mechs = mechs }
 
                         _ ->
                             model
@@ -188,35 +168,43 @@ update msg model =
 
                 Pause ->
                     { model | isTicking = False }
+        newCommand =
+            if
+                msg == Reset || msg == Continue
+            then
+                Task.perform Init Time.now
+            else
+                Cmd.none
     in
     ( newModel, newCommand )
 
 
-decrementFields : Int -> Model -> Model
-decrementFields millis model =
-    { model | fields = List.map (Field.tick millis) model.fields }
+decrementMechs : Int -> Model -> Model
+decrementMechs millis model =
+    { model | mechs = List.map ( Mech.tick millis ) model.mechs }
 
 {-| Updates the list of current timers, dependent on the timer of the given index.
     Int: index of the "upcoming attack" in the list.
+    Int: index o
     Model: model to be updated.
     If the timer for the given index reaches 0, then the model discards the earliest attack currently displayed.
 -}
-advanceFields : Int -> Model -> Model
-advanceFields index model =
+advanceMechs : Int -> Model -> Model
+advanceMechs index model =
     let
-        fields =
-            case List.getAt index model.fields of
+        newMechs =
+            case List.getAt index model.mechs of
                 Just { millisLeft } ->
                     if millisLeft < 0 then
-                        List.drop presentAmount model.fields
+                        List.drop 1 model.mechs
 
                     else
-                        model.fields
+                        model.mechs
 
                 Nothing ->
-                    model.fields
+                    model.mechs
     in
-    { model | fields = fields }
+    { model | mechs = newMechs }
 
 {-| Increments the timer by a certain amount of milliseconds.
 -}
@@ -230,10 +218,10 @@ setLastTick : Time.Posix -> Model -> Model
 setLastTick time model =
     { model | lastTick = Just time }
 
-decodeFields : String -> Result Decode.Error (List Field)
-decodeFields =
+decodeMechs : String -> Result Decode.Error (List Mech)
+decodeMechs =
     Result.map Array.toList
-        << Decode.decodeString (Decode.array Field.decoder)
+        << Decode.decodeString (Decode.array Mech.decoder)
 
 
 
@@ -241,11 +229,11 @@ decodeFields =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions { isTicking } =
+subscriptions { isTicking, viewConfig } =
     if
         isTicking
     then
-        Time.every (toFloat tickTimeMillis) Tick
+        Time.every ( toFloat tickTimeMillis ) ( Tick viewConfig )
     else
         Sub.none
 
@@ -253,46 +241,26 @@ subscriptions { isTicking } =
 
 -- VIEW
 
-
-type alias FieldConfig =
-    { amount : Int
-    , colorBar : Color
-    , isFocus : Bool
-    }
-
-
-type alias FieldsConfig =
-    { future : FieldConfig
-    , past : FieldConfig
-    , present : FieldConfig
-    }
-
-
-viewFields : Int -> List Field -> List FieldConfig -> List (Html Msg)
-viewFields millisTotal fields =
+viewMechs : List Mech -> ViewConfig -> List (Html Msg)
+viewMechs mechs viewConfig =
     let
-        f config ( fieldss, views ) =
+        configsList = [ viewConfig.past, viewConfig.present, viewConfig.future ]
+        viewConcat groupConfig ( mechList, viewList ) =
             let
-                ( toView, rest ) =
-                    List.splitAt config.amount fieldss
-
-                conf =
-                    { colorBackground = Css.rgba 150 150 150 0.5
-                    , colorBar = config.colorBar
-                    , isFocus = config.isFocus
-                    , millisTotal = millisTotal
-                    }
+                ( mechsToView, restOfMechs ) =
+                    List.splitAt groupConfig.amount mechList
 
                 newViews =
-                    List.map (Field.view conf) toView
+                    List.map ( Mech.view viewConfig groupConfig ) mechsToView
             in
-            ( rest, views ++ newViews )
+                ( restOfMechs, viewList ++ newViews )
     in
-    Tuple.second << List.foldl f ( fields, [] )
+        configsList
+            |> List.foldl viewConcat ( mechs, [] )
+            |> Tuple.second
 
-
-view : FieldsConfig -> Model -> Html Msg
-view config { isTicking, fields, millisPassed, millisTotal } =
+view : Model -> Html Msg
+view { viewConfig, isTicking, mechs, millisPassed } =
     let
         reset =
             Html.button
@@ -340,14 +308,9 @@ view config { isTicking, fields, millisPassed, millisTotal } =
         clock =
             Clock.view millisPassed
 
-        fieldViews =
-            viewFields
-                millisTotal
-                fields
-                [ config.past
-                , config.present
-                , config.future
-                ]
+        
+        mechsList =
+            viewMechs mechs viewConfig
     in
     Html.div
         [ Html.css
@@ -355,6 +318,6 @@ view config { isTicking, fields, millisPassed, millisTotal } =
             , Css.paddingBottom <| Css.em 1
             ]
         ]
-        ([ reset, pause, clock ]
-            ++ fieldViews
+        (
+            [ reset, pause, clock ] ++ mechsList
         )

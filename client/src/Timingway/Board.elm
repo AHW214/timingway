@@ -1,15 +1,15 @@
 module Timingway.Board exposing (Board, new)
 
 import List.Extra as List
-import Timingway.Field as Field exposing (Field)
+import Timingway.Mech as Mech exposing (Mech)
 import Timingway.Util.Basic as Basic
 
 
 type alias Board =
     { config : Config
-    , fieldsFuture : List Field
-    , fieldsPast : List (Maybe Field)
-    , fieldsUpcoming : List Field
+    , mechsFuture : List Mech
+    , mechsPast : List (Maybe Mech)
+    , mechsUpcoming : List Mech
     }
 
 
@@ -25,22 +25,22 @@ type alias Config =
 -- tick : Int -> Board -> Board
 -- tick delta board =
 --     let
---         fields =
+--         mechs =
 --     in
 
 
-new : Config -> List Field -> Board
-new config fields =
+new : Config -> List Mech -> Board
+new config mechs =
     let
-        ( fieldsExpired, fieldsActive ) =
-            List.partition Field.isExpired fields
+        ( mechsExpired, mechsActive ) =
+            List.partition Mech.isExpired mechs
 
-        fieldsPast =
-            fieldsExpired
+        mechsPast =
+            mechsExpired
                 |> List.map Just
                 |> Basic.padLeft config.numPast Nothing
 
-        ( fieldsUpcoming, fieldsFuture ) =
-            List.splitAt config.numUpcoming fieldsActive
+        ( mechsUpcoming, mechsFuture ) =
+            List.splitAt config.numUpcoming mechsActive
     in
-    Board config fieldsFuture fieldsPast fieldsUpcoming
+    Board config mechsFuture mechsPast mechsUpcoming
