@@ -16,10 +16,16 @@ view : Int -> Html msg
 view millis =
     Html.div
         [ Html.css
-            [ Css.color Colors.white
+            [ Css.position <| Css.absolute
+            , Css.marginTop <| Css.rem 1
+            , Css.marginLeft <| Css.rem 65
+            , Css.color Colors.white
+            , Css.backgroundColor <| Css.rgba 150 150 150 0.5
+            , Css.padding <| Css.rem 1
+            , Css.width <| Css.rem 15
+            , Css.borderRadius <| Css.rem 0.5
             , Css.textAlign Css.center
-            , Css.fontSize <| Css.em 3
-            , Css.marginBottom <| Css.em 1
+            , Css.fontSize <| Css.rem 4
             ]
         ]
         [ Html.text <| displayClock millis

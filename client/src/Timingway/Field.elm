@@ -12,6 +12,8 @@ import Css.Colors as Colors
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Json.Decode as Decode exposing (Decoder)
+import Round
+import Timingway.Util.List as List
 
 
 type alias Field =
@@ -44,9 +46,9 @@ decoder =
 
 
 type alias Config =
-    { colorBackround : Color
+    { colorBackground : Color
     , colorBar : Color
-    , colorOutline : Maybe Color
+    , isFocus : Bool
     , millisTotal : Int
     }
 
@@ -55,98 +57,121 @@ view : Config -> Field -> Html msg
 view config field =
     let
         cssCommon =
-            [ Css.width <| Css.pct 50
-            , Css.marginBottom <| Css.pct 3
+            [ Css.marginBottom <| Css.rem 1
+            , Css.marginLeft <| Css.rem 8
             ]
 
         cssOutline =
-            case config.colorOutline of
-                Nothing ->
-                    []
-
-                Just color ->
-                    [ Css.border3 (Css.px 5) Css.outset color
-                    , Css.paddingTop <| Css.pct 2
-                    , Css.paddingBottom <| Css.pct 2
-                    ]
+            if config.isFocus then
+                [ Css.paddingTop <| Css.rem 1
+                , Css.paddingBottom <| Css.rem 1
+                ]
+            else
+                []
+                
     in
-    Html.div
-        [ Html.css
-            (cssCommon ++ cssOutline)
-        ]
-        [ viewName field
-        , viewBar config field
-        ]
+        Html.div
+            [ Html.css
+                (cssCommon ++ cssOutline)
+            ]
+            [ viewName config field
+            , viewBar config field
+            ]
 
 
 viewBar : Config -> Field -> Html msg
 viewBar config { resolveType, millisLeft } =
-    Html.div
-        [ Html.css
-            [ Css.position Css.relative
-            , Css.backgroundColor config.colorBackround
-            , Css.margin Css.auto
-            , Css.borderRadius <| Css.rem 0.5
-            , Css.border3 (Css.px 1) Css.solid Colors.white
-            , Css.boxShadow3
-                (Css.px 0.5)
-                (Css.px 0.5)
-                (Css.rgba 50 50 50 0.8)
-            , Css.width <| Css.pct 90
-            , Css.height <| Css.em 4
-            , Css.paddingRight <| Css.rem 1
-            ]
-        ]
-        [ Html.div
+    let
+        barHeight =
+            Css.rem <| List.choose config.isFocus 8 5
+        
+        barFont =
+            Css.rem <| List.choose config.isFocus 3.5 2.5
+
+        barMargin =
+            Css.rem <| List.choose config.isFocus 1.5 1
+
+    in
+        Html.div
             [ Html.css
-                [ Css.position Css.absolute
+                [ Css.position Css.relative
+                , Css.backgroundColor config.colorBackground
                 , Css.borderRadius <| Css.rem 0.5
-                , Css.backgroundColor config.colorBar
-                , let
-                    percentLeft =
-                        100 - computePercent config.millisTotal millisLeft
-                  in
-                  Css.width <| Css.pct percentLeft
-                , Css.height <| Css.em 4
-                ]
-            ]
-            []
-        , Html.div
-            [ Html.css
-                [ Css.position Css.absolute
-                , Css.width <| Css.pct 95
-                , Css.color Colors.white
-                , Css.textAlign Css.left
-                , Css.fontSize <| Css.rem 2
-                , Css.marginLeft <| Css.rem 1
-                , Css.marginTop <| Css.rem 0.75
+                , Css.width <| Css.rem 40
+                , Css.height barHeight
+                , Css.marginLeft <| Css.rem 10
                 ]
             ]
             [ Html.div
+                [ Html.css
+                    [ Css.position Css.absolute
+                    , Css.borderRadius <| Css.rem 0.5
+                    , Css.backgroundColor config.colorBar
+                    , let
+                        percentLeft =
+                            100 - computePercent config.millisTotal millisLeft
+                    in
+                    Css.width <| Css.rem <| 0.4 * percentLeft
+                    , Css.height barHeight
+                    ]
+                ]
                 []
-                [ let
-                    time =
-                        "(" ++ displaySeconds millisLeft ++ ")"
-                  in
-                  Html.text <| resolveType ++ " " ++ time
+            , Html.div
+                [ Html.css
+                    [ Css.position Css.absolute
+                    , Css.width <| Css.pct 100
+                    , Css.color Colors.white
+                    , Css.textAlign Css.left
+                    , Css.fontSize barFont
+                    , Css.marginLeft <| Css.rem 1
+                    , Css.marginTop barMargin
+                    ]
+                ]
+                [ Html.div
+                    []
+                    [ 
+                    Html.text <| resolveType
+                    ]
+                ]
+                , Html.div
+                [ Html.css
+                    [ Css.position Css.absolute
+                    , Css.width <| Css.rem 38
+                    , Css.color Colors.white
+                    , Css.textAlign Css.right
+                    , Css.fontSize barFont
+                    , Css.marginTop barMargin
+                    ]
+                ]
+                [ Html.div
+                    []
+                    [ let
+                        time =
+                            displaySeconds millisLeft
+                    in
+                    Html.text <| time
+                    ]
                 ]
             ]
-        ]
 
 
-viewName : Field -> Html msg
-viewName { attackName } =
-    Html.div
-        [ Html.css
-            [ Css.color Colors.white
-            , Css.textAlign Css.left
-            , Css.fontSize <| Css.pct 200
-            , Css.marginLeft <| Css.pct 5
-            , Css.marginBottom <| Css.pct 1
+viewName : Config -> Field -> Html msg
+viewName config { attackName } =
+    let
+        barFont =
+            Css.rem <| List.choose config.isFocus 3 2.5
+    in
+        Html.div
+            [ Html.css
+                [ Css.color Colors.white
+                , Css.textAlign Css.left
+                , Css.fontSize barFont
+                , Css.marginLeft <| Css.rem 10
+                , Css.marginBottom <| Css.rem 1
+                ]
             ]
-        ]
-        [ Html.text attackName
-        ]
+            [ Html.text attackName
+            ]
 
 
 {-| Display the given number of milliseconds rounded down to the nearest number
@@ -156,9 +181,9 @@ displaySeconds : Int -> String
 displaySeconds millis =
     let
         seconds =
-            max 0 (millis // 1000)
+            max 0 (toFloat millis / 1000)
     in
-    String.fromInt seconds ++ "s"
+    Round.round 1 seconds ++ "s"
 
 
 {-| Compute the percentage `current` constitutes of `total`. The result is
