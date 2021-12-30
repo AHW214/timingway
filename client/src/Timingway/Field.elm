@@ -13,7 +13,7 @@ import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Json.Decode as Decode exposing (Decoder)
 import Round
-import Timingway.Util.List as List
+import Timingway.Util.Basic as Basic
 
 
 type alias Field =
@@ -83,13 +83,13 @@ viewBar : Config -> Field -> Html msg
 viewBar config { resolveType, millisLeft } =
     let
         barHeight =
-            Css.rem <| List.choose config.isFocus 8 5
+            Css.rem <| Basic.choose config.isFocus 8 5
         
         barFont =
-            Css.rem <| List.choose config.isFocus 3.5 2.5
+            Css.rem <| Basic.choose config.isFocus 3.5 2.5
 
         barMargin =
-            Css.rem <| List.choose config.isFocus 1.5 1
+            Css.rem <| Basic.choose config.isFocus 1.5 1
 
     in
         Html.div
@@ -159,7 +159,7 @@ viewName : Config -> Field -> Html msg
 viewName config { attackName } =
     let
         barFont =
-            Css.rem <| List.choose config.isFocus 3 2.5
+            Css.rem <| Basic.choose config.isFocus 3 2.5
     in
         Html.div
             [ Html.css

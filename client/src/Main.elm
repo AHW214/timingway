@@ -13,7 +13,7 @@ import Task
 import Time
 import Timingway.Clock as Clock
 import Timingway.Field as Field exposing (Field)
-import Timingway.Util.List as List
+import Timingway.Util.Basic as Basic
 
 
 -- MAIN
@@ -317,7 +317,7 @@ view config { isTicking, fields, millisPassed, millisTotal } =
         pause = 
             Html.button
                 [ Html.onClick
-                    <| List.choose isTicking Pause Continue
+                    <| Basic.choose isTicking Pause Continue
                 , Html.css
                     [ Css.backgroundColor <| Css.rgba 50 50 50 0.8
                     , Css.position Css.absolute
@@ -334,7 +334,7 @@ view config { isTicking, fields, millisPassed, millisTotal } =
                     ]
                 ]
                 [ Html.text
-                    <| List.choose isTicking "\u{23FE}" "\u{25B6}"
+                    <| Basic.choose isTicking "\u{23FE}" "\u{25B6}"
                 ]
 
         clock =

@@ -1,4 +1,4 @@
-module Timingway.Util.List exposing (padLeft, choose)
+module Timingway.Util.Basic exposing (padLeft, choose)
 
 
 padLeft : Int -> a -> List a -> List a

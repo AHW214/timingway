@@ -2,7 +2,7 @@ module Timingway.Board exposing (Board, new)
 
 import List.Extra as List
 import Timingway.Field as Field exposing (Field)
-import Timingway.Util.List as List
+import Timingway.Util.Basic as Basic
 
 
 type alias Board =
@@ -38,7 +38,7 @@ new config fields =
         fieldsPast =
             fieldsExpired
                 |> List.map Just
-                |> List.padLeft config.numPast Nothing
+                |> Basic.padLeft config.numPast Nothing
 
         ( fieldsUpcoming, fieldsFuture ) =
             List.splitAt config.numUpcoming fieldsActive

@@ -8121,7 +8121,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$St
 var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
 var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
 var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
-var $author$project$Timingway$Util$List$choose = F3(
+var $author$project$Timingway$Util$Basic$choose = F3(
 	function (clause, valTrue, valFalse) {
 		return clause ? valTrue : valFalse;
 	});
@@ -8650,11 +8650,11 @@ var $author$project$Timingway$Field$viewBar = F2(
 		var resolveType = _v0.resolveType;
 		var millisLeft = _v0.millisLeft;
 		var barMargin = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$List$choose, config.isFocus, 1.5, 1));
+			A3($author$project$Timingway$Util$Basic$choose, config.isFocus, 1.5, 1));
 		var barHeight = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$List$choose, config.isFocus, 8, 5));
+			A3($author$project$Timingway$Util$Basic$choose, config.isFocus, 8, 5));
 		var barFont = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$List$choose, config.isFocus, 3.5, 2.5));
+			A3($author$project$Timingway$Util$Basic$choose, config.isFocus, 3.5, 2.5));
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -8758,7 +8758,7 @@ var $author$project$Timingway$Field$viewName = F2(
 	function (config, _v0) {
 		var attackName = _v0.attackName;
 		var barFont = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$List$choose, config.isFocus, 3, 2.5));
+			A3($author$project$Timingway$Util$Basic$choose, config.isFocus, 3, 2.5));
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -8886,7 +8886,7 @@ var $author$project$Main$view = F2(
 			_List_fromArray(
 				[
 					$rtfeldman$elm_css$Html$Styled$Events$onClick(
-					A3($author$project$Timingway$Util$List$choose, isTicking, $author$project$Main$Pause, $author$project$Main$Continue)),
+					A3($author$project$Timingway$Util$Basic$choose, isTicking, $author$project$Main$Pause, $author$project$Main$Continue)),
 					$rtfeldman$elm_css$Html$Styled$Attributes$css(
 					_List_fromArray(
 						[
@@ -8916,7 +8916,7 @@ var $author$project$Main$view = F2(
 			_List_fromArray(
 				[
 					$rtfeldman$elm_css$Html$Styled$text(
-					A3($author$project$Timingway$Util$List$choose, isTicking, '\u23FE', '\u25B6'))
+					A3($author$project$Timingway$Util$Basic$choose, isTicking, '\u23FE', '\u25B6'))
 				]));
 		var fieldViews = A3(
 			$author$project$Main$viewFields,

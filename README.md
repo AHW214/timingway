@@ -2,16 +2,11 @@
 
 Timingway is designed to seamlessly visualize timelines and mechanics from Google Sheets in timer format.
 
-## Generating HTML
+## Generating HTML for testing
 
 Use the following command to generate the HTML file:
 ```bash
 $ make
-```
-
-Use the following command to generate the JS file:
-```bash
-$ make js
 ```
 
 To remove the HTML file:
