@@ -5314,7 +5314,7 @@ var $author$project$Main$init = function (_v0) {
 					10),
 					A4(
 					$author$project$Main$makeMech,
-					'Prismatic Deception',
+					'Prismatic Deceptiooooooooooooooooooooooooon',
 					'Sword up = in',
 					$elm$core$Maybe$Just('woah a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong note'),
 					15),
@@ -8525,9 +8525,9 @@ var $author$project$Timingway$Mech$maybeViewNotes = function (_v0) {
 							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
 							$rtfeldman$elm_css$Css$fontSize(
 							$rtfeldman$elm_css$Css$rem(1.5)),
-							$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
 							$rtfeldman$elm_css$Css$maxWidth(
-							$rtfeldman$elm_css$Css$rem(10)),
+							$rtfeldman$elm_css$Css$rem(12)),
+							$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
 							$rtfeldman$elm_css$Css$textOverflow($rtfeldman$elm_css$Css$ellipsis),
 							$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
 						]))
@@ -8885,7 +8885,6 @@ var $author$project$Timingway$Mech$viewBar = F3(
 						]))
 				]));
 	});
-var $rtfeldman$elm_css$Css$marginRight = $rtfeldman$elm_css$Css$prop1('margin-right');
 var $author$project$Timingway$Mech$viewName = F2(
 	function (groupConfig, _v0) {
 		var attackName = _v0.attackName;
@@ -8900,11 +8899,14 @@ var $author$project$Timingway$Mech$viewName = F2(
 						[
 							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
 							$rtfeldman$elm_css$Css$alignSelf($rtfeldman$elm_css$Css$flexEnd),
-							$rtfeldman$elm_css$Css$marginRight(
-							$rtfeldman$elm_css$Css$rem(3)),
 							$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
 							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
-							$rtfeldman$elm_css$Css$fontSize(barFont)
+							$rtfeldman$elm_css$Css$fontSize(barFont),
+							$rtfeldman$elm_css$Css$maxWidth(
+							$rtfeldman$elm_css$Css$rem(25)),
+							$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
+							$rtfeldman$elm_css$Css$textOverflow($rtfeldman$elm_css$Css$ellipsis),
+							$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
 						]))
 				]),
 			_List_fromArray(

@@ -166,8 +166,8 @@ maybeViewNotes { optionalNotes } =
                     , Css.color Colors.white
                     , Css.textAlign Css.left
                     , Css.fontSize <| Css.rem 1.5
+                    , Css.maxWidth <| Css.rem 12
                     , Css.overflow Css.hidden
-                    , Css.maxWidth <| Css.rem 10
                     , Css.textOverflow Css.ellipsis
                     , Css.whiteSpace Css.noWrap
                     ]
@@ -191,6 +191,10 @@ viewName groupConfig { attackName } =
                 , Css.color Colors.white
                 , Css.textAlign Css.left
                 , Css.fontSize barFont
+                , Css.maxWidth <| Css.rem 25
+                , Css.overflow Css.hidden
+                , Css.textOverflow Css.ellipsis
+                , Css.whiteSpace Css.noWrap
                 ]
             ]
             [ Html.text attackName
