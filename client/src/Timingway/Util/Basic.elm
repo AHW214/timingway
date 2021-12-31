@@ -16,6 +16,9 @@ choose : Bool -> a -> a -> a
 choose clause valTrue valFalse =
     if clause then valTrue else valFalse
 
+{-| Applies the given function to the contents of the `Maybe` and returns the
+result if it is `Just x`, or returns the given default value if it is `Nothing`.
+-}
 maybe : b -> (a -> b) -> Maybe a -> b
 maybe y f mx =
     case mx of
