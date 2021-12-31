@@ -25,14 +25,14 @@ view { past, present, future } mechs =
             [ Html.css
                 [ Css.marginLeft <| Css.rem 5
                 , Css.marginTop <| Css.rem 14.5
-                , Css.outlineColor Colors.white
-                , Css.outlineStyle Css.solid
-                , Css.outlineWidth <| Css.rem 0.25
-                , Css.borderRadius <| Css.rem 0.5
+                -- , Css.outlineColor Colors.white
+                -- , Css.outlineStyle Css.solid
+                -- , Css.outlineWidth <| Css.rem 0.25
+                -- , Css.borderRadius <| Css.rem 0.5
                 , Css.padding <| Css.rem 0.5
                 , Css.width <| Css.rem 40
                 , Css.height <| Css.rem 32.5
-                , Css.backgroundColor <| Css.rgba 0 0 0 0.4
+                -- , Css.backgroundColor <| Css.rgba 0 0 0 0.4
                 ]
             ]
             (if List.isEmpty mechsOverflow

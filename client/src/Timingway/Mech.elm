@@ -87,16 +87,17 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
         barHeight =
             Css.rem <| Basic.choose groupConfig.isFocus 8 5
 
-        barFont = Css.rem 2.5
+        barFont =
+            Css.rem <| Basic.choose groupConfig.isFocus 2.5 2
 
         barMargin =
-            Css.rem <| Basic.choose groupConfig.isFocus 2 0.75
+            Css.rem <| Basic.choose groupConfig.isFocus 2 1
 
     in
         Html.div
             [ Html.css
                 [ Css.position Css.relative
-                , Css.backgroundColor viewConfig.backgroundColor
+                , Css.backgroundImage <| Css.linearGradient2 Css.toBottom (Css.stop2 viewConfig.backgroundColor <| Css.pct 80) (Css.stop <| Css.rgba 55 55 55 0.5) []
                 , Css.borderRadius <| Css.rem 0.5
                 , Css.width <| Css.rem barWidth
                 , Css.height barHeight
@@ -106,7 +107,7 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                 [ Html.css
                     [ Css.position Css.absolute
                     , Css.borderRadius <| Css.rem 0.5
-                    , Css.backgroundColor groupConfig.barColor
+                    , Css.backgroundImage <| Css.linearGradient2 Css.toBottom (Css.stop2 groupConfig.barColor <| Css.pct 20) (Css.stop <| groupConfig.barGradient) []
                     , let
                         percentLeft =
                             100 - computePercent viewConfig.millisTotal millisLeft

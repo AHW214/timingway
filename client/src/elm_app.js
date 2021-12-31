@@ -5306,41 +5306,50 @@ var $author$project$Main$init = function (_v0) {
 			mechs: _List_fromArray(
 				[
 					A4($author$project$Main$makeMech, 'No Previous Mechanics', '', $elm$core$Maybe$Nothing, 0),
-					A4($author$project$Main$makeMech, 'Gaoler\'s Flail', 'Left/Right', $elm$core$Maybe$Nothing, 10),
+					A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 15),
+					A4($author$project$Main$makeMech, 'Doubled Impact', 'Tank Share', $elm$core$Maybe$Nothing, 27),
+					A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 44),
+					A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 58),
+					A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 112),
 					A4(
 					$author$project$Main$makeMech,
-					'Elemental Break',
-					'Fire/Thunder Protean',
-					$elm$core$Maybe$Just('3 mins on CD'),
-					15),
-					A4($author$project$Main$makeMech, 'Prismatic Deception', 'Sword up = in', $elm$core$Maybe$Nothing, 23),
-					A4($author$project$Main$makeMech, 'Akh Rhai', 'Prepare to Move', $elm$core$Maybe$Nothing, 29),
+					'Sewage Deluge',
+					'Raidwide',
+					$elm$core$Maybe$Just('Waters rise'),
+					125),
+					A4($author$project$Main$makeMech, 'Tainted Flood', 'Spread', $elm$core$Maybe$Nothing, 151),
+					A4($author$project$Main$makeMech, 'Predatory Sight', 'Stack + 1', $elm$core$Maybe$Nothing, 207),
+					A4($author$project$Main$makeMech, 'Shockwave', 'Jump + KB', $elm$core$Maybe$Nothing, 217),
+					A4($author$project$Main$makeMech, 'Disassociation', 'Head Dive', $elm$core$Maybe$Nothing, 246),
+					A4($author$project$Main$makeMech, 'Coherence', 'Flare + Stack', $elm$core$Maybe$Nothing, 258),
+					A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 315),
 					A4(
 					$author$project$Main$makeMech,
-					'Burnt Strike',
-					'Any Sides',
-					$elm$core$Maybe$Just('1 mins on CD'),
-					42),
-					A4($author$project$Main$makeMech, 'Hell\'s Judgment', 'HP to 1', $elm$core$Maybe$Nothing, 51),
-					A4($author$project$Main$makeMech, 'Decollation', 'Raidwide', $elm$core$Maybe$Nothing, 58),
-					A4($author$project$Main$makeMech, 'Ultima', 'Tank LB3', $elm$core$Maybe$Nothing, 107),
+					'Sewage Deluge',
+					'Raidwide',
+					$elm$core$Maybe$Just('Waters rise'),
+					329),
+					A4($author$project$Main$makeMech, 'Tainted Flood', 'Spread', $elm$core$Maybe$Nothing, 347),
+					A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 355),
+					A4($author$project$Main$makeMech, 'Sewage Eruption', '3 Eruptions', $elm$core$Maybe$Nothing, 406),
+					A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 419),
+					A4($author$project$Main$makeMech, 'Tainted Flood', 'Spread', $elm$core$Maybe$Nothing, 427),
+					A4($author$project$Main$makeMech, 'Predatory Sight', 'Stack + 1', $elm$core$Maybe$Nothing, 440),
+					A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 447),
+					A4($author$project$Main$makeMech, 'Disassociation + Shockwave', 'Head Dive + KB', $elm$core$Maybe$Nothing, 511),
+					A4($author$project$Main$makeMech, 'Disassociation + Sewage Eruption', 'Head Dive + 3 Eruptions', $elm$core$Maybe$Nothing, 542),
+					A4($author$project$Main$makeMech, 'Coherence', 'Flare + Stack', $elm$core$Maybe$Nothing, 547),
+					A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 601),
+					A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 612),
+					A4($author$project$Main$makeMech, 'Doubled Impact', 'Tank Share', $elm$core$Maybe$Nothing, 623),
 					A4(
 					$author$project$Main$makeMech,
-					'Cycle of Faith',
-					'Protean, Sides, Tether',
-					$elm$core$Maybe$Just('All buffs, pots'),
-					119),
-					A4(
-					$author$project$Main$makeMech,
-					'Elemental Break',
-					'Any Protean',
-					$elm$core$Maybe$Just('All buffs after 3-4 GCDs'),
-					150),
-					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 155),
-					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 163),
-					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 168),
-					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 183),
-					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 192)
+					'Sewage Deluge',
+					'Raidwide',
+					$elm$core$Maybe$Just('Waters rise'),
+					640),
+					A4($author$project$Main$makeMech, 'Tainted Flood', 'Spread', $elm$core$Maybe$Nothing, 658),
+					A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 706)
 				]),
 			millisPassed: 0,
 			viewConfig: {
@@ -5348,17 +5357,20 @@ var $author$project$Main$init = function (_v0) {
 				future: {
 					amount: 2,
 					barColor: A4($rtfeldman$elm_css$Css$rgba, 0, 100, 255, 0.6),
+					barGradient: A4($rtfeldman$elm_css$Css$rgba, 200, 100, 255, 0.6),
 					isFocus: false
 				},
 				millisTotal: 15000,
 				past: {
 					amount: 1,
 					barColor: A4($rtfeldman$elm_css$Css$rgba, 0, 200, 0, 0.6),
+					barGradient: A4($rtfeldman$elm_css$Css$rgba, 0, 255, 155, 0.6),
 					isFocus: false
 				},
 				present: {
 					amount: 1,
 					barColor: A4($rtfeldman$elm_css$Css$rgba, 255, 0, 0, 0.6),
+					barGradient: A4($rtfeldman$elm_css$Css$rgba, 255, 155, 0, 0.6),
 					isFocus: true
 				}
 			}
@@ -8474,12 +8486,6 @@ var $author$project$Timingway$Clock$view = function (millis) {
 				$author$project$Timingway$Clock$displayClock(millis))
 			]));
 };
-var $rtfeldman$elm_css$Css$outlineColor = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'outline-color', c.value);
-};
-var $rtfeldman$elm_css$Css$outlineStyle = $rtfeldman$elm_css$Css$prop1('outline-style');
-var $rtfeldman$elm_css$Css$outlineWidth = $rtfeldman$elm_css$Css$prop1('outline-width');
-var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -8870,20 +8876,12 @@ var $author$project$Timingway$Overflow$view = F2(
 							$rtfeldman$elm_css$Css$rem(5)),
 							$rtfeldman$elm_css$Css$marginTop(
 							$rtfeldman$elm_css$Css$rem(14.5)),
-							$rtfeldman$elm_css$Css$outlineColor($ursi$elm_css_colors$Css$Colors$white),
-							$rtfeldman$elm_css$Css$outlineStyle($rtfeldman$elm_css$Css$solid),
-							$rtfeldman$elm_css$Css$outlineWidth(
-							$rtfeldman$elm_css$Css$rem(0.25)),
-							$rtfeldman$elm_css$Css$borderRadius(
-							$rtfeldman$elm_css$Css$rem(0.5)),
 							$rtfeldman$elm_css$Css$padding(
 							$rtfeldman$elm_css$Css$rem(0.5)),
 							$rtfeldman$elm_css$Css$width(
 							$rtfeldman$elm_css$Css$rem(40)),
 							$rtfeldman$elm_css$Css$height(
-							$rtfeldman$elm_css$Css$rem(32.5)),
-							$rtfeldman$elm_css$Css$backgroundColor(
-							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.4))
+							$rtfeldman$elm_css$Css$rem(32.5))
 						]))
 				]),
 			$elm$core$List$isEmpty(mechsOverflow) ? _List_fromArray(
@@ -8955,6 +8953,7 @@ var $author$project$Timingway$Mech$maybeViewNotes = function (_v0) {
 	};
 	return A2($elm$core$Maybe$map, viewNotes, optionalNotes);
 };
+var $rtfeldman$elm_css$Css$backgroundImage = $rtfeldman$elm_css$Css$prop1('background-image');
 var $author$project$Timingway$Mech$barWidth = 45;
 var $elm$core$Basics$clamp = F3(
 	function (low, high, number) {
@@ -8964,19 +8963,69 @@ var $author$project$Timingway$Mech$computePercent = F2(
 	function (total, current) {
 		return 100 * A3($elm$core$Basics$clamp, 0, 1, current / total);
 	});
+var $rtfeldman$elm_css$Css$collectStops = $elm$core$List$map(
+	function (_v0) {
+		var c = _v0.a;
+		var len = _v0.b;
+		return A2(
+			$elm$core$String$append,
+			c.value,
+			A2(
+				$elm$core$Maybe$withDefault,
+				'',
+				A2(
+					$elm$core$Maybe$map,
+					A2(
+						$elm$core$Basics$composeL,
+						$elm$core$String$cons(
+							_Utils_chr(' ')),
+						function ($) {
+							return $.value;
+						}),
+					len)));
+	});
+var $rtfeldman$elm_css$Css$linearGradient2 = F4(
+	function (direction, firstStop, secondStop, otherStops) {
+		return {
+			backgroundImage: $rtfeldman$elm_css$Css$Structure$Compatible,
+			listStyleTypeOrPositionOrImage: $rtfeldman$elm_css$Css$Structure$Compatible,
+			value: A2(
+				$rtfeldman$elm_css$Css$cssFunction,
+				'linear-gradient',
+				A2(
+					$elm$core$List$cons,
+					direction.value,
+					$rtfeldman$elm_css$Css$collectStops(
+						_Utils_ap(
+							_List_fromArray(
+								[firstStop, secondStop]),
+							otherStops))))
+		};
+	});
 var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
 var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
+var $rtfeldman$elm_css$Css$stop = function (c) {
+	return _Utils_Tuple2(c, $elm$core$Maybe$Nothing);
+};
+var $rtfeldman$elm_css$Css$stop2 = F2(
+	function (c, len) {
+		return _Utils_Tuple2(
+			c,
+			$elm$core$Maybe$Just(len));
+	});
+var $rtfeldman$elm_css$Css$toBottom = {angleOrDirection: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'to bottom'};
 var $author$project$Timingway$Mech$viewBar = F3(
 	function (viewConfig, groupConfig, _v0) {
 		var resolveType = _v0.resolveType;
 		var millisLeft = _v0.millisLeft;
 		var barMargin = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 2, 0.75));
+			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 2, 1));
 		var barHeight = $rtfeldman$elm_css$Css$rem(
 			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 8, 5));
-		var barFont = $rtfeldman$elm_css$Css$rem(2.5);
+		var barFont = $rtfeldman$elm_css$Css$rem(
+			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 2.5, 2));
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -8985,7 +9034,17 @@ var $author$project$Timingway$Mech$viewBar = F3(
 					_List_fromArray(
 						[
 							$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative),
-							$rtfeldman$elm_css$Css$backgroundColor(viewConfig.backgroundColor),
+							$rtfeldman$elm_css$Css$backgroundImage(
+							A4(
+								$rtfeldman$elm_css$Css$linearGradient2,
+								$rtfeldman$elm_css$Css$toBottom,
+								A2(
+									$rtfeldman$elm_css$Css$stop2,
+									viewConfig.backgroundColor,
+									$rtfeldman$elm_css$Css$pct(80)),
+								$rtfeldman$elm_css$Css$stop(
+									A4($rtfeldman$elm_css$Css$rgba, 55, 55, 55, 0.5)),
+								_List_Nil)),
 							$rtfeldman$elm_css$Css$borderRadius(
 							$rtfeldman$elm_css$Css$rem(0.5)),
 							$rtfeldman$elm_css$Css$width(
@@ -9005,7 +9064,16 @@ var $author$project$Timingway$Mech$viewBar = F3(
 									$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 									$rtfeldman$elm_css$Css$borderRadius(
 									$rtfeldman$elm_css$Css$rem(0.5)),
-									$rtfeldman$elm_css$Css$backgroundColor(groupConfig.barColor),
+									$rtfeldman$elm_css$Css$backgroundImage(
+									A4(
+										$rtfeldman$elm_css$Css$linearGradient2,
+										$rtfeldman$elm_css$Css$toBottom,
+										A2(
+											$rtfeldman$elm_css$Css$stop2,
+											groupConfig.barColor,
+											$rtfeldman$elm_css$Css$pct(20)),
+										$rtfeldman$elm_css$Css$stop(groupConfig.barGradient),
+										_List_Nil)),
 									function () {
 									var percentLeft = 100 - A2($author$project$Timingway$Mech$computePercent, viewConfig.millisTotal, millisLeft);
 									return $rtfeldman$elm_css$Css$width(
@@ -9226,7 +9294,7 @@ var $author$project$Main$view = function (_v0) {
 			$rtfeldman$elm_css$Css$marginBottom(
 			$rtfeldman$elm_css$Css$rem(1)),
 			$rtfeldman$elm_css$Css$fontSize(
-			$rtfeldman$elm_css$Css$rem(6)),
+			$rtfeldman$elm_css$Css$rem(2.5)),
 			$rtfeldman$elm_css$Css$marginLeft(
 			$rtfeldman$elm_css$Css$rem(2.5)),
 			$rtfeldman$elm_css$Css$height(
@@ -9252,7 +9320,7 @@ var $author$project$Main$view = function (_v0) {
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Html$Styled$text(
-				A3($author$project$Timingway$Util$Basic$choose, isTicking, '\u23F8', '\u23F5'))
+				A3($author$project$Timingway$Util$Basic$choose, isTicking, 'Pause', 'Play'))
 			]));
 	var reset = A2(
 		$rtfeldman$elm_css$Html$Styled$button,
@@ -9268,7 +9336,7 @@ var $author$project$Main$view = function (_v0) {
 			]),
 		_List_fromArray(
 			[
-				$rtfeldman$elm_css$Html$Styled$text('\u21BB')
+				$rtfeldman$elm_css$Html$Styled$text('Reset')
 			]));
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,

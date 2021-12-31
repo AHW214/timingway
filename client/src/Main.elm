@@ -16,7 +16,7 @@ import Timingway.Config exposing (ViewConfig)
 import Timingway.Mech as Mech exposing (Mech)
 import Timingway.Overflow as Overflow
 import Timingway.Util.Basic as Basic
-import FeatherIcons
+-- import FeatherIcons
 
 -- MAIN
 
@@ -76,21 +76,35 @@ init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( { mechs =
             [ makeMech "No Previous Mechanics" "" Nothing 0
-            , makeMech "Gaoler's Flail" "Left/Right" Nothing 10
-            , makeMech "Elemental Break" "Fire/Thunder Protean" (Just "3 mins on CD") 15
-            , makeMech "Prismatic Deception" "Sword up = in" Nothing 23
-            , makeMech "Akh Rhai" "Prepare to Move" Nothing 29
-            , makeMech "Burnt Strike" "Any Sides" (Just "1 mins on CD") 42
-            , makeMech "Hell's Judgment" "HP to 1" Nothing 51
-            , makeMech "Decollation" "Raidwide" Nothing 58
-            , makeMech "Ultima" "Tank LB3" Nothing 107
-            , makeMech "Cycle of Faith" "Protean, Sides, Tether" (Just "All buffs, pots") 119
-            , makeMech "Elemental Break" "Any Protean" (Just "All buffs after 3-4 GCDs") 150
-            , makeMech "Error 2002" "Return to Queue" Nothing 155
-            , makeMech "Error 2002" "Return to Queue" Nothing 163
-            , makeMech "Error 2002" "Return to Queue" Nothing 168
-            , makeMech "Error 2002" "Return to Queue" Nothing 183
-            , makeMech "Error 2002" "Return to Queue" Nothing 192
+            , makeMech "Murky Depths" "Raidwide" Nothing 15
+            , makeMech "Doubled Impact" "Tank Share" Nothing 27
+            , makeMech "Spoken Cataract" "Head + Body" Nothing 44
+            , makeMech "Spoken Cataract" "Head + Body" Nothing 58
+            , makeMech "Murky Depths" "Raidwide" Nothing 112
+            , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 125
+            , makeMech "Tainted Flood" "Spread" Nothing 151
+            , makeMech "Predatory Sight" "Stack + 1" Nothing 207
+            , makeMech "Shockwave" "Jump + KB" Nothing 217
+            , makeMech "Disassociation" "Head Dive" Nothing 246
+            , makeMech "Coherence" "Flare + Stack" Nothing 258
+            , makeMech "Murky Depths" "Raidwide" Nothing 315
+            , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 329
+            , makeMech "Tainted Flood" "Spread" Nothing 347
+            , makeMech "Spoken Cataract" "Head + Body" Nothing 355
+            , makeMech "Sewage Eruption" "3 Eruptions" Nothing 406
+            , makeMech "Spoken Cataract" "Head + Body" Nothing 419
+            , makeMech "Tainted Flood" "Spread" Nothing 427
+            , makeMech "Predatory Sight" "Stack + 1" Nothing 440
+            , makeMech "Murky Depths" "Raidwide" Nothing 447
+            , makeMech "Disassociation + Shockwave" "Head Dive + KB" Nothing 511
+            , makeMech "Disassociation + Sewage Eruption" "Head Dive + 3 Eruptions" Nothing 542
+            , makeMech "Coherence" "Flare + Stack" Nothing 547
+            , makeMech "Murky Depths" "Raidwide" Nothing 601
+            , makeMech "Murky Depths" "Raidwide" Nothing 612
+            , makeMech "Doubled Impact" "Tank Share" Nothing 623
+            , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 640
+            , makeMech "Tainted Flood" "Spread" Nothing 658
+            , makeMech "Spoken Cataract" "Head + Body" Nothing 706
             ]
       , lastTick = Nothing
       , millisPassed = 0
@@ -99,16 +113,19 @@ init _ =
             { past =
                 { amount = 1
                 , barColor = Css.rgba 0 200 0 0.6
+                , barGradient = Css.rgba 0 255 155 0.6
                 , isFocus = False
                 }
             , present =
                 { amount = 1
                 , barColor = Css.rgba 255 0 0 0.6
+                , barGradient = Css.rgba 255 155 0 0.6
                 , isFocus = True
                 }
             , future =
                 { amount = 2
                 , barColor = Css.rgba 0 100 255 0.6
+                , barGradient = Css.rgba 200 100 255 0.6
                 , isFocus = False
                 }
             , millisTotal = 15000
@@ -290,7 +307,7 @@ view { viewConfig, isTicking, mechs, millisPassed } =
             , Css.color Colors.white
             , Css.textAlign Css.center
             , Css.marginBottom <| Css.rem 1
-            , Css.fontSize <| Css.rem 6
+            , Css.fontSize <| Css.rem 2.5
             , Css.marginLeft <| Css.rem 2.5
             , Css.height <| Css.rem 10
             , Css.width <| Css.rem 10
@@ -301,7 +318,7 @@ view { viewConfig, isTicking, mechs, millisPassed } =
                 [ Html.onClick Reset
                 , Html.css <|
                     ( Css.marginTop <| Css.rem 8 ) :: buttonCss
-                ] [Html.text "\u{21BB}"]
+                ] [Html.text "Reset"]
 
         pause =
             Html.button
@@ -310,7 +327,7 @@ view { viewConfig, isTicking, mechs, millisPassed } =
                 , Html.css <|
                     ( Css.marginTop <| Css.rem 28 ) :: buttonCss
                 ] [ Html.text
-                    <| Basic.choose isTicking "\u{23F8}" "\u{23F5}"
+                    <| Basic.choose isTicking "Pause" "Play"
                 ]
 
         clock =
