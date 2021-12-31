@@ -5306,32 +5306,36 @@ var $author$project$Main$init = function (_v0) {
 			mechs: _List_fromArray(
 				[
 					A4($author$project$Main$makeMech, 'No Previous Mechanics', '', $elm$core$Maybe$Nothing, 0),
-					A4($author$project$Main$makeMech, 'Gaoler\'s Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaail', 'Left/right', $elm$core$Maybe$Nothing, 10),
+					A4($author$project$Main$makeMech, 'Gaoler\'s Flail', 'Left/Right', $elm$core$Maybe$Nothing, 10),
 					A4(
 					$author$project$Main$makeMech,
-					'Prismatic Deceptiooooooooooooooooooooooooon',
-					'Sword up = in',
-					$elm$core$Maybe$Just('woah a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong note'),
+					'Elemental Break',
+					'Fire/Thunder Protean',
+					$elm$core$Maybe$Just('Three minutes on CD'),
 					15),
+					A4($author$project$Main$makeMech, 'Prismatic Deception', 'Sword up = in', $elm$core$Maybe$Nothing, 23),
+					A4($author$project$Main$makeMech, 'Akh Rhai', 'Prepare to Move', $elm$core$Maybe$Nothing, 29),
 					A4(
 					$author$project$Main$makeMech,
-					'Akh Rhai',
-					'Prepare to move',
-					$elm$core$Maybe$Just('move it groove it'),
-					18),
+					'Burnt Strike',
+					'Any Sides',
+					$elm$core$Maybe$Just('One minute on CD'),
+					42),
+					A4($author$project$Main$makeMech, 'Hell\'s Judgment', 'HP to 1', $elm$core$Maybe$Nothing, 51),
+					A4($author$project$Main$makeMech, 'Decollation', 'Raidwide', $elm$core$Maybe$Nothing, 58),
+					A4($author$project$Main$makeMech, 'Pitiless Rescue', 'KB Immunity', $elm$core$Maybe$Nothing, 107),
 					A4(
 					$author$project$Main$makeMech,
-					'Hell\'s Judgment',
-					'HP to 1',
-					$elm$core$Maybe$Just('say hello to dante'),
-					24),
-					A4($author$project$Main$makeMech, 'Decollation', 'Raidwide', $elm$core$Maybe$Nothing, 37),
+					'Cycle of Faith',
+					'Protean, Sides, Tether',
+					$elm$core$Maybe$Just('Buffs and Pots'),
+					119),
 					A4(
 					$author$project$Main$makeMech,
-					'Pitiless Rescue',
-					'KB Immunity',
-					$elm$core$Maybe$Just('moderate length note'),
-					115)
+					'Elemental Break',
+					'Any Protean',
+					$elm$core$Maybe$Just('All buffs, 3-4 GCDs after boss targetable'),
+					150)
 				]),
 			millisPassed: 0,
 			viewConfig: {

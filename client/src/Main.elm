@@ -75,12 +75,16 @@ init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( { mechs =
             [ makeMech "No Previous Mechanics" "" Nothing 0
-            , makeMech "Gaoler's Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaail" "Left/right" Nothing 10
-            , makeMech "Prismatic Deceptiooooooooooooooooooooooooon" "Sword up = in" (Just "woah a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong note") 15
-            , makeMech "Akh Rhai" "Prepare to move" (Just "move it groove it") 18
-            , makeMech "Hell's Judgment" "HP to 1" (Just "say hello to dante") 24
-            , makeMech "Decollation" "Raidwide" Nothing 37
-            , makeMech "Pitiless Rescue" "KB Immunity" (Just "moderate length note") 115
+            , makeMech "Gaoler's Flail" "Left/Right" Nothing 10
+            , makeMech "Elemental Break" "Fire/Thunder Protean" (Just "Three minutes on CD") 15
+            , makeMech "Prismatic Deception" "Sword up = in" Nothing 23
+            , makeMech "Akh Rhai" "Prepare to Move" Nothing 29
+            , makeMech "Burnt Strike" "Any Sides" (Just "One minute on CD") 42
+            , makeMech "Hell's Judgment" "HP to 1" Nothing 51
+            , makeMech "Decollation" "Raidwide" Nothing 58
+            , makeMech "Pitiless Rescue" "KB Immunity" Nothing 107
+            , makeMech "Cycle of Faith" "Protean, Sides, Tether" (Just "Buffs and Pots") 119
+            , makeMech "Elemental Break" "Any Protean" (Just "All buffs, 3-4 GCDs after boss targetable") 150
             ]
       , lastTick = Nothing
       , millisPassed = 0
