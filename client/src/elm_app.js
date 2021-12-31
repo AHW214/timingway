@@ -5235,22 +5235,23 @@ var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Main$Init = function (a) {
 	return {$: 'Init', a: a};
 };
-var $author$project$Timingway$Mech$Mech = F3(
-	function (attackName, resolveType, millisLeft) {
-		return {attackName: attackName, millisLeft: millisLeft, resolveType: resolveType};
+var $author$project$Timingway$Mech$Mech = F4(
+	function (attackName, resolveType, millisLeft, optionalNotes) {
+		return {attackName: attackName, millisLeft: millisLeft, optionalNotes: optionalNotes, resolveType: resolveType};
 	});
 var $author$project$Main$timeToMillis = function (time) {
 	var seconds = time % 100;
 	var mins = (time / 100) | 0;
 	return ((mins * 60) + seconds) * 1000;
 };
-var $author$project$Main$makeMech = F3(
-	function (attackName, resolveType, millisLeft) {
-		return A3(
+var $author$project$Main$makeMech = F4(
+	function (attackName, resolveType, optionalNotes, millisLeft) {
+		return A4(
 			$author$project$Timingway$Mech$Mech,
 			attackName,
 			resolveType,
-			$author$project$Main$timeToMillis(millisLeft));
+			$author$project$Main$timeToMillis(millisLeft),
+			optionalNotes);
 	});
 var $elm$time$Time$Name = function (a) {
 	return {$: 'Name', a: a};
@@ -5304,13 +5305,33 @@ var $author$project$Main$init = function (_v0) {
 			lastTick: $elm$core$Maybe$Nothing,
 			mechs: _List_fromArray(
 				[
-					A3($author$project$Main$makeMech, 'No Previous Mechanics', '', 0),
-					A3($author$project$Main$makeMech, 'Gaoler\'s Flail', 'Left/right', 10),
-					A3($author$project$Main$makeMech, 'Prismatic Deception', 'Sword up = in', 15),
-					A3($author$project$Main$makeMech, 'Akh Rhai', 'Prepare to move', 18),
-					A3($author$project$Main$makeMech, 'Hell\'s Judgment', 'HP to 1', 24),
-					A3($author$project$Main$makeMech, 'Decollation', 'Raidwide', 37),
-					A3($author$project$Main$makeMech, 'Pitiless Rescue', 'KB Immunity', 115)
+					A4($author$project$Main$makeMech, 'No Previous Mechanics', '', $elm$core$Maybe$Nothing, 0),
+					A4(
+					$author$project$Main$makeMech,
+					'Gaoler\'s Flail',
+					'Left/right',
+					$elm$core$Maybe$Just('look out danger'),
+					10),
+					A4(
+					$author$project$Main$makeMech,
+					'Prismatic Deception',
+					'Sword up = in',
+					$elm$core$Maybe$Just('woah a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong note'),
+					15),
+					A4(
+					$author$project$Main$makeMech,
+					'Akh Rhai',
+					'Prepare to move',
+					$elm$core$Maybe$Just('move it groove it'),
+					18),
+					A4(
+					$author$project$Main$makeMech,
+					'Hell\'s Judgment',
+					'HP to 1',
+					$elm$core$Maybe$Just('say hello to dante'),
+					24),
+					A4($author$project$Main$makeMech, 'Decollation', 'Raidwide', $elm$core$Maybe$Nothing, 37),
+					A4($author$project$Main$makeMech, 'Pitiless Rescue', 'KB Immunity', $elm$core$Maybe$Nothing, 115)
 				]),
 			millisPassed: 0,
 			viewConfig: {
@@ -8002,14 +8023,27 @@ var $elm$json$Json$Decode$array = _Json_decodeArray;
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map3 = _Json_map3;
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$Timingway$Mech$decoder = A4(
-	$elm$json$Json$Decode$map3,
+var $author$project$Timingway$Mech$decoder = A5(
+	$elm$json$Json$Decode$map4,
 	$author$project$Timingway$Mech$Mech,
 	A2($elm$json$Json$Decode$field, 'attackName', $elm$json$Json$Decode$string),
 	A2($elm$json$Json$Decode$field, 'resolveType', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'millisLeft', $elm$json$Json$Decode$int));
+	A2($elm$json$Json$Decode$field, 'millisLeft', $elm$json$Json$Decode$int),
+	A2(
+		$elm$json$Json$Decode$field,
+		'notes',
+		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)));
 var $elm$core$Result$map = F2(
 	function (func, ra) {
 		if (ra.$ === 'Ok') {
@@ -8436,6 +8470,76 @@ var $elm_community$list_extra$List$Extra$splitAt = F2(
 			A2($elm$core$List$take, n, xs),
 			A2($elm$core$List$drop, n, xs));
 	});
+var $rtfeldman$elm_css$Css$displayFlex = A2($rtfeldman$elm_css$Css$property, 'display', 'flex');
+var $rtfeldman$elm_css$Css$fillAvailable = {lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, minMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'fill-available'};
+var $rtfeldman$elm_css$Css$fitContent = _Utils_update(
+	$rtfeldman$elm_css$Css$fillAvailable,
+	{value: 'fit-content'});
+var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
+	return A3(
+		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
+		'justifyContent',
+		'justify-content',
+		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
+};
+var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
+var $author$project$Timingway$Util$Basic$maybe = F3(
+	function (y, f, mx) {
+		if (mx.$ === 'Just') {
+			var x = mx.a;
+			return f(x);
+		} else {
+			return y;
+		}
+	});
+var $rtfeldman$elm_css$Css$alignSelf = function (fn) {
+	return A3(
+		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
+		'alignSelf',
+		'align-self',
+		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
+};
+var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
+var $rtfeldman$elm_css$Css$ellipsis = {textOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'ellipsis'};
+var $rtfeldman$elm_css$Css$flexEnd = $rtfeldman$elm_css$Css$prop1('flex-end');
+var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
+var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
+var $rtfeldman$elm_css$Css$noWrap = {flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, flexWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'nowrap', whiteSpace: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
+var $rtfeldman$elm_css$Css$textOverflow = $rtfeldman$elm_css$Css$prop1('text-overflow');
+var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
+var $author$project$Timingway$Mech$maybeViewNotes = function (_v0) {
+	var optionalNotes = _v0.optionalNotes;
+	var viewNotes = function (notes) {
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$div,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+							$rtfeldman$elm_css$Css$alignSelf($rtfeldman$elm_css$Css$flexEnd),
+							$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
+							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
+							$rtfeldman$elm_css$Css$fontSize(
+							$rtfeldman$elm_css$Css$rem(1.5)),
+							$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
+							$rtfeldman$elm_css$Css$maxWidth(
+							$rtfeldman$elm_css$Css$rem(10)),
+							$rtfeldman$elm_css$Css$textOverflow($rtfeldman$elm_css$Css$ellipsis),
+							$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
+						]))
+				]),
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$text(notes)
+				]));
+	};
+	return A2($elm$core$Maybe$map, viewNotes, optionalNotes);
+};
+var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
 var $elm$core$Basics$clamp = F3(
 	function (low, high, number) {
 		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
@@ -8668,7 +8772,6 @@ var $author$project$Timingway$Mech$displaySeconds = function (millis) {
 	var seconds = A2($elm$core$Basics$max, 0, millis / 1000);
 	return A2($myrho$elm_round$Round$round, 1, seconds) + 's';
 };
-var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
@@ -8782,6 +8885,7 @@ var $author$project$Timingway$Mech$viewBar = F3(
 						]))
 				]));
 	});
+var $rtfeldman$elm_css$Css$marginRight = $rtfeldman$elm_css$Css$prop1('margin-right');
 var $author$project$Timingway$Mech$viewName = F2(
 	function (groupConfig, _v0) {
 		var attackName = _v0.attackName;
@@ -8794,13 +8898,13 @@ var $author$project$Timingway$Mech$viewName = F2(
 					$rtfeldman$elm_css$Html$Styled$Attributes$css(
 					_List_fromArray(
 						[
+							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+							$rtfeldman$elm_css$Css$alignSelf($rtfeldman$elm_css$Css$flexEnd),
+							$rtfeldman$elm_css$Css$marginRight(
+							$rtfeldman$elm_css$Css$rem(3)),
 							$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
 							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
-							$rtfeldman$elm_css$Css$fontSize(barFont),
-							$rtfeldman$elm_css$Css$marginLeft(
-							$rtfeldman$elm_css$Css$rem(10)),
-							$rtfeldman$elm_css$Css$marginBottom(
-							$rtfeldman$elm_css$Css$rem(1))
+							$rtfeldman$elm_css$Css$fontSize(barFont)
 						]))
 				]),
 			_List_fromArray(
@@ -8810,6 +8914,15 @@ var $author$project$Timingway$Mech$viewName = F2(
 	});
 var $author$project$Timingway$Mech$view = F3(
 	function (viewConfig, groupConfig, mech) {
+		var optionalNotes = A3(
+			$author$project$Timingway$Util$Basic$maybe,
+			_List_Nil,
+			$elm$core$List$singleton,
+			$author$project$Timingway$Mech$maybeViewNotes(mech));
+		var name = _List_fromArray(
+			[
+				A2($author$project$Timingway$Mech$viewName, groupConfig, mech)
+			]);
 		var cssOutline = groupConfig.isFocus ? _List_fromArray(
 			[
 				$rtfeldman$elm_css$Css$paddingTop(
@@ -8819,6 +8932,7 @@ var $author$project$Timingway$Mech$view = F3(
 			]) : _List_Nil;
 		var cssCommon = _List_fromArray(
 			[
+				$rtfeldman$elm_css$Css$maxWidth($rtfeldman$elm_css$Css$fitContent),
 				$rtfeldman$elm_css$Css$marginBottom(
 				$rtfeldman$elm_css$Css$rem(1)),
 				$rtfeldman$elm_css$Css$marginLeft(
@@ -8833,7 +8947,22 @@ var $author$project$Timingway$Mech$view = F3(
 				]),
 			_List_fromArray(
 				[
-					A2($author$project$Timingway$Mech$viewName, groupConfig, mech),
+					A2(
+					$rtfeldman$elm_css$Html$Styled$div,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$displayFlex,
+									$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
+									$rtfeldman$elm_css$Css$marginLeft(
+									$rtfeldman$elm_css$Css$rem(10)),
+									$rtfeldman$elm_css$Css$marginBottom(
+									$rtfeldman$elm_css$Css$rem(1))
+								]))
+						]),
+					_Utils_ap(name, optionalNotes)),
 					A3($author$project$Timingway$Mech$viewBar, viewConfig, groupConfig, mech)
 				]));
 	});

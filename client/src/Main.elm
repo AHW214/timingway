@@ -65,21 +65,21 @@ timeToMillis time =
     String: Resolution of attack
     Int: Time in MMSS format
 -}
-makeMech : String -> String -> Int -> Mech
-makeMech attackName resolveType millisLeft =
-    Mech attackName resolveType ( timeToMillis millisLeft )
+makeMech : String -> String -> Maybe String -> Int -> Mech
+makeMech attackName resolveType optionalNotes millisLeft =
+    Mech attackName resolveType ( timeToMillis millisLeft ) optionalNotes
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( { mechs =
-            [ makeMech "No Previous Mechanics" "" 0
-            , makeMech "Gaoler's Flail" "Left/right" 10
-            , makeMech "Prismatic Deception" "Sword up = in" 15
-            , makeMech "Akh Rhai" "Prepare to move" 18
-            , makeMech "Hell's Judgment" "HP to 1" 24
-            , makeMech "Decollation" "Raidwide" 37
-            , makeMech "Pitiless Rescue" "KB Immunity" 115
+            [ makeMech "No Previous Mechanics" "" Nothing 0
+            , makeMech "Gaoler's Flail" "Left/right" (Just "look out danger") 10
+            , makeMech "Prismatic Deception" "Sword up = in" (Just "woah a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong note") 15
+            , makeMech "Akh Rhai" "Prepare to move" (Just "move it groove it") 18
+            , makeMech "Hell's Judgment" "HP to 1" (Just "say hello to dante") 24
+            , makeMech "Decollation" "Raidwide" Nothing 37
+            , makeMech "Pitiless Rescue" "KB Immunity" Nothing 115
             ]
       , lastTick = Nothing
       , millisPassed = 0

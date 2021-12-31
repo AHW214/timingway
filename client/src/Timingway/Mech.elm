@@ -19,6 +19,7 @@ type alias Mech =
     { attackName : String
     , resolveType : String
     , millisLeft : Int
+    , optionalNotes : Maybe String
     }
 
 tick : Int -> Mech -> Mech
@@ -33,11 +34,11 @@ isExpired { millisLeft } =
 
 decoder : Decoder Mech
 decoder =
-    Decode.map3 Mech
+    Decode.map4 Mech
         (Decode.field "attackName" Decode.string)
         (Decode.field "resolveType" Decode.string)
         (Decode.field "millisLeft" Decode.int)
-
+        (Decode.field "notes" <| Decode.maybe Decode.string)
 
 -- VIEW
 
@@ -45,7 +46,8 @@ view : ViewConfig -> GroupConfig -> Mech -> Html msg
 view viewConfig groupConfig mech =
     let
         cssCommon =
-            [ Css.marginBottom <| Css.rem 1
+            [ Css.maxWidth Css.fitContent
+            , Css.marginBottom <| Css.rem 1
             , Css.marginLeft <| Css.rem 8
             ]
 
@@ -56,12 +58,24 @@ view viewConfig groupConfig mech =
                 ]
             else
                 []
+
+        name = [ viewName groupConfig mech ]
+
+        optionalNotes = Basic.maybe [] List.singleton <| maybeViewNotes mech
     in
         Html.div
             [ Html.css
                 (cssCommon ++ cssOutline)
             ]
-            [ viewName groupConfig mech
+            [ Html.div
+                [ Html.css
+                    [ Css.displayFlex
+                    , Css.justifyContent Css.spaceBetween
+                    , Css.marginLeft <| Css.rem 10
+                    , Css.marginBottom <| Css.rem 1
+                    ]
+                ]
+                (name ++ optionalNotes)
             , viewBar viewConfig groupConfig mech
             ]
 
@@ -141,6 +155,28 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                 ]
             ]
 
+maybeViewNotes : Mech -> Maybe (Html msg)
+maybeViewNotes { optionalNotes } =
+    let
+        viewNotes notes =
+            Html.div
+                [ Html.css
+                    [ Css.display Css.inlineBlock
+                    , Css.alignSelf Css.flexEnd
+                    , Css.color Colors.white
+                    , Css.textAlign Css.left
+                    , Css.fontSize <| Css.rem 1.5
+                    , Css.overflow Css.hidden
+                    , Css.maxWidth <| Css.rem 10
+                    , Css.textOverflow Css.ellipsis
+                    , Css.whiteSpace Css.noWrap
+                    ]
+                ]
+                [ Html.text notes
+                ]
+    in
+        Maybe.map viewNotes optionalNotes
+
 
 viewName : GroupConfig -> Mech -> Html msg
 viewName groupConfig { attackName } =
@@ -150,11 +186,11 @@ viewName groupConfig { attackName } =
     in
         Html.div
             [ Html.css
-                [ Css.color Colors.white
+                [ Css.display Css.inlineBlock
+                , Css.alignSelf Css.flexEnd
+                , Css.color Colors.white
                 , Css.textAlign Css.left
                 , Css.fontSize barFont
-                , Css.marginLeft <| Css.rem 10
-                , Css.marginBottom <| Css.rem 1
                 ]
             ]
             [ Html.text attackName
