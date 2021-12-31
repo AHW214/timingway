@@ -60,7 +60,7 @@ viewMechInfo : Mech -> Html msg
 viewMechInfo mech =
     let
         formatNotes n =
-            " (" ++ n ++ ")"
+            "(" ++ n ++ ")"
 
         notesContent =
             Basic.maybe "" formatNotes mech.optionalNotes
@@ -87,10 +87,11 @@ viewMechInfo mech =
                 , Css.fontSize <| Css.rem 1.5
                 ]
             ]
-            [ attackName
-            , divider
-            , resolveType
-            , notes
+            [ Html.div
+                []
+                [ Html.div [] [ attackName, divider, resolveType ]
+                , Html.div [] [ notes ]
+                ]
             ]
 
 viewMechTime : Mech -> Html msg

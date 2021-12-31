@@ -8502,7 +8502,7 @@ var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('s
 var $author$project$Timingway$Overflow$viewMechInfo = function (mech) {
 	var resolveType = $rtfeldman$elm_css$Html$Styled$text(mech.resolveType);
 	var formatNotes = function (n) {
-		return ' (' + (n + ')');
+		return '(' + (n + ')');
 	};
 	var notesContent = A3($author$project$Timingway$Util$Basic$maybe, '', formatNotes, mech.optionalNotes);
 	var notes = A2(
@@ -8548,7 +8548,24 @@ var $author$project$Timingway$Overflow$viewMechInfo = function (mech) {
 					]))
 			]),
 		_List_fromArray(
-			[attackName, divider, resolveType, notes]));
+			[
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$rtfeldman$elm_css$Html$Styled$div,
+						_List_Nil,
+						_List_fromArray(
+							[attackName, divider, resolveType])),
+						A2(
+						$rtfeldman$elm_css$Html$Styled$div,
+						_List_Nil,
+						_List_fromArray(
+							[notes]))
+					]))
+			]));
 };
 var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$abs = function (n) {
