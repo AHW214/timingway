@@ -74,7 +74,7 @@ init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( { mechs =
             [ makeMech "No Previous Mechanics" "" Nothing 0
-            , makeMech "Gaoler's Flail" "Left/right" (Just "look out danger") 10
+            , makeMech "Gaoler's Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaail" "Left/right" Nothing 10
             , makeMech "Prismatic Deceptiooooooooooooooooooooooooon" "Sword up = in" (Just "woah a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooong note") 15
             , makeMech "Akh Rhai" "Prepare to move" (Just "move it groove it") 18
             , makeMech "Hell's Judgment" "HP to 1" (Just "say hello to dante") 24

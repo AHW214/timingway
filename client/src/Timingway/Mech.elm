@@ -179,10 +179,13 @@ maybeViewNotes { optionalNotes } =
 
 
 viewName : GroupConfig -> Mech -> Html msg
-viewName groupConfig { attackName } =
+viewName groupConfig { attackName, optionalNotes } =
     let
         barFont =
             Css.rem <| Basic.choose groupConfig.isFocus 3 2.5
+
+        maxWidth =
+            Css.rem <| Basic.maybe 40 (always 25) optionalNotes
     in
         Html.div
             [ Html.css
@@ -191,7 +194,7 @@ viewName groupConfig { attackName } =
                 , Css.color Colors.white
                 , Css.textAlign Css.left
                 , Css.fontSize barFont
-                , Css.maxWidth <| Css.rem 25
+                , Css.maxWidth maxWidth
                 , Css.overflow Css.hidden
                 , Css.textOverflow Css.ellipsis
                 , Css.whiteSpace Css.noWrap

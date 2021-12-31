@@ -5306,12 +5306,7 @@ var $author$project$Main$init = function (_v0) {
 			mechs: _List_fromArray(
 				[
 					A4($author$project$Main$makeMech, 'No Previous Mechanics', '', $elm$core$Maybe$Nothing, 0),
-					A4(
-					$author$project$Main$makeMech,
-					'Gaoler\'s Flail',
-					'Left/right',
-					$elm$core$Maybe$Just('look out danger'),
-					10),
+					A4($author$project$Main$makeMech, 'Gaoler\'s Flaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaail', 'Left/right', $elm$core$Maybe$Nothing, 10),
 					A4(
 					$author$project$Main$makeMech,
 					'Prismatic Deceptiooooooooooooooooooooooooon',
@@ -8885,9 +8880,20 @@ var $author$project$Timingway$Mech$viewBar = F3(
 						]))
 				]));
 	});
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
 var $author$project$Timingway$Mech$viewName = F2(
 	function (groupConfig, _v0) {
 		var attackName = _v0.attackName;
+		var optionalNotes = _v0.optionalNotes;
+		var maxWidth = $rtfeldman$elm_css$Css$rem(
+			A3(
+				$author$project$Timingway$Util$Basic$maybe,
+				40,
+				$elm$core$Basics$always(25),
+				optionalNotes));
 		var barFont = $rtfeldman$elm_css$Css$rem(
 			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 3, 2.5));
 		return A2(
@@ -8902,8 +8908,7 @@ var $author$project$Timingway$Mech$viewName = F2(
 							$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
 							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
 							$rtfeldman$elm_css$Css$fontSize(barFont),
-							$rtfeldman$elm_css$Css$maxWidth(
-							$rtfeldman$elm_css$Css$rem(25)),
+							$rtfeldman$elm_css$Css$maxWidth(maxWidth),
 							$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
 							$rtfeldman$elm_css$Css$textOverflow($rtfeldman$elm_css$Css$ellipsis),
 							$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
