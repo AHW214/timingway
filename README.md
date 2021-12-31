@@ -4,12 +4,17 @@ Timingway is designed to seamlessly visualize timelines and mechanics from Googl
 
 ## Generating HTML for testing
 
-Use the following command to generate the HTML file:
+If you are working on this project, you can use the following command to generate test HTML files:
 ```bash
 $ make
 ```
 
-To remove the HTML file:
+To remove the HTML file generated:
 ```bash
 $ make clean
+```
+
+To update the JS file used in index.html:
+```bash
+$ make js
 ```
