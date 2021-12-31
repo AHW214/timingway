@@ -18,7 +18,7 @@ view millis =
         [ Html.css
             [ Css.position <| Css.absolute
             , Css.marginTop <| Css.rem 1
-            , Css.marginLeft <| Css.rem 65
+            , Css.marginLeft <| Css.rem 79
             , Css.color Colors.white
             , Css.backgroundColor <| Css.rgba 150 150 150 0.5
             , Css.padding <| Css.rem 1

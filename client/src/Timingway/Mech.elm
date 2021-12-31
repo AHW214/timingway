@@ -19,14 +19,16 @@ import Timingway.Config exposing (ViewConfig, GroupConfig)
 type alias Mech =
     { attackName : String
     , resolveType : String
-    , millisLeft : Int
     , optionalNotes : Maybe String
+    , millisLeft : Int
     }
 
 tick : Int -> Mech -> Mech
 tick delta mech =
     { mech | millisLeft = mech.millisLeft - delta }
 
+barWidth : Float
+barWidth = 45
 
 isExpired : Mech -> Bool
 isExpired { millisLeft } =
@@ -38,8 +40,8 @@ decoder =
     Decode.map4 Mech
         (Decode.field "attackName" Decode.string)
         (Decode.field "resolveType" Decode.string)
-        (Decode.field "millisLeft" Decode.int)
         (Decode.field "notes" <| Decode.maybe Decode.string)
+        (Decode.field "millisLeft" Decode.int)
 
 -- VIEW
 
@@ -48,13 +50,13 @@ view viewConfig groupConfig mech =
     let
         cssCommon =
             [ Css.maxWidth Css.fitContent
-            , Css.marginBottom <| Css.rem 1
+            , Css.marginBottom <| Css.rem 1.5
             ]
 
         cssOutline =
             if groupConfig.isFocus then
-                [ Css.paddingTop <| Css.rem 1
-                , Css.paddingBottom <| Css.rem 1
+                [ Css.paddingTop <| Css.rem 2
+                , Css.paddingBottom <| Css.rem 2
                 ]
             else
                 []
@@ -85,11 +87,10 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
         barHeight =
             Css.rem <| Basic.choose groupConfig.isFocus 8 5
 
-        barFont =
-            Css.rem <| Basic.choose groupConfig.isFocus 3.5 2.5
+        barFont = Css.rem 2.5
 
         barMargin =
-            Css.rem <| Basic.choose groupConfig.isFocus 1.5 1
+            Css.rem <| Basic.choose groupConfig.isFocus 2 0.75
 
     in
         Html.div
@@ -97,7 +98,7 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                 [ Css.position Css.relative
                 , Css.backgroundColor viewConfig.backgroundColor
                 , Css.borderRadius <| Css.rem 0.5
-                , Css.width <| Css.rem 40
+                , Css.width <| Css.rem barWidth
                 , Css.height barHeight
                 ]
             ]
@@ -110,7 +111,7 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                         percentLeft =
                             100 - computePercent viewConfig.millisTotal millisLeft
                     in
-                    Css.width <| Css.rem <| 0.4 * percentLeft
+                    Css.width <| Css.rem <| barWidth/100 * percentLeft
                     , Css.height barHeight
                     ]
                 ]
@@ -135,7 +136,7 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                 , Html.div
                 [ Html.css
                     [ Css.position Css.absolute
-                    , Css.width <| Css.rem 38
+                    , Css.width <| Css.rem <| barWidth - 1
                     , Css.color Colors.white
                     , Css.textAlign Css.right
                     , Css.fontSize barFont
@@ -146,7 +147,8 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                     []
                     [ let
                         time =
-                            displaySeconds millisLeft
+                            millisLeft
+                                |> displaySeconds ( Basic.choose ( millisLeft < viewConfig.millisTotal ) 1 0 )
                     in
                     Html.text <| time
                     ]
@@ -188,6 +190,7 @@ viewName groupConfig { attackName, optionalNotes } =
         Html.div
             [ Html.css
                 [ Css.display Css.inlineBlock
+                , Css.fontWeight Css.bold
                 , Css.alignSelf Css.flexEnd
                 , Css.color Colors.white
                 , Css.textAlign Css.left
@@ -205,13 +208,18 @@ viewName groupConfig { attackName, optionalNotes } =
 {-| Display the given number of milliseconds rounded down to the nearest number
 of seconds.
 -}
-displaySeconds : Int -> String
-displaySeconds millis =
+displaySeconds : Int -> Int -> String
+displaySeconds roundTo millis =
     let
         seconds =
             max 0 (toFloat millis / 1000)
+        adjustedRoundTo = Basic.choose ( seconds == 0 ) 0 roundTo
+        roundedString =
+            case adjustedRoundTo of
+               0 -> truncate seconds |> String.fromInt
+               _ -> Round.round adjustedRoundTo seconds
     in
-    Round.round 1 seconds ++ "s"
+        roundedString ++ "s"
 
 
 {-| Compute the percentage `current` constitutes of `total`. The result is

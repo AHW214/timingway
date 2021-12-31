@@ -16,6 +16,7 @@ import Timingway.Config exposing (ViewConfig)
 import Timingway.Mech as Mech exposing (Mech)
 import Timingway.Overflow as Overflow
 import Timingway.Util.Basic as Basic
+import FeatherIcons
 
 -- MAIN
 
@@ -68,7 +69,7 @@ timeToMillis time =
 -}
 makeMech : String -> String -> Maybe String -> Int -> Mech
 makeMech attackName resolveType optionalNotes millisLeft =
-    Mech attackName resolveType ( timeToMillis millisLeft ) optionalNotes
+    Mech attackName resolveType optionalNotes ( timeToMillis millisLeft )
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -76,15 +77,20 @@ init _ =
     ( { mechs =
             [ makeMech "No Previous Mechanics" "" Nothing 0
             , makeMech "Gaoler's Flail" "Left/Right" Nothing 10
-            , makeMech "Elemental Break" "Fire/Thunder Protean" (Just "Three minutes on CD") 15
+            , makeMech "Elemental Break" "Fire/Thunder Protean" (Just "3 mins on CD") 15
             , makeMech "Prismatic Deception" "Sword up = in" Nothing 23
             , makeMech "Akh Rhai" "Prepare to Move" Nothing 29
-            , makeMech "Burnt Strike" "Any Sides" (Just "One minute on CD") 42
+            , makeMech "Burnt Strike" "Any Sides" (Just "1 mins on CD") 42
             , makeMech "Hell's Judgment" "HP to 1" Nothing 51
             , makeMech "Decollation" "Raidwide" Nothing 58
-            , makeMech "Pitiless Rescue" "KB Immunity" Nothing 107
-            , makeMech "Cycle of Faith" "Protean, Sides, Tether" (Just "Buffs and Pots") 119
-            , makeMech "Elemental Break" "Any Protean" (Just "All buffs, 3-4 GCDs after boss targetable") 150
+            , makeMech "Ultima" "Tank LB3" Nothing 107
+            , makeMech "Cycle of Faith" "Protean, Sides, Tether" (Just "All buffs, pots") 119
+            , makeMech "Elemental Break" "Any Protean" (Just "All buffs after 3-4 GCDs") 150
+            , makeMech "Error 2002" "Return to Queue" Nothing 155
+            , makeMech "Error 2002" "Return to Queue" Nothing 163
+            , makeMech "Error 2002" "Return to Queue" Nothing 168
+            , makeMech "Error 2002" "Return to Queue" Nothing 183
+            , makeMech "Error 2002" "Return to Queue" Nothing 192
             ]
       , lastTick = Nothing
       , millisPassed = 0
@@ -284,8 +290,7 @@ view { viewConfig, isTicking, mechs, millisPassed } =
             , Css.color Colors.white
             , Css.textAlign Css.center
             , Css.marginBottom <| Css.rem 1
-            , Css.fontSize <| Css.rem 5
-            , Css.padding <| Css.rem 1
+            , Css.fontSize <| Css.rem 6
             , Css.marginLeft <| Css.rem 2.5
             , Css.height <| Css.rem 10
             , Css.width <| Css.rem 10
@@ -296,9 +301,8 @@ view { viewConfig, isTicking, mechs, millisPassed } =
                 [ Html.onClick Reset
                 , Html.css <|
                     ( Css.marginTop <| Css.rem 8 ) :: buttonCss
-                ] [
-                    Html.text "\u{21BA}"
-                ]
+                ] [Html.text "\u{21BB}"]
+
         pause =
             Html.button
                 [ Html.onClick
@@ -306,7 +310,7 @@ view { viewConfig, isTicking, mechs, millisPassed } =
                 , Html.css <|
                     ( Css.marginTop <| Css.rem 28 ) :: buttonCss
                 ] [ Html.text
-                    <| Basic.choose isTicking "\u{23FE}" "\u{25B6}"
+                    <| Basic.choose isTicking "\u{23F8}" "\u{23F5}"
                 ]
 
         clock =

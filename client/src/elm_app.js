@@ -5236,7 +5236,7 @@ var $author$project$Main$Init = function (a) {
 	return {$: 'Init', a: a};
 };
 var $author$project$Timingway$Mech$Mech = F4(
-	function (attackName, resolveType, millisLeft, optionalNotes) {
+	function (attackName, resolveType, optionalNotes, millisLeft) {
 		return {attackName: attackName, millisLeft: millisLeft, optionalNotes: optionalNotes, resolveType: resolveType};
 	});
 var $author$project$Main$timeToMillis = function (time) {
@@ -5250,8 +5250,8 @@ var $author$project$Main$makeMech = F4(
 			$author$project$Timingway$Mech$Mech,
 			attackName,
 			resolveType,
-			$author$project$Main$timeToMillis(millisLeft),
-			optionalNotes);
+			optionalNotes,
+			$author$project$Main$timeToMillis(millisLeft));
 	});
 var $elm$time$Time$Name = function (a) {
 	return {$: 'Name', a: a};
@@ -5311,7 +5311,7 @@ var $author$project$Main$init = function (_v0) {
 					$author$project$Main$makeMech,
 					'Elemental Break',
 					'Fire/Thunder Protean',
-					$elm$core$Maybe$Just('Three minutes on CD'),
+					$elm$core$Maybe$Just('3 mins on CD'),
 					15),
 					A4($author$project$Main$makeMech, 'Prismatic Deception', 'Sword up = in', $elm$core$Maybe$Nothing, 23),
 					A4($author$project$Main$makeMech, 'Akh Rhai', 'Prepare to Move', $elm$core$Maybe$Nothing, 29),
@@ -5319,23 +5319,28 @@ var $author$project$Main$init = function (_v0) {
 					$author$project$Main$makeMech,
 					'Burnt Strike',
 					'Any Sides',
-					$elm$core$Maybe$Just('One minute on CD'),
+					$elm$core$Maybe$Just('1 mins on CD'),
 					42),
 					A4($author$project$Main$makeMech, 'Hell\'s Judgment', 'HP to 1', $elm$core$Maybe$Nothing, 51),
 					A4($author$project$Main$makeMech, 'Decollation', 'Raidwide', $elm$core$Maybe$Nothing, 58),
-					A4($author$project$Main$makeMech, 'Pitiless Rescue', 'KB Immunity', $elm$core$Maybe$Nothing, 107),
+					A4($author$project$Main$makeMech, 'Ultima', 'Tank LB3', $elm$core$Maybe$Nothing, 107),
 					A4(
 					$author$project$Main$makeMech,
 					'Cycle of Faith',
 					'Protean, Sides, Tether',
-					$elm$core$Maybe$Just('Buffs and Pots'),
+					$elm$core$Maybe$Just('All buffs, pots'),
 					119),
 					A4(
 					$author$project$Main$makeMech,
 					'Elemental Break',
 					'Any Protean',
-					$elm$core$Maybe$Just('All buffs, 3-4 GCDs after boss targetable'),
-					150)
+					$elm$core$Maybe$Just('All buffs after 3-4 GCDs'),
+					150),
+					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 155),
+					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 163),
+					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 168),
+					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 183),
+					A4($author$project$Main$makeMech, 'Error 2002', 'Return to Queue', $elm$core$Maybe$Nothing, 192)
 				]),
 			millisPassed: 0,
 			viewConfig: {
@@ -8043,11 +8048,11 @@ var $author$project$Timingway$Mech$decoder = A5(
 	$author$project$Timingway$Mech$Mech,
 	A2($elm$json$Json$Decode$field, 'attackName', $elm$json$Json$Decode$string),
 	A2($elm$json$Json$Decode$field, 'resolveType', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'millisLeft', $elm$json$Json$Decode$int),
 	A2(
 		$elm$json$Json$Decode$field,
 		'notes',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)));
+		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'millisLeft', $elm$json$Json$Decode$int));
 var $elm$core$Result$map = F2(
 	function (func, ra) {
 		if (ra.$ === 'Ok') {
@@ -8295,7 +8300,6 @@ var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
 var $rtfeldman$elm_css$Css$paddingBottom = $rtfeldman$elm_css$Css$prop1('padding-bottom');
 var $rtfeldman$elm_css$Css$paddingTop = $rtfeldman$elm_css$Css$prop1('padding-top');
 var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
@@ -8416,6 +8420,7 @@ var $author$project$Timingway$Clock$displayClock = function (millis) {
 	var minutes = $elm$core$String$fromInt((totalSeconds / 60) | 0);
 	return padTime(minutes) + (' : ' + padTime(seconds));
 };
+var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
 var $rtfeldman$elm_css$Css$rgb = F3(
 	function (r, g, b) {
 		return {
@@ -8448,7 +8453,7 @@ var $author$project$Timingway$Clock$view = function (millis) {
 						$rtfeldman$elm_css$Css$marginTop(
 						$rtfeldman$elm_css$Css$rem(1)),
 						$rtfeldman$elm_css$Css$marginLeft(
-						$rtfeldman$elm_css$Css$rem(65)),
+						$rtfeldman$elm_css$Css$rem(79)),
 						$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
 						$rtfeldman$elm_css$Css$backgroundColor(
 						A4($rtfeldman$elm_css$Css$rgba, 150, 150, 150, 0.5)),
@@ -8489,37 +8494,9 @@ var $rtfeldman$elm_css$Css$fontWeight = function (_v0) {
 	var value = _v0.value;
 	return A2($rtfeldman$elm_css$Css$property, 'font-weight', value);
 };
-var $author$project$Timingway$Util$Basic$maybe = F3(
-	function (y, f, mx) {
-		if (mx.$ === 'Just') {
-			var x = mx.a;
-			return f(x);
-		} else {
-			return y;
-		}
-	});
 var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
 var $author$project$Timingway$Overflow$viewMechInfo = function (mech) {
 	var resolveType = $rtfeldman$elm_css$Html$Styled$text(mech.resolveType);
-	var formatNotes = function (n) {
-		return '(' + (n + ')');
-	};
-	var notesContent = A3($author$project$Timingway$Util$Basic$maybe, '', formatNotes, mech.optionalNotes);
-	var notes = A2(
-		$rtfeldman$elm_css$Html$Styled$span,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$rem(1))
-					]))
-			]),
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$text(notesContent)
-			]));
 	var divider = $rtfeldman$elm_css$Html$Styled$text(' : ');
 	var attackName = A2(
 		$rtfeldman$elm_css$Html$Styled$span,
@@ -8558,12 +8535,7 @@ var $author$project$Timingway$Overflow$viewMechInfo = function (mech) {
 						$rtfeldman$elm_css$Html$Styled$div,
 						_List_Nil,
 						_List_fromArray(
-							[attackName, divider, resolveType])),
-						A2(
-						$rtfeldman$elm_css$Html$Styled$div,
-						_List_Nil,
-						_List_fromArray(
-							[notes]))
+							[attackName, divider, resolveType]))
 					]))
 			]));
 };
@@ -8787,10 +8759,20 @@ var $myrho$elm_round$Round$round = $myrho$elm_round$Round$roundFun(
 				}
 			}
 		}));
-var $author$project$Timingway$Mech$displaySeconds = function (millis) {
-	var seconds = A2($elm$core$Basics$max, 0, millis / 1000);
-	return A2($myrho$elm_round$Round$round, 1, seconds) + 's';
-};
+var $elm$core$Basics$truncate = _Basics_truncate;
+var $author$project$Timingway$Mech$displaySeconds = F2(
+	function (roundTo, millis) {
+		var seconds = A2($elm$core$Basics$max, 0, millis / 1000);
+		var adjustedRoundTo = A3($author$project$Timingway$Util$Basic$choose, !seconds, 0, roundTo);
+		var roundedString = function () {
+			if (!adjustedRoundTo) {
+				return $elm$core$String$fromInt(seconds | 0);
+			} else {
+				return A2($myrho$elm_round$Round$round, adjustedRoundTo, seconds);
+			}
+		}();
+		return roundedString + 's';
+	});
 var $author$project$Timingway$Overflow$viewMechTime = function (_v0) {
 	var millisLeft = _v0.millisLeft;
 	return A2(
@@ -8808,7 +8790,7 @@ var $author$project$Timingway$Overflow$viewMechTime = function (_v0) {
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Html$Styled$text(
-				$author$project$Timingway$Mech$displaySeconds(millisLeft))
+				A2($author$project$Timingway$Mech$displaySeconds, 0, millisLeft))
 			]));
 };
 var $author$project$Timingway$Overflow$viewMech = function (mech) {
@@ -8865,7 +8847,7 @@ var $author$project$Timingway$Overflow$viewPlaceholder = A2(
 		]),
 	_List_fromArray(
 		[
-			$rtfeldman$elm_css$Html$Styled$text('No future moves known...')
+			$rtfeldman$elm_css$Html$Styled$text('No future mechanics known...')
 		]));
 var $author$project$Timingway$Overflow$view = F2(
 	function (_v0, mechs) {
@@ -8873,7 +8855,10 @@ var $author$project$Timingway$Overflow$view = F2(
 		var present = _v0.present;
 		var future = _v0.future;
 		var numBeforeOverflow = (past.amount + present.amount) + future.amount;
-		var mechsOverflow = A2($elm$core$List$drop, numBeforeOverflow, mechs);
+		var mechsOverflow = A2(
+			$elm$core$List$take,
+			10,
+			A2($elm$core$List$drop, numBeforeOverflow, mechs));
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -8884,7 +8869,7 @@ var $author$project$Timingway$Overflow$view = F2(
 							$rtfeldman$elm_css$Css$marginLeft(
 							$rtfeldman$elm_css$Css$rem(5)),
 							$rtfeldman$elm_css$Css$marginTop(
-							$rtfeldman$elm_css$Css$rem(15)),
+							$rtfeldman$elm_css$Css$rem(14.5)),
 							$rtfeldman$elm_css$Css$outlineColor($ursi$elm_css_colors$Css$Colors$white),
 							$rtfeldman$elm_css$Css$outlineStyle($rtfeldman$elm_css$Css$solid),
 							$rtfeldman$elm_css$Css$outlineWidth(
@@ -8896,7 +8881,7 @@ var $author$project$Timingway$Overflow$view = F2(
 							$rtfeldman$elm_css$Css$width(
 							$rtfeldman$elm_css$Css$rem(40)),
 							$rtfeldman$elm_css$Css$height(
-							$rtfeldman$elm_css$Css$rem(35)),
+							$rtfeldman$elm_css$Css$rem(32.5)),
 							$rtfeldman$elm_css$Css$backgroundColor(
 							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.4))
 						]))
@@ -8915,6 +8900,15 @@ var $rtfeldman$elm_css$Css$fitContent = _Utils_update(
 	$rtfeldman$elm_css$Css$fillAvailable,
 	{value: 'fit-content'});
 var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
+var $author$project$Timingway$Util$Basic$maybe = F3(
+	function (y, f, mx) {
+		if (mx.$ === 'Just') {
+			var x = mx.a;
+			return f(x);
+		} else {
+			return y;
+		}
+	});
 var $rtfeldman$elm_css$Css$alignSelf = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -8961,6 +8955,7 @@ var $author$project$Timingway$Mech$maybeViewNotes = function (_v0) {
 	};
 	return A2($elm$core$Maybe$map, viewNotes, optionalNotes);
 };
+var $author$project$Timingway$Mech$barWidth = 45;
 var $elm$core$Basics$clamp = F3(
 	function (low, high, number) {
 		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
@@ -8978,11 +8973,10 @@ var $author$project$Timingway$Mech$viewBar = F3(
 		var resolveType = _v0.resolveType;
 		var millisLeft = _v0.millisLeft;
 		var barMargin = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 1.5, 1));
+			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 2, 0.75));
 		var barHeight = $rtfeldman$elm_css$Css$rem(
 			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 8, 5));
-		var barFont = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 3.5, 2.5));
+		var barFont = $rtfeldman$elm_css$Css$rem(2.5);
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -8995,7 +8989,7 @@ var $author$project$Timingway$Mech$viewBar = F3(
 							$rtfeldman$elm_css$Css$borderRadius(
 							$rtfeldman$elm_css$Css$rem(0.5)),
 							$rtfeldman$elm_css$Css$width(
-							$rtfeldman$elm_css$Css$rem(40)),
+							$rtfeldman$elm_css$Css$rem($author$project$Timingway$Mech$barWidth)),
 							$rtfeldman$elm_css$Css$height(barHeight)
 						]))
 				]),
@@ -9015,7 +9009,7 @@ var $author$project$Timingway$Mech$viewBar = F3(
 									function () {
 									var percentLeft = 100 - A2($author$project$Timingway$Mech$computePercent, viewConfig.millisTotal, millisLeft);
 									return $rtfeldman$elm_css$Css$width(
-										$rtfeldman$elm_css$Css$rem(0.4 * percentLeft));
+										$rtfeldman$elm_css$Css$rem(($author$project$Timingway$Mech$barWidth / 100) * percentLeft));
 								}(),
 									$rtfeldman$elm_css$Css$height(barHeight)
 								]))
@@ -9058,7 +9052,7 @@ var $author$project$Timingway$Mech$viewBar = F3(
 								[
 									$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 									$rtfeldman$elm_css$Css$width(
-									$rtfeldman$elm_css$Css$rem(38)),
+									$rtfeldman$elm_css$Css$rem($author$project$Timingway$Mech$barWidth - 1)),
 									$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
 									$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$right),
 									$rtfeldman$elm_css$Css$fontSize(barFont),
@@ -9073,7 +9067,14 @@ var $author$project$Timingway$Mech$viewBar = F3(
 							_List_fromArray(
 								[
 									function () {
-									var time = $author$project$Timingway$Mech$displaySeconds(millisLeft);
+									var time = A2(
+										$author$project$Timingway$Mech$displaySeconds,
+										A3(
+											$author$project$Timingway$Util$Basic$choose,
+											_Utils_cmp(millisLeft, viewConfig.millisTotal) < 0,
+											1,
+											0),
+										millisLeft);
 									return $rtfeldman$elm_css$Html$Styled$text(time);
 								}()
 								]))
@@ -9104,6 +9105,7 @@ var $author$project$Timingway$Mech$viewName = F2(
 					_List_fromArray(
 						[
 							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+							$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold),
 							$rtfeldman$elm_css$Css$alignSelf($rtfeldman$elm_css$Css$flexEnd),
 							$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
 							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
@@ -9133,15 +9135,15 @@ var $author$project$Timingway$Mech$view = F3(
 		var cssOutline = groupConfig.isFocus ? _List_fromArray(
 			[
 				$rtfeldman$elm_css$Css$paddingTop(
-				$rtfeldman$elm_css$Css$rem(1)),
+				$rtfeldman$elm_css$Css$rem(2)),
 				$rtfeldman$elm_css$Css$paddingBottom(
-				$rtfeldman$elm_css$Css$rem(1))
+				$rtfeldman$elm_css$Css$rem(2))
 			]) : _List_Nil;
 		var cssCommon = _List_fromArray(
 			[
 				$rtfeldman$elm_css$Css$maxWidth($rtfeldman$elm_css$Css$fitContent),
 				$rtfeldman$elm_css$Css$marginBottom(
-				$rtfeldman$elm_css$Css$rem(1))
+				$rtfeldman$elm_css$Css$rem(1.5))
 			]);
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
@@ -9224,9 +9226,7 @@ var $author$project$Main$view = function (_v0) {
 			$rtfeldman$elm_css$Css$marginBottom(
 			$rtfeldman$elm_css$Css$rem(1)),
 			$rtfeldman$elm_css$Css$fontSize(
-			$rtfeldman$elm_css$Css$rem(5)),
-			$rtfeldman$elm_css$Css$padding(
-			$rtfeldman$elm_css$Css$rem(1)),
+			$rtfeldman$elm_css$Css$rem(6)),
 			$rtfeldman$elm_css$Css$marginLeft(
 			$rtfeldman$elm_css$Css$rem(2.5)),
 			$rtfeldman$elm_css$Css$height(
@@ -9252,7 +9252,7 @@ var $author$project$Main$view = function (_v0) {
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Html$Styled$text(
-				A3($author$project$Timingway$Util$Basic$choose, isTicking, '\u23FE', '\u25B6'))
+				A3($author$project$Timingway$Util$Basic$choose, isTicking, '\u23F8', '\u23F5'))
 			]));
 	var reset = A2(
 		$rtfeldman$elm_css$Html$Styled$button,
@@ -9268,7 +9268,7 @@ var $author$project$Main$view = function (_v0) {
 			]),
 		_List_fromArray(
 			[
-				$rtfeldman$elm_css$Html$Styled$text('\u21BA')
+				$rtfeldman$elm_css$Html$Styled$text('\u21BB')
 			]));
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,

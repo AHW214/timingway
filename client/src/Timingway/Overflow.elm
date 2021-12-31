@@ -6,7 +6,7 @@ import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Timingway.Config exposing (ViewConfig)
 import Timingway.Mech as Mech exposing (Mech)
-import Timingway.Util.Basic as Basic
+-- import Timingway.Util.Basic as Basic
 
 -- VIEW
 
@@ -17,19 +17,21 @@ view { past, present, future } mechs =
             past.amount + present.amount + future.amount
 
         mechsOverflow =
-            List.drop numBeforeOverflow mechs
+            mechs
+                |> List.drop numBeforeOverflow
+                |> List.take 10
     in
         Html.div
             [ Html.css
                 [ Css.marginLeft <| Css.rem 5
-                , Css.marginTop <| Css.rem 15
+                , Css.marginTop <| Css.rem 14.5
                 , Css.outlineColor Colors.white
                 , Css.outlineStyle Css.solid
                 , Css.outlineWidth <| Css.rem 0.25
                 , Css.borderRadius <| Css.rem 0.5
                 , Css.padding <| Css.rem 0.5
                 , Css.width <| Css.rem 40
-                , Css.height <| Css.rem 35
+                , Css.height <| Css.rem 32.5
                 , Css.backgroundColor <| Css.rgba 0 0 0 0.4
                 ]
             ]
@@ -56,19 +58,21 @@ viewMech mech =
         , viewMechTime mech
         ]
 
+{-|
+    formatNotes n =
+        "(" ++ n ++ ")"
+
+    notesContent =
+        Basic.maybe "" formatNotes mech.optionalNotes
+
+    notes =
+        Html.span
+            [ Html.css [ Css.fontSize <| Css.rem 1 ] ]
+            [ Html.text notesContent ]
+-}
 viewMechInfo : Mech -> Html msg
 viewMechInfo mech =
     let
-        formatNotes n =
-            "(" ++ n ++ ")"
-
-        notesContent =
-            Basic.maybe "" formatNotes mech.optionalNotes
-
-        notes =
-            Html.span
-                [ Html.css [ Css.fontSize <| Css.rem 1 ] ]
-                [ Html.text notesContent ]
 
         attackName =
             Html.span
@@ -80,6 +84,8 @@ viewMechInfo mech =
 
         divider =
             Html.text " : "
+
+
     in
         Html.div
             [ Html.css
@@ -90,7 +96,7 @@ viewMechInfo mech =
             [ Html.div
                 []
                 [ Html.div [] [ attackName, divider, resolveType ]
-                , Html.div [] [ notes ]
+                -- , Html.div [] [ notes ]
                 ]
             ]
 
@@ -102,7 +108,7 @@ viewMechTime { millisLeft } =
             , Css.fontSize <| Css.rem 1.5
             ]
         ]
-        [ Html.text <| Mech.displaySeconds millisLeft
+        [ Html.text <| Mech.displaySeconds 0 millisLeft
         ]
 
 viewPlaceholder : Html msg
@@ -118,5 +124,5 @@ viewPlaceholder =
             , Css.fontStyle Css.italic
             ]
         ]
-        [ Html.text "No future moves known..."
+        [ Html.text "No future mechanics known..."
         ]
