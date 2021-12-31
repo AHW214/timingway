@@ -14,6 +14,7 @@ import Time
 import Timingway.Clock as Clock
 import Timingway.Config exposing (ViewConfig)
 import Timingway.Mech as Mech exposing (Mech)
+import Timingway.Overflow as Overflow
 import Timingway.Util.Basic as Basic
 
 -- MAIN
@@ -243,7 +244,7 @@ subscriptions { isTicking, viewConfig } =
 
 -- VIEW
 
-viewMechs : List Mech -> ViewConfig -> List (Html Msg)
+viewMechs : List Mech -> ViewConfig -> Html Msg
 viewMechs mechs viewConfig =
     let
         groupsList = [ viewConfig.past, viewConfig.present, viewConfig.future ]
@@ -256,10 +257,19 @@ viewMechs mechs viewConfig =
                     List.map ( Mech.view viewConfig groupConfig ) groupToView
             in
                 ( viewList ++ newViews , restOfGroups )
+
+        groupViews =
+            groupsList
+                |> List.foldl viewNextGroup ( [] , mechs )
+                |> Tuple.first
     in
-        groupsList
-            |> List.foldl viewNextGroup ( [] , mechs )
-            |> Tuple.first
+        Html.div
+            [ Html.css
+                [ Css.marginLeft <| Css.rem 18
+                ]
+            ]
+            groupViews
+
 
 view : Model -> Html Msg
 view { viewConfig, isTicking, mechs, millisPassed } =
@@ -298,15 +308,22 @@ view { viewConfig, isTicking, mechs, millisPassed } =
         clock =
             Clock.view millisPassed
 
-        mechsList =
+        mechsView =
             viewMechs mechs viewConfig
+
+        overflow =
+            Overflow.view viewConfig mechs
     in
     Html.div
         [ Html.css
-            [ Css.paddingTop <| Css.em 2
+            [ Css.displayFlex
+            , Css.paddingTop <| Css.em 2
             , Css.paddingBottom <| Css.em 1
             ]
         ]
-        (
-            [ reset, pause, clock ] ++ mechsList
-        )
+        [ reset
+        , pause
+        , clock
+        , mechsView
+        , overflow
+        ]

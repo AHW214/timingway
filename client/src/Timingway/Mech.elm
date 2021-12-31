@@ -48,7 +48,6 @@ view viewConfig groupConfig mech =
         cssCommon =
             [ Css.maxWidth Css.fitContent
             , Css.marginBottom <| Css.rem 1
-            , Css.marginLeft <| Css.rem 8
             ]
 
         cssOutline =
@@ -71,7 +70,6 @@ view viewConfig groupConfig mech =
                 [ Html.css
                     [ Css.displayFlex
                     , Css.justifyContent Css.spaceBetween
-                    , Css.marginLeft <| Css.rem 10
                     , Css.marginBottom <| Css.rem 1
                     ]
                 ]
@@ -100,7 +98,6 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                 , Css.borderRadius <| Css.rem 0.5
                 , Css.width <| Css.rem 40
                 , Css.height barHeight
-                , Css.marginLeft <| Css.rem 10
                 ]
             ]
             [ Html.div
