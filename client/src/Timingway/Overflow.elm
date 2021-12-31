@@ -5,7 +5,7 @@ import Css.Colors as Colors
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Timingway.Config exposing (ViewConfig)
-import Timingway.Mech exposing (Mech)
+import Timingway.Mech as Mech exposing (Mech)
 import Timingway.Util.Basic as Basic
 
 -- VIEW
@@ -28,7 +28,7 @@ view { past, present, future } mechs =
                 , Css.outlineWidth <| Css.rem 0.25
                 , Css.borderRadius <| Css.rem 0.5
                 , Css.padding <| Css.rem 0.5
-                , Css.width <| Css.rem 30
+                , Css.width <| Css.rem 40
                 , Css.height <| Css.rem 35
                 , Css.backgroundColor <| Css.rgba 0 0 0 0.4
                 ]
@@ -38,30 +38,71 @@ view { past, present, future } mechs =
                 else List.map viewMech mechsOverflow)
 
 viewMech : Mech -> Html msg
-viewMech { attackName, optionalNotes, resolveType } =
+viewMech mech =
+    Html.div
+        [ Html.css
+            [ Css.displayFlex
+            , Css.justifyContent Css.spaceBetween
+            , Css.color Colors.white
+            , Css.backgroundColor <| Css.rgba 150 150 150 0.5
+            , Css.padding <| Css.rem 0.5
+            , Css.marginBottom <| Css.rem 0.5
+            , Css.borderRadius <| Css.rem 0.5
+            , Css.textAlign Css.left
+            , Css.fontSize <| Css.rem 1.5
+            ]
+        ]
+        [ viewMechInfo mech
+        , viewMechTime mech
+        ]
+
+viewMechInfo : Mech -> Html msg
+viewMechInfo mech =
     let
         formatNotes n =
             " (" ++ n ++ ")"
 
-        notes =
-            Basic.maybe "" formatNotes optionalNotes
+        notesContent =
+            Basic.maybe "" formatNotes mech.optionalNotes
 
-        text =
-            attackName ++ " : " ++ resolveType ++ notes
+        notes =
+            Html.span
+                [ Html.css [ Css.fontSize <| Css.rem 1 ] ]
+                [ Html.text notesContent ]
+
+        attackName =
+            Html.span
+                [ Html.css [ Css.fontWeight Css.bold ] ]
+                [ Html.text mech.attackName ]
+
+        resolveType =
+            Html.text mech.resolveType
+
+        divider =
+            Html.text " : "
     in
         Html.div
             [ Html.css
                 [ Css.color Colors.white
-                , Css.backgroundColor <| Css.rgba 150 150 150 0.5
-                , Css.padding <| Css.rem 0.5
-                , Css.marginBottom <| Css.rem 0.5
-                , Css.borderRadius <| Css.rem 0.5
-                , Css.textAlign Css.left
                 , Css.fontSize <| Css.rem 1.5
                 ]
             ]
-            [ Html.text text
+            [ attackName
+            , divider
+            , resolveType
+            , notes
             ]
+
+viewMechTime : Mech -> Html msg
+viewMechTime { millisLeft } =
+    Html.div
+        [ Html.css
+            [ Css.color Colors.white
+            , Css.fontSize <| Css.rem 1.5
+            ]
+        ]
+        [ Html.text <| Mech.displaySeconds millisLeft
+        ]
 
 viewPlaceholder : Html msg
 viewPlaceholder =

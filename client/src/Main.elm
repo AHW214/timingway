@@ -80,7 +80,7 @@ init _ =
             , makeMech "Akh Rhai" "Prepare to move" (Just "move it groove it") 18
             , makeMech "Hell's Judgment" "HP to 1" (Just "say hello to dante") 24
             , makeMech "Decollation" "Raidwide" Nothing 37
-            , makeMech "Pitiless Rescue" "KB Immunity" Nothing 115
+            , makeMech "Pitiless Rescue" "KB Immunity" (Just "moderate length note") 115
             ]
       , lastTick = Nothing
       , millisPassed = 0

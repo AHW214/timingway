@@ -1,6 +1,7 @@
 module Timingway.Mech exposing
     ( Mech
     , decoder
+    , displaySeconds
     , isExpired
     , tick
     , view
