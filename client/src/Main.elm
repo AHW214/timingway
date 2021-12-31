@@ -25,7 +25,7 @@ main : Program Flags Model Msg
 main =
     Browser.element
         { init = init
-        , view = Html.toUnstyled << view
+        , view = view >> Html.toUnstyled
         , update = update
         , subscriptions = subscriptions
         }
@@ -84,20 +84,20 @@ init _ =
       , lastTick = Nothing
       , millisPassed = 0
       , isTicking = False
-      , viewConfig = 
+      , viewConfig =
             { past =
                 { amount = 1
-                , colorBar = Css.rgba 0 200 0 0.6
+                , barColor = Css.rgba 0 200 0 0.6
                 , isFocus = False
                 }
             , present =
                 { amount = 1
-                , colorBar = Css.rgba 255 0 0 0.6
+                , barColor = Css.rgba 255 0 0 0.6
                 , isFocus = True
                 }
             , future =
                 { amount = 2
-                , colorBar = Css.rgba 0 100 255 0.6
+                , barColor = Css.rgba 0 100 255 0.6
                 , isFocus = False
                 }
             , millisTotal = 15000
@@ -169,19 +169,21 @@ update msg model =
                 Pause ->
                     { model | isTicking = False }
         newCommand =
-            if
-                msg == Reset || msg == Continue
-            then
-                Task.perform Init Time.now
-            else
-                Cmd.none
+            case msg of
+                Continue ->
+                    Task.perform Init Time.now
+                _ ->
+                    Cmd.none
     in
     ( newModel, newCommand )
 
 
 decrementMechs : Int -> Model -> Model
 decrementMechs millis model =
-    { model | mechs = List.map ( Mech.tick millis ) model.mechs }
+    let
+        decrementList = List.map ( Mech.tick millis )
+    in
+        { model | mechs = decrementList model.mechs }
 
 {-| Updates the list of current timers, dependent on the timer of the given index.
     Int: index of the "upcoming attack" in the list.
@@ -244,71 +246,58 @@ subscriptions { isTicking, viewConfig } =
 viewMechs : List Mech -> ViewConfig -> List (Html Msg)
 viewMechs mechs viewConfig =
     let
-        configsList = [ viewConfig.past, viewConfig.present, viewConfig.future ]
-        viewConcat groupConfig ( mechList, viewList ) =
+        groupsList = [ viewConfig.past, viewConfig.present, viewConfig.future ]
+        viewNextGroup groupConfig ( viewList , mechList ) =
             let
-                ( mechsToView, restOfMechs ) =
+                ( groupToView , restOfGroups ) =
                     List.splitAt groupConfig.amount mechList
 
                 newViews =
-                    List.map ( Mech.view viewConfig groupConfig ) mechsToView
+                    List.map ( Mech.view viewConfig groupConfig ) groupToView
             in
-                ( restOfMechs, viewList ++ newViews )
+                ( viewList ++ newViews , restOfGroups )
     in
-        configsList
-            |> List.foldl viewConcat ( mechs, [] )
-            |> Tuple.second
+        groupsList
+            |> List.foldl viewNextGroup ( [] , mechs )
+            |> Tuple.first
 
 view : Model -> Html Msg
 view { viewConfig, isTicking, mechs, millisPassed } =
     let
+        buttonCss =
+            [ Css.backgroundColor <| Css.rgba 50 50 50 0.8
+            , Css.position Css.absolute
+            , Css.color Colors.white
+            , Css.textAlign Css.center
+            , Css.marginBottom <| Css.rem 1
+            , Css.fontSize <| Css.rem 5
+            , Css.padding <| Css.rem 1
+            , Css.marginLeft <| Css.rem 2.5
+            , Css.height <| Css.rem 10
+            , Css.width <| Css.rem 10
+            , Css.borderRadius <| Css.rem 1
+            ]
         reset =
             Html.button
                 [ Html.onClick Reset
-                , Html.css
-                    [ Css.backgroundColor <| Css.rgba 50 50 50 0.8
-                    , Css.position Css.absolute
-                    , Css.color Colors.white
-                    , Css.textAlign Css.center
-                    , Css.marginBottom <| Css.rem 1
-                    , Css.fontSize <| Css.rem 5
-                    , Css.padding <| Css.rem 1
-                    , Css.marginTop <| Css.rem 8
-                    , Css.marginLeft <| Css.rem 2.5
-                    , Css.height <| Css.rem 10
-                    , Css.width <| Css.rem 10
-                    , Css.borderRadius <| Css.rem 1
-                    ]
+                , Html.css <|
+                    ( Css.marginTop <| Css.rem 8 ) :: buttonCss
                 ] [
                     Html.text "\u{21BA}"
                 ]
-        pause = 
+        pause =
             Html.button
                 [ Html.onClick
                     <| Basic.choose isTicking Pause Continue
-                , Html.css
-                    [ Css.backgroundColor <| Css.rgba 50 50 50 0.8
-                    , Css.position Css.absolute
-                    , Css.color Colors.white
-                    , Css.textAlign Css.center
-                    , Css.marginBottom <| Css.rem 1
-                    , Css.fontSize <| Css.rem 5
-                    , Css.padding <| Css.rem 1
-                    , Css.marginTop <| Css.rem 28
-                    , Css.marginLeft <| Css.rem 2.5
-                    , Css.height <| Css.rem 10
-                    , Css.width <| Css.rem 10
-                    , Css.borderRadius <| Css.rem 1
-                    ]
-                ]
-                [ Html.text
+                , Html.css <|
+                    ( Css.marginTop <| Css.rem 28 ) :: buttonCss
+                ] [ Html.text
                     <| Basic.choose isTicking "\u{23FE}" "\u{25B6}"
                 ]
 
         clock =
             Clock.view millisPassed
 
-        
         mechsList =
             viewMechs mechs viewConfig
     in

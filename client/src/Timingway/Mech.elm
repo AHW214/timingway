@@ -56,7 +56,6 @@ view viewConfig groupConfig mech =
                 ]
             else
                 []
-                
     in
         Html.div
             [ Html.css
@@ -72,7 +71,7 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
     let
         barHeight =
             Css.rem <| Basic.choose groupConfig.isFocus 8 5
-        
+
         barFont =
             Css.rem <| Basic.choose groupConfig.isFocus 3.5 2.5
 
@@ -94,7 +93,7 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                 [ Html.css
                     [ Css.position Css.absolute
                     , Css.borderRadius <| Css.rem 0.5
-                    , Css.backgroundColor groupConfig.colorBar
+                    , Css.backgroundColor groupConfig.barColor
                     , let
                         percentLeft =
                             100 - computePercent viewConfig.millisTotal millisLeft
@@ -117,7 +116,7 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                 ]
                 [ Html.div
                     []
-                    [ 
+                    [
                     Html.text <| resolveType
                     ]
                 ]

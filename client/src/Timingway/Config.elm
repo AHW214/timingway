@@ -5,7 +5,7 @@ import Css exposing (Color)
 -}
 type alias GroupConfig =
     { amount : Int
-    , colorBar : Color 
+    , barColor : Color
     , isFocus : Bool
     }
 

@@ -4438,8 +4438,8 @@ var _Bitwise_shiftRightZfBy = F2(function(offset, a)
 {
 	return a >>> offset;
 });
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
 		return g(
 			f(x));
 	});
@@ -5317,18 +5317,18 @@ var $author$project$Main$init = function (_v0) {
 				backgroundColor: A4($rtfeldman$elm_css$Css$rgba, 150, 150, 150, 0.5),
 				future: {
 					amount: 2,
-					colorBar: A4($rtfeldman$elm_css$Css$rgba, 0, 100, 255, 0.6),
+					barColor: A4($rtfeldman$elm_css$Css$rgba, 0, 100, 255, 0.6),
 					isFocus: false
 				},
 				millisTotal: 15000,
 				past: {
 					amount: 1,
-					colorBar: A4($rtfeldman$elm_css$Css$rgba, 0, 200, 0, 0.6),
+					barColor: A4($rtfeldman$elm_css$Css$rgba, 0, 200, 0, 0.6),
 					isFocus: false
 				},
 				present: {
 					amount: 1,
-					colorBar: A4($rtfeldman$elm_css$Css$rgba, 255, 0, 0, 0.6),
+					barColor: A4($rtfeldman$elm_css$Css$rgba, 255, 0, 0, 0.6),
 					isFocus: true
 				}
 			}
@@ -5716,6 +5716,11 @@ var $elm$time$Time$onSelfMsg = F3(
 				},
 				A2($elm$core$Task$andThen, tellTaggers, $elm$time$Time$now));
 		}
+	});
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
 	});
 var $elm$time$Time$subMap = F2(
 	function (f, _v0) {
@@ -7952,8 +7957,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 	}
 };
 var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
-var $author$project$Main$Continue = {$: 'Continue'};
-var $author$project$Main$Reset = {$: 'Reset'};
 var $elm$core$List$drop = F2(
 	function (n, list) {
 		drop:
@@ -8031,13 +8034,12 @@ var $author$project$Timingway$Mech$tick = F2(
 	});
 var $author$project$Main$decrementMechs = F2(
 	function (millis, model) {
+		var decrementList = $elm$core$List$map(
+			$author$project$Timingway$Mech$tick(millis));
 		return _Utils_update(
 			model,
 			{
-				mechs: A2(
-					$elm$core$List$map,
-					$author$project$Timingway$Mech$tick(millis),
-					model.mechs)
+				mechs: decrementList(model.mechs)
 			});
 	});
 var $author$project$Main$incrementTimer = F2(
@@ -8071,11 +8073,11 @@ var $author$project$Main$update = F2(
 					var viewConfig = msg.a;
 					var time = msg.b;
 					var delta = function () {
-						var _v1 = model.lastTick;
-						if (_v1.$ === 'Nothing') {
+						var _v2 = model.lastTick;
+						if (_v2.$ === 'Nothing') {
 							return $author$project$Main$tickTimeMillis;
 						} else {
-							var lastTick = _v1.a;
+							var lastTick = _v2.a;
 							return $elm$time$Time$posixToMillis(time) - $elm$time$Time$posixToMillis(lastTick);
 						}
 					}();
@@ -8091,9 +8093,9 @@ var $author$project$Main$update = F2(
 								A2($author$project$Main$setLastTick, time, model))));
 				case 'Input':
 					var input = msg.a;
-					var _v2 = $author$project$Main$decodeMechs(input);
-					if (_v2.$ === 'Ok') {
-						var mechs = _v2.a;
+					var _v3 = $author$project$Main$decodeMechs(input);
+					if (_v3.$ === 'Ok') {
+						var mechs = _v3.a;
 						return _Utils_update(
 							model,
 							{mechs: mechs});
@@ -8115,10 +8117,18 @@ var $author$project$Main$update = F2(
 						{isTicking: false});
 			}
 		}();
-		var newCommand = (_Utils_eq(msg, $author$project$Main$Reset) || _Utils_eq(msg, $author$project$Main$Continue)) ? A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now) : $elm$core$Platform$Cmd$none;
+		var newCommand = function () {
+			if (msg.$ === 'Continue') {
+				return A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now);
+			} else {
+				return $elm$core$Platform$Cmd$none;
+			}
+		}();
 		return _Utils_Tuple2(newModel, newCommand);
 	});
+var $author$project$Main$Continue = {$: 'Continue'};
 var $author$project$Main$Pause = {$: 'Pause'};
+var $author$project$Main$Reset = {$: 'Reset'};
 var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
 	return {$: 'AppendProperty', a: a};
@@ -8420,10 +8430,6 @@ var $author$project$Timingway$Clock$view = function (millis) {
 				$author$project$Timingway$Clock$displayClock(millis))
 			]));
 };
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
-};
 var $elm_community$list_extra$List$Extra$splitAt = F2(
 	function (n, xs) {
 		return _Utils_Tuple2(
@@ -8707,7 +8713,7 @@ var $author$project$Timingway$Mech$viewBar = F3(
 									$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 									$rtfeldman$elm_css$Css$borderRadius(
 									$rtfeldman$elm_css$Css$rem(0.5)),
-									$rtfeldman$elm_css$Css$backgroundColor(groupConfig.colorBar),
+									$rtfeldman$elm_css$Css$backgroundColor(groupConfig.barColor),
 									function () {
 									var percentLeft = 100 - A2($author$project$Timingway$Mech$computePercent, viewConfig.millisTotal, millisLeft);
 									return $rtfeldman$elm_css$Css$width(
@@ -8833,69 +8839,58 @@ var $author$project$Timingway$Mech$view = F3(
 	});
 var $author$project$Main$viewMechs = F2(
 	function (mechs, viewConfig) {
-		var viewConcat = F2(
+		var viewNextGroup = F2(
 			function (groupConfig, _v1) {
-				var mechList = _v1.a;
-				var viewList = _v1.b;
+				var viewList = _v1.a;
+				var mechList = _v1.b;
 				var _v0 = A2($elm_community$list_extra$List$Extra$splitAt, groupConfig.amount, mechList);
-				var mechsToView = _v0.a;
-				var restOfMechs = _v0.b;
+				var groupToView = _v0.a;
+				var restOfGroups = _v0.b;
 				var newViews = A2(
 					$elm$core$List$map,
 					A2($author$project$Timingway$Mech$view, viewConfig, groupConfig),
-					mechsToView);
+					groupToView);
 				return _Utils_Tuple2(
-					restOfMechs,
-					_Utils_ap(viewList, newViews));
+					_Utils_ap(viewList, newViews),
+					restOfGroups);
 			});
-		var configsList = _List_fromArray(
+		var groupsList = _List_fromArray(
 			[viewConfig.past, viewConfig.present, viewConfig.future]);
 		return A3(
 			$elm$core$List$foldl,
-			viewConcat,
-			_Utils_Tuple2(mechs, _List_Nil),
-			configsList).b;
+			viewNextGroup,
+			_Utils_Tuple2(_List_Nil, mechs),
+			groupsList).a;
 	});
 var $author$project$Main$view = function (_v0) {
 	var viewConfig = _v0.viewConfig;
 	var isTicking = _v0.isTicking;
 	var mechs = _v0.mechs;
 	var millisPassed = _v0.millisPassed;
-	var reset = A2(
-		$rtfeldman$elm_css$Html$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$Reset),
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						A4($rtfeldman$elm_css$Css$rgba, 50, 50, 50, 0.8)),
-						$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-						$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
-						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
-						$rtfeldman$elm_css$Css$marginBottom(
-						$rtfeldman$elm_css$Css$rem(1)),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$rem(5)),
-						$rtfeldman$elm_css$Css$padding(
-						$rtfeldman$elm_css$Css$rem(1)),
-						$rtfeldman$elm_css$Css$marginTop(
-						$rtfeldman$elm_css$Css$rem(8)),
-						$rtfeldman$elm_css$Css$marginLeft(
-						$rtfeldman$elm_css$Css$rem(2.5)),
-						$rtfeldman$elm_css$Css$height(
-						$rtfeldman$elm_css$Css$rem(10)),
-						$rtfeldman$elm_css$Css$width(
-						$rtfeldman$elm_css$Css$rem(10)),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$rem(1))
-					]))
-			]),
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$text('\u21BA')
-			]));
+	var mechsList = A2($author$project$Main$viewMechs, mechs, viewConfig);
+	var clock = $author$project$Timingway$Clock$view(millisPassed);
+	var buttonCss = _List_fromArray(
+		[
+			$rtfeldman$elm_css$Css$backgroundColor(
+			A4($rtfeldman$elm_css$Css$rgba, 50, 50, 50, 0.8)),
+			$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+			$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
+			$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+			$rtfeldman$elm_css$Css$marginBottom(
+			$rtfeldman$elm_css$Css$rem(1)),
+			$rtfeldman$elm_css$Css$fontSize(
+			$rtfeldman$elm_css$Css$rem(5)),
+			$rtfeldman$elm_css$Css$padding(
+			$rtfeldman$elm_css$Css$rem(1)),
+			$rtfeldman$elm_css$Css$marginLeft(
+			$rtfeldman$elm_css$Css$rem(2.5)),
+			$rtfeldman$elm_css$Css$height(
+			$rtfeldman$elm_css$Css$rem(10)),
+			$rtfeldman$elm_css$Css$width(
+			$rtfeldman$elm_css$Css$rem(10)),
+			$rtfeldman$elm_css$Css$borderRadius(
+			$rtfeldman$elm_css$Css$rem(1))
+		]);
 	var pause = A2(
 		$rtfeldman$elm_css$Html$Styled$button,
 		_List_fromArray(
@@ -8903,38 +8898,33 @@ var $author$project$Main$view = function (_v0) {
 				$rtfeldman$elm_css$Html$Styled$Events$onClick(
 				A3($author$project$Timingway$Util$Basic$choose, isTicking, $author$project$Main$Pause, $author$project$Main$Continue)),
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$backgroundColor(
-						A4($rtfeldman$elm_css$Css$rgba, 50, 50, 50, 0.8)),
-						$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-						$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
-						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
-						$rtfeldman$elm_css$Css$marginBottom(
-						$rtfeldman$elm_css$Css$rem(1)),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$rem(5)),
-						$rtfeldman$elm_css$Css$padding(
-						$rtfeldman$elm_css$Css$rem(1)),
-						$rtfeldman$elm_css$Css$marginTop(
+				A2(
+					$elm$core$List$cons,
+					$rtfeldman$elm_css$Css$marginTop(
 						$rtfeldman$elm_css$Css$rem(28)),
-						$rtfeldman$elm_css$Css$marginLeft(
-						$rtfeldman$elm_css$Css$rem(2.5)),
-						$rtfeldman$elm_css$Css$height(
-						$rtfeldman$elm_css$Css$rem(10)),
-						$rtfeldman$elm_css$Css$width(
-						$rtfeldman$elm_css$Css$rem(10)),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$rem(1))
-					]))
+					buttonCss))
 			]),
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Html$Styled$text(
 				A3($author$project$Timingway$Util$Basic$choose, isTicking, '\u23FE', '\u25B6'))
 			]));
-	var mechsList = A2($author$project$Main$viewMechs, mechs, viewConfig);
-	var clock = $author$project$Timingway$Clock$view(millisPassed);
+	var reset = A2(
+		$rtfeldman$elm_css$Html$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$Reset),
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				A2(
+					$elm$core$List$cons,
+					$rtfeldman$elm_css$Css$marginTop(
+						$rtfeldman$elm_css$Css$rem(8)),
+					buttonCss))
+			]),
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$text('\u21BA')
+			]));
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
 		_List_fromArray(
@@ -8958,7 +8948,7 @@ var $author$project$Main$main = $elm$browser$Browser$element(
 		init: $author$project$Main$init,
 		subscriptions: $author$project$Main$subscriptions,
 		update: $author$project$Main$update,
-		view: A2($elm$core$Basics$composeL, $rtfeldman$elm_css$Html$Styled$toUnstyled, $author$project$Main$view)
+		view: A2($elm$core$Basics$composeR, $author$project$Main$view, $rtfeldman$elm_css$Html$Styled$toUnstyled)
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
