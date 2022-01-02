@@ -5424,9 +5424,10 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$Main$GetSheet = function (a) {
-	return {$: 'GetSheet', a: a};
-};
+var $author$project$Main$GetSheet = F2(
+	function (a, b) {
+		return {$: 'GetSheet', a: a, b: b};
+	});
 var $author$project$Main$Init = function (a) {
 	return {$: 'Init', a: a};
 };
@@ -6266,7 +6267,7 @@ var $author$project$Main$makeMech = F4(
 			optionalNotes,
 			$author$project$Main$timeToMillis(millisLeft));
 	});
-var $author$project$Main$prevMech = A4($author$project$Main$makeMech, 'No Previous Mechanics', '', $elm$core$Maybe$Nothing, 0);
+var $author$project$Main$prevMech = A4($author$project$Main$makeMech, 'Countdown', 'No Previous Mechanics', $elm$core$Maybe$Nothing, 0);
 var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
 var $rtfeldman$elm_css$Css$cssFunction = F2(
 	function (funcName, args) {
@@ -6739,7 +6740,10 @@ var $author$project$Main$init = F3(
 						A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now),
 						$elm$http$Http$get(
 						{
-							expect: A2($elm$http$Http$expectJson, $author$project$Main$GetSheet, $author$project$Timingway$Sheet$decoder),
+							expect: A2(
+								$elm$http$Http$expectJson,
+								$author$project$Main$GetSheet(0),
+								$author$project$Timingway$Sheet$decoder),
 							url: A2($author$project$Timingway$Sheet$makeQueryUrl, sheetId, 'App')
 						})
 					])));
@@ -7395,23 +7399,33 @@ var $author$project$Main$update = F2(
 								A2($author$project$Main$setLastTick, time, model)))),
 					$elm$core$Platform$Cmd$none);
 			case 'GetSheet':
-				var result = msg.a;
+				var countdown = msg.a;
+				var result = msg.b;
 				return _Utils_Tuple2(
 					function () {
 						if (result.$ === 'Err') {
 							return model;
 						} else {
 							var rows = result.a;
-							var mechs = A2($elm$core$List$filterMap, $author$project$Timingway$Mech$fromRow, rows);
+							var mechs = A2(
+								$elm$core$List$cons,
+								$author$project$Main$prevMech,
+								A2($elm$core$List$filterMap, $author$project$Timingway$Mech$fromRow, rows));
+							var addCountdown = function (mech) {
+								return _Utils_update(
+									mech,
+									{millisLeft: mech.millisLeft + countdown});
+							};
 							return _Utils_update(
 								model,
 								{
-									mechs: A2($elm$core$List$cons, $author$project$Main$prevMech, mechs)
+									mechs: A2($elm$core$List$map, addCountdown, mechs)
 								});
 						}
 					}(),
 					$elm$core$Platform$Cmd$none);
 			case 'Reset':
+				var countdown = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						$author$project$Main$initModel,
@@ -7422,7 +7436,10 @@ var $author$project$Main$update = F2(
 								A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now),
 								$elm$http$Http$get(
 								{
-									expect: A2($elm$http$Http$expectJson, $author$project$Main$GetSheet, $author$project$Timingway$Sheet$decoder),
+									expect: A2(
+										$elm$http$Http$expectJson,
+										$author$project$Main$GetSheet(countdown),
+										$author$project$Timingway$Sheet$decoder),
 									url: A2($author$project$Timingway$Sheet$makeQueryUrl, model.sheetId, 'App')
 								})
 							])));
@@ -7462,7 +7479,10 @@ var $author$project$Main$update = F2(
 								A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now),
 								$elm$http$Http$get(
 								{
-									expect: A2($elm$http$Http$expectJson, $author$project$Main$GetSheet, $author$project$Timingway$Sheet$decoder),
+									expect: A2(
+										$elm$http$Http$expectJson,
+										$author$project$Main$GetSheet(0),
+										$author$project$Timingway$Sheet$decoder),
 									url: A2($author$project$Timingway$Sheet$makeQueryUrl, model.sheetId, 'App')
 								})
 							]))) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none));
@@ -10467,7 +10487,9 @@ var $author$project$Main$viewOverlay = function (_v0) {
 };
 var $author$project$Main$Continue = {$: 'Continue'};
 var $author$project$Main$Pause = {$: 'Pause'};
-var $author$project$Main$Reset = {$: 'Reset'};
+var $author$project$Main$Reset = function (a) {
+	return {$: 'Reset', a: a};
+};
 var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
 var $rtfeldman$elm_css$Css$EmUnits = {$: 'EmUnits'};
 var $rtfeldman$elm_css$Css$em = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$EmUnits, 'em');
@@ -11060,6 +11082,23 @@ var $author$project$Main$viewSite = function (_v0) {
 			$rtfeldman$elm_css$Css$borderRadius(
 			$rtfeldman$elm_css$Css$rem(1))
 		]);
+	var five = A2(
+		$rtfeldman$elm_css$Html$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Events$onClick(
+				$author$project$Main$Reset(5000)),
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				A2(
+					$elm$core$List$cons,
+					$rtfeldman$elm_css$Css$marginTop(
+						$rtfeldman$elm_css$Css$rem(12)),
+					buttonCss))
+			]),
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$text('Five')
+			]));
 	var pause = A2(
 		$rtfeldman$elm_css$Html$Styled$button,
 		_List_fromArray(
@@ -11070,7 +11109,7 @@ var $author$project$Main$viewSite = function (_v0) {
 				A2(
 					$elm$core$List$cons,
 					$rtfeldman$elm_css$Css$marginTop(
-						$rtfeldman$elm_css$Css$rem(28)),
+						$rtfeldman$elm_css$Css$rem(36)),
 					buttonCss))
 			]),
 		_List_fromArray(
@@ -11078,21 +11117,39 @@ var $author$project$Main$viewSite = function (_v0) {
 				$rtfeldman$elm_css$Html$Styled$text(
 				A3($author$project$Timingway$Util$Basic$choose, isTicking, 'Pause', 'Play'))
 			]));
-	var reset = A2(
+	var ten = A2(
 		$rtfeldman$elm_css$Html$Styled$button,
 		_List_fromArray(
 			[
-				$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$Reset),
+				$rtfeldman$elm_css$Html$Styled$Events$onClick(
+				$author$project$Main$Reset(10000)),
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				A2(
 					$elm$core$List$cons,
 					$rtfeldman$elm_css$Css$marginTop(
-						$rtfeldman$elm_css$Css$rem(8)),
+						$rtfeldman$elm_css$Css$rem(24)),
 					buttonCss))
 			]),
 		_List_fromArray(
 			[
-				$rtfeldman$elm_css$Html$Styled$text('Reset')
+				$rtfeldman$elm_css$Html$Styled$text('Ten')
+			]));
+	var zero = A2(
+		$rtfeldman$elm_css$Html$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Events$onClick(
+				$author$project$Main$Reset(0)),
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				A2(
+					$elm$core$List$cons,
+					$rtfeldman$elm_css$Css$marginTop(
+						$rtfeldman$elm_css$Css$rem(0)),
+					buttonCss))
+			]),
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$text('Zero')
 			]));
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
@@ -11109,7 +11166,7 @@ var $author$project$Main$viewSite = function (_v0) {
 					]))
 			]),
 		_List_fromArray(
-			[reset, pause, clock, mechsView, overflow]));
+			[zero, five, ten, pause, clock, mechsView, overflow]));
 };
 var $author$project$Main$view = function (model) {
 	var viewNotFound = function (_v1) {

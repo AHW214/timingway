@@ -104,13 +104,13 @@ init _ url _ =
             [ Task.perform Init Time.now
             , Http.get
                 { url = Sheet.makeQueryUrl sheetId "App"
-                , expect = Http.expectJson GetSheet Sheet.decoder
+                , expect = Http.expectJson ( GetSheet 0 ) Sheet.decoder
                 }
             ]
         )
 
 prevMech : Mech
-prevMech = makeMech "No Previous Mechanics" "" Nothing 0
+prevMech = makeMech "Countdown" "No Previous Mechanics" Nothing 0
 
 initModel : Model
 initModel =
@@ -151,12 +151,13 @@ initModel =
 type Msg
     = Init Time.Posix
     | Tick ViewConfig Time.Posix
-    | GetSheet (Result Http.Error (List Row))
+    | GetSheet Int (Result Http.Error (List Row))
     | ToggleKey Bool String
-    | Reset
+    | Reset Int
     | Continue
     | Pause
     | NoOp
+
 
 {-| Determines how often the model updates (in milliseconds).
 -}
@@ -191,20 +192,20 @@ update msg model =
                 , Cmd.none
                 )
 
-        GetSheet result ->
+        GetSheet countdown result ->
             ( case result of
                 Err _ -> model
 
                 Ok rows ->
                     let
-                        mechs =
-                            List.filterMap Mech.fromRow rows
+                        mechs = prevMech :: List.filterMap Mech.fromRow rows
+                        addCountdown mech = { mech | millisLeft = mech.millisLeft + countdown }
                     in
-                        { model | mechs = prevMech :: mechs }
+                        { model | mechs = List.map addCountdown mechs }
             , Cmd.none
             )
 
-        Reset ->
+        Reset countdown ->
             ( { initModel
                 | isTicking = True
                 , route = model.route
@@ -214,7 +215,7 @@ update msg model =
                 [ Task.perform Init Time.now
                 , Http.get
                     { url = Sheet.makeQueryUrl model.sheetId "App"
-                    , expect = Http.expectJson GetSheet Sheet.decoder
+                    , expect = Http.expectJson ( GetSheet countdown ) Sheet.decoder
                     }
                 ]
             )
@@ -251,7 +252,7 @@ update msg model =
                                     [ Task.perform Init Time.now
                                     , Http.get
                                         { url = Sheet.makeQueryUrl model.sheetId "App"
-                                        , expect = Http.expectJson GetSheet Sheet.decoder
+                                        , expect = Http.expectJson ( GetSheet 0 ) Sheet.decoder
                                         }
                                     ]
                                 )
@@ -458,19 +459,32 @@ viewSite { viewConfig, isTicking, mechs, millisPassed } =
             , Css.width <| Css.rem 10
             , Css.borderRadius <| Css.rem 1
             ]
-        reset =
+        five =
             Html.button
-                [ Html.onClick Reset
+                [ Html.onClick <| Reset 5000
                 , Html.css <|
-                    ( Css.marginTop <| Css.rem 8 ) :: buttonCss
-                ] [Html.text "Reset"]
+                    ( Css.marginTop <| Css.rem 12 ) :: buttonCss
+                ] [Html.text "Five"]
 
+        ten =
+            Html.button
+                [ Html.onClick <| Reset 10000
+                , Html.css <|
+                    ( Css.marginTop <| Css.rem 24 ) :: buttonCss
+                ] [Html.text "Ten"]
+
+        zero =
+            Html.button
+                [ Html.onClick <| Reset 0
+                , Html.css <|
+                    ( Css.marginTop <| Css.rem 0 ) :: buttonCss
+                ] [Html.text "Zero"]
         pause =
             Html.button
                 [ Html.onClick
                     <| Basic.choose isTicking Pause Continue
                 , Html.css <|
-                    ( Css.marginTop <| Css.rem 28 ) :: buttonCss
+                    ( Css.marginTop <| Css.rem 36 ) :: buttonCss
                 ] [ Html.text
                     <| Basic.choose isTicking "Pause" "Play"
                 ]
@@ -491,7 +505,9 @@ viewSite { viewConfig, isTicking, mechs, millisPassed } =
             , Css.paddingBottom <| Css.em 1
             ]
         ]
-        [ reset
+        [ zero
+        , five
+        , ten
         , pause
         , clock
         , mechsView
