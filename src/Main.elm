@@ -2,10 +2,12 @@ module Main exposing (..)
 
 import Array
 import Browser
+import Browser.Events as Events
 import Browser.Navigation exposing (Key)
 import Css
 import Css.Global
 import Css.Colors as Colors
+import Dict exposing (Dict)
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Html.Styled.Events as Html
@@ -60,6 +62,7 @@ type alias Model =
     , viewConfig : ViewConfig
     , route : Route
     , sheetId : String
+    , keyMap : Dict String Bool
     }
 
 type Route
@@ -139,6 +142,7 @@ initModel =
         }
     , route = Site
     , sheetId = sampleSheet
+    , keyMap = Dict.empty
     }
 
 -- UPDATE
@@ -148,6 +152,7 @@ type Msg
     = Init Time.Posix
     | Tick ViewConfig Time.Posix
     | GetSheet (Result Http.Error (List Row))
+    | ToggleKey Bool String
     | Reset
     | Continue
     | Pause
@@ -162,71 +167,102 @@ tickTimeMillis =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        newModel =
-            case msg of
-                Init time ->
-                    setLastTick time model
+    case msg of
+        Init time ->
+            ( setLastTick time model
+            , Cmd.none
+            )
 
-                Tick viewConfig time ->
+        Tick viewConfig time ->
+            let
+                delta =
+                    case model.lastTick of
+                        Nothing ->
+                            tickTimeMillis
+
+                        Just lastTick ->
+                            Time.posixToMillis time - Time.posixToMillis lastTick
+            in
+                ( model
+                    |> setLastTick time
+                    |> incrementTimer delta
+                    |> decrementMechs delta
+                    |> advanceMechs viewConfig.past.amount
+                , Cmd.none
+                )
+
+        GetSheet result ->
+            ( case result of
+                Err _ -> model
+
+                Ok rows ->
                     let
-                        delta =
-                            case model.lastTick of
-                                Nothing ->
-                                    tickTimeMillis
-
-                                Just lastTick ->
-                                    Time.posixToMillis time - Time.posixToMillis lastTick
+                        mechs =
+                            List.filterMap Mech.fromRow rows
                     in
-                    model
-                        |> setLastTick time
-                        |> incrementTimer delta
-                        |> decrementMechs delta
-                        |> advanceMechs viewConfig.past.amount
+                        { model | mechs = prevMech :: mechs }
+            , Cmd.none
+            )
 
-                GetSheet result ->
-                    case result of
-                        Err _ -> model
-
-                        Ok rows ->
-                            let
-                                mechs =
-                                    List.filterMap Mech.fromRow rows
-                            in
-                                { model | mechs = prevMech :: mechs }
-
-                Reset ->
-                    { initModel
-                        | isTicking = True
-                        , route = model.route
+        Reset ->
+            ( { initModel
+                | isTicking = True
+                , route = model.route
+                , sheetId = model.sheetId
+                }
+            , Cmd.batch
+                [ Task.perform Init Time.now
+                , Http.get
+                    { url = Sheet.makeQueryUrl model.sheetId "App"
+                    , expect = Http.expectJson GetSheet Sheet.decoder
                     }
+                ]
+            )
 
-                Continue ->
-                    { model | isTicking = True }
+        Continue ->
+            ( { model | isTicking = True }
+            , Task.perform Init Time.now
+            )
 
-                Pause ->
-                    { model | isTicking = False }
+        Pause ->
+            ( { model | isTicking = False }
+            , Cmd.none
+            )
 
-                NoOp ->
-                    model
+        ToggleKey enabled key ->
+            let
+                newKeyMap =
+                    Dict.insert key enabled model.keyMap
 
-        newCommand =
-            case msg of
-                Continue ->
-                    Task.perform Init Time.now
-                Reset ->
-                    Cmd.batch
-                        [ Task.perform Init Time.now
-                        , Http.get
-                            { url = Sheet.makeQueryUrl model.sheetId "App"
-                            , expect = Http.expectJson GetSheet Sheet.decoder
-                            }
-                        ]
-                _ ->
-                    Cmd.none
-    in
-        ( newModel, newCommand )
+                _ = Debug.log "keyMap" newKeyMap
 
+                isPressed k =
+                    Maybe.withDefault False <| Dict.get k newKeyMap
+            in
+                if isPressed "1"
+                    then ( { model | isTicking = not model.isTicking }
+                            , Task.perform Init Time.now
+                         )
+                    else if isPressed "2"
+                        then  ( { initModel
+                                    | isTicking = True
+                                    , route = model.route
+                                    , sheetId = model.sheetId
+                                    }
+                                , Cmd.batch
+                                    [ Task.perform Init Time.now
+                                    , Http.get
+                                        { url = Sheet.makeQueryUrl model.sheetId "App"
+                                        , expect = Http.expectJson GetSheet Sheet.decoder
+                                        }
+                                    ]
+                                )
+                        else ( model, Cmd.none)
+
+        NoOp ->
+            ( model
+            , Cmd.none
+            )
 
 decrementMechs : Int -> Model -> Model
 decrementMechs millis model =
@@ -311,14 +347,26 @@ routeParser =
 
 subscriptions : Model -> Sub Msg
 subscriptions { isTicking, viewConfig } =
-    if
-        isTicking
-    then
-        Time.every ( toFloat tickTimeMillis ) ( Tick viewConfig )
-    else
-        Sub.none
+    let
+        keyDecoder toMsg =
+            Decode.map2 toMsg
+                (Decode.field "repeat" Decode.bool)
+                (Decode.field "key" Decode.string)
 
+        subKey event msg =
+            event (keyDecoder <| \repeat ->
+                if repeat then always NoOp else msg)
 
+        subTick =
+            if isTicking
+                then Time.every ( toFloat tickTimeMillis ) ( Tick viewConfig )
+                else Sub.none
+    in
+        Sub.batch
+            [ subTick
+            , subKey Events.onKeyDown <| ToggleKey True
+            , subKey Events.onKeyUp <| ToggleKey False
+            ]
 
 -- VIEW
 

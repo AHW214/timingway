@@ -6303,6 +6303,7 @@ var $elm$core$List$singleton = function (value) {
 };
 var $author$project$Main$initModel = {
 	isTicking: false,
+	keyMap: $elm$core$Dict$empty,
 	lastTick: $elm$core$Maybe$Nothing,
 	mechs: $elm$core$List$singleton($author$project$Main$prevMech),
 	millisPassed: 0,
@@ -6747,6 +6748,12 @@ var $author$project$Main$Tick = F2(
 	function (a, b) {
 		return {$: 'Tick', a: a, b: b};
 	});
+var $author$project$Main$ToggleKey = F2(
+	function (a, b) {
+		return {$: 'ToggleKey', a: a, b: b};
+	});
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$time$Time$Every = F2(
 	function (a, b) {
 		return {$: 'Every', a: a, b: b};
@@ -7001,16 +7008,228 @@ var $elm$time$Time$every = F2(
 		return $elm$time$Time$subscription(
 			A2($elm$time$Time$Every, interval, tagger));
 	});
-var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$browser$Browser$Events$Document = {$: 'Document'};
+var $elm$browser$Browser$Events$MySub = F3(
+	function (a, b, c) {
+		return {$: 'MySub', a: a, b: b, c: c};
+	});
+var $elm$browser$Browser$Events$State = F2(
+	function (subs, pids) {
+		return {pids: pids, subs: subs};
+	});
+var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
+	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
+var $elm$browser$Browser$Events$nodeToKey = function (node) {
+	if (node.$ === 'Document') {
+		return 'd_';
+	} else {
+		return 'w_';
+	}
+};
+var $elm$browser$Browser$Events$addKey = function (sub) {
+	var node = sub.a;
+	var name = sub.b;
+	return _Utils_Tuple2(
+		_Utils_ap(
+			$elm$browser$Browser$Events$nodeToKey(node),
+			name),
+		sub);
+};
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
+var $elm$browser$Browser$Events$Event = F2(
+	function (key, event) {
+		return {event: event, key: key};
+	});
+var $elm$browser$Browser$Events$spawn = F3(
+	function (router, key, _v0) {
+		var node = _v0.a;
+		var name = _v0.b;
+		var actualNode = function () {
+			if (node.$ === 'Document') {
+				return _Browser_doc;
+			} else {
+				return _Browser_window;
+			}
+		}();
+		return A2(
+			$elm$core$Task$map,
+			function (value) {
+				return _Utils_Tuple2(key, value);
+			},
+			A3(
+				_Browser_on,
+				actualNode,
+				name,
+				function (event) {
+					return A2(
+						$elm$core$Platform$sendToSelf,
+						router,
+						A2($elm$browser$Browser$Events$Event, key, event));
+				}));
+	});
+var $elm$core$Dict$union = F2(
+	function (t1, t2) {
+		return A3($elm$core$Dict$foldl, $elm$core$Dict$insert, t2, t1);
+	});
+var $elm$browser$Browser$Events$onEffects = F3(
+	function (router, subs, state) {
+		var stepRight = F3(
+			function (key, sub, _v6) {
+				var deads = _v6.a;
+				var lives = _v6.b;
+				var news = _v6.c;
+				return _Utils_Tuple3(
+					deads,
+					lives,
+					A2(
+						$elm$core$List$cons,
+						A3($elm$browser$Browser$Events$spawn, router, key, sub),
+						news));
+			});
+		var stepLeft = F3(
+			function (_v4, pid, _v5) {
+				var deads = _v5.a;
+				var lives = _v5.b;
+				var news = _v5.c;
+				return _Utils_Tuple3(
+					A2($elm$core$List$cons, pid, deads),
+					lives,
+					news);
+			});
+		var stepBoth = F4(
+			function (key, pid, _v2, _v3) {
+				var deads = _v3.a;
+				var lives = _v3.b;
+				var news = _v3.c;
+				return _Utils_Tuple3(
+					deads,
+					A3($elm$core$Dict$insert, key, pid, lives),
+					news);
+			});
+		var newSubs = A2($elm$core$List$map, $elm$browser$Browser$Events$addKey, subs);
+		var _v0 = A6(
+			$elm$core$Dict$merge,
+			stepLeft,
+			stepBoth,
+			stepRight,
+			state.pids,
+			$elm$core$Dict$fromList(newSubs),
+			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
+		var deadPids = _v0.a;
+		var livePids = _v0.b;
+		var makeNewPids = _v0.c;
+		return A2(
+			$elm$core$Task$andThen,
+			function (pids) {
+				return $elm$core$Task$succeed(
+					A2(
+						$elm$browser$Browser$Events$State,
+						newSubs,
+						A2(
+							$elm$core$Dict$union,
+							livePids,
+							$elm$core$Dict$fromList(pids))));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (_v1) {
+					return $elm$core$Task$sequence(makeNewPids);
+				},
+				$elm$core$Task$sequence(
+					A2($elm$core$List$map, $elm$core$Process$kill, deadPids))));
+	});
+var $elm$browser$Browser$Events$onSelfMsg = F3(
+	function (router, _v0, state) {
+		var key = _v0.key;
+		var event = _v0.event;
+		var toMessage = function (_v2) {
+			var subKey = _v2.a;
+			var _v3 = _v2.b;
+			var node = _v3.a;
+			var name = _v3.b;
+			var decoder = _v3.c;
+			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
+		};
+		var messages = A2($elm$core$List$filterMap, toMessage, state.subs);
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v1) {
+				return $elm$core$Task$succeed(state);
+			},
+			$elm$core$Task$sequence(
+				A2(
+					$elm$core$List$map,
+					$elm$core$Platform$sendToApp(router),
+					messages)));
+	});
+var $elm$browser$Browser$Events$subMap = F2(
+	function (func, _v0) {
+		var node = _v0.a;
+		var name = _v0.b;
+		var decoder = _v0.c;
+		return A3(
+			$elm$browser$Browser$Events$MySub,
+			node,
+			name,
+			A2($elm$json$Json$Decode$map, func, decoder));
+	});
+_Platform_effectManagers['Browser.Events'] = _Platform_createManager($elm$browser$Browser$Events$init, $elm$browser$Browser$Events$onEffects, $elm$browser$Browser$Events$onSelfMsg, 0, $elm$browser$Browser$Events$subMap);
+var $elm$browser$Browser$Events$subscription = _Platform_leaf('Browser.Events');
+var $elm$browser$Browser$Events$on = F3(
+	function (node, name, decoder) {
+		return $elm$browser$Browser$Events$subscription(
+			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
+	});
+var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
+var $elm$browser$Browser$Events$onKeyUp = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keyup');
 var $author$project$Main$tickTimeMillis = 100;
 var $author$project$Main$subscriptions = function (_v0) {
 	var isTicking = _v0.isTicking;
 	var viewConfig = _v0.viewConfig;
-	return isTicking ? A2(
+	var subTick = isTicking ? A2(
 		$elm$time$Time$every,
 		$author$project$Main$tickTimeMillis,
 		$author$project$Main$Tick(viewConfig)) : $elm$core$Platform$Sub$none;
+	var keyDecoder = function (toMsg) {
+		return A3(
+			$elm$json$Json$Decode$map2,
+			toMsg,
+			A2($elm$json$Json$Decode$field, 'repeat', $elm$json$Json$Decode$bool),
+			A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
+	};
+	var subKey = F2(
+		function (event, msg) {
+			return event(
+				keyDecoder(
+					function (repeat) {
+						return repeat ? $elm$core$Basics$always($author$project$Main$NoOp) : msg;
+					}));
+		});
+	return $elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				subTick,
+				A2(
+				subKey,
+				$elm$browser$Browser$Events$onKeyDown,
+				$author$project$Main$ToggleKey(true)),
+				A2(
+				subKey,
+				$elm$browser$Browser$Events$onKeyUp,
+				$author$project$Main$ToggleKey(false))
+			]));
 };
 var $elm$core$List$drop = F2(
 	function (n, list) {
@@ -7129,7 +7348,9 @@ var $author$project$Main$incrementTimer = F2(
 			model,
 			{millisPassed: model.millisPassed + millis});
 	});
+var $elm$core$Debug$log = _Debug_log;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$core$Basics$not = _Basics_not;
 var $elm$time$Time$posixToMillis = function (_v0) {
 	var millis = _v0.a;
 	return millis;
@@ -7144,24 +7365,26 @@ var $author$project$Main$setLastTick = F2(
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		var newModel = function () {
-			switch (msg.$) {
-				case 'Init':
-					var time = msg.a;
-					return A2($author$project$Main$setLastTick, time, model);
-				case 'Tick':
-					var viewConfig = msg.a;
-					var time = msg.b;
-					var delta = function () {
-						var _v2 = model.lastTick;
-						if (_v2.$ === 'Nothing') {
-							return $author$project$Main$tickTimeMillis;
-						} else {
-							var lastTick = _v2.a;
-							return $elm$time$Time$posixToMillis(time) - $elm$time$Time$posixToMillis(lastTick);
-						}
-					}();
-					return A2(
+		switch (msg.$) {
+			case 'Init':
+				var time = msg.a;
+				return _Utils_Tuple2(
+					A2($author$project$Main$setLastTick, time, model),
+					$elm$core$Platform$Cmd$none);
+			case 'Tick':
+				var viewConfig = msg.a;
+				var time = msg.b;
+				var delta = function () {
+					var _v1 = model.lastTick;
+					if (_v1.$ === 'Nothing') {
+						return $author$project$Main$tickTimeMillis;
+					} else {
+						var lastTick = _v1.a;
+						return $elm$time$Time$posixToMillis(time) - $elm$time$Time$posixToMillis(lastTick);
+					}
+				}();
+				return _Utils_Tuple2(
+					A2(
 						$author$project$Main$advanceMechs,
 						viewConfig.past.amount,
 						A2(
@@ -7170,42 +7393,31 @@ var $author$project$Main$update = F2(
 							A2(
 								$author$project$Main$incrementTimer,
 								delta,
-								A2($author$project$Main$setLastTick, time, model))));
-				case 'GetSheet':
-					var result = msg.a;
-					if (result.$ === 'Err') {
-						return model;
-					} else {
-						var rows = result.a;
-						var mechs = A2($elm$core$List$filterMap, $author$project$Timingway$Mech$fromRow, rows);
-						return _Utils_update(
-							model,
-							{
-								mechs: A2($elm$core$List$cons, $author$project$Main$prevMech, mechs)
-							});
-					}
-				case 'Reset':
-					return _Utils_update(
+								A2($author$project$Main$setLastTick, time, model)))),
+					$elm$core$Platform$Cmd$none);
+			case 'GetSheet':
+				var result = msg.a;
+				return _Utils_Tuple2(
+					function () {
+						if (result.$ === 'Err') {
+							return model;
+						} else {
+							var rows = result.a;
+							var mechs = A2($elm$core$List$filterMap, $author$project$Timingway$Mech$fromRow, rows);
+							return _Utils_update(
+								model,
+								{
+									mechs: A2($elm$core$List$cons, $author$project$Main$prevMech, mechs)
+								});
+						}
+					}(),
+					$elm$core$Platform$Cmd$none);
+			case 'Reset':
+				return _Utils_Tuple2(
+					_Utils_update(
 						$author$project$Main$initModel,
-						{isTicking: true, route: model.route});
-				case 'Continue':
-					return _Utils_update(
-						model,
-						{isTicking: true});
-				case 'Pause':
-					return _Utils_update(
-						model,
-						{isTicking: false});
-				default:
-					return model;
-			}
-		}();
-		var newCommand = function () {
-			switch (msg.$) {
-				case 'Continue':
-					return A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now);
-				case 'Reset':
-					return $elm$core$Platform$Cmd$batch(
+						{isTicking: true, route: model.route, sheetId: model.sheetId}),
+					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
 								A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now),
@@ -7214,12 +7426,51 @@ var $author$project$Main$update = F2(
 									expect: A2($elm$http$Http$expectJson, $author$project$Main$GetSheet, $author$project$Timingway$Sheet$decoder),
 									url: A2($author$project$Timingway$Sheet$makeQueryUrl, model.sheetId, 'App')
 								})
-							]));
-				default:
-					return $elm$core$Platform$Cmd$none;
-			}
-		}();
-		return _Utils_Tuple2(newModel, newCommand);
+							])));
+			case 'Continue':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isTicking: true}),
+					A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now));
+			case 'Pause':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isTicking: false}),
+					$elm$core$Platform$Cmd$none);
+			case 'ToggleKey':
+				var enabled = msg.a;
+				var key = msg.b;
+				var newKeyMap = A3($elm$core$Dict$insert, key, enabled, model.keyMap);
+				var isPressed = function (k) {
+					return A2(
+						$elm$core$Maybe$withDefault,
+						false,
+						A2($elm$core$Dict$get, k, newKeyMap));
+				};
+				var _v3 = A2($elm$core$Debug$log, 'keyMap', newKeyMap);
+				return isPressed('1') ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{isTicking: !model.isTicking}),
+					A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now)) : (isPressed('2') ? _Utils_Tuple2(
+					_Utils_update(
+						$author$project$Main$initModel,
+						{isTicking: true, route: model.route, sheetId: model.sheetId}),
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now),
+								$elm$http$Http$get(
+								{
+									expect: A2($elm$http$Http$expectJson, $author$project$Main$GetSheet, $author$project$Timingway$Sheet$decoder),
+									url: A2($author$project$Timingway$Sheet$makeQueryUrl, model.sheetId, 'App')
+								})
+							]))) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none));
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
 	});
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
 	return {$: 'AppendProperty', a: a};
@@ -7326,7 +7577,6 @@ var $elm$core$List$any = F2(
 			}
 		}
 	});
-var $elm$core$Basics$not = _Basics_not;
 var $elm$core$List$all = F2(
 	function (isOkay, list) {
 		return !A2(
