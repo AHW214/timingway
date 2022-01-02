@@ -16,6 +16,7 @@ import Timingway.Config exposing (ViewConfig)
 import Timingway.Mech as Mech exposing (Mech)
 import Timingway.Overflow as Overflow
 import Timingway.Util.Basic as Basic
+import Timingway.Overlay as Overlay
 -- import FeatherIcons
 
 -- MAIN
@@ -108,7 +109,7 @@ init _ =
             ]
       , lastTick = Nothing
       , millisPassed = 0
-      , isTicking = False
+      , isTicking = True
       , viewConfig =
             { past =
                 { amount = 1
@@ -299,56 +300,73 @@ viewMechs mechs viewConfig =
 
 
 view : Model -> Html Msg
-view { viewConfig, isTicking, mechs, millisPassed } =
+view { viewConfig, mechs, millisPassed } =
     let
-        buttonCss =
-            [ Css.backgroundColor <| Css.rgba 50 50 50 0.8
-            , Css.position Css.absolute
-            , Css.color Colors.white
-            , Css.textAlign Css.center
-            , Css.marginBottom <| Css.rem 1
-            , Css.fontSize <| Css.rem 2.5
-            , Css.marginLeft <| Css.rem 2.5
-            , Css.height <| Css.rem 10
-            , Css.width <| Css.rem 10
-            , Css.borderRadius <| Css.rem 1
-            ]
-        reset =
-            Html.button
-                [ Html.onClick Reset
-                , Html.css <|
-                    ( Css.marginTop <| Css.rem 8 ) :: buttonCss
-                ] [Html.text "Reset"]
 
-        pause =
-            Html.button
-                [ Html.onClick
-                    <| Basic.choose isTicking Pause Continue
-                , Html.css <|
-                    ( Css.marginTop <| Css.rem 28 ) :: buttonCss
-                ] [ Html.text
-                    <| Basic.choose isTicking "Pause" "Play"
-                ]
-
-        clock =
-            Clock.view millisPassed
-
-        mechsView =
-            viewMechs mechs viewConfig
-
-        overflow =
-            Overflow.view viewConfig mechs
+        overlay = Overlay.view mechs
     in
     Html.div
         [ Html.css
-            [ Css.displayFlex
-            , Css.paddingTop <| Css.em 2
-            , Css.paddingBottom <| Css.em 1
+            [ Css.marginLeft <| Css.rem 1
+            , Css.marginTop <| Css.rem 1
+            , Css.displayFlex
             ]
         ]
-        [ reset
-        , pause
-        , clock
-        , mechsView
-        , overflow
+        [ overlay
         ]
+
+{-
+    view { viewConfig, isTicking, mechs, millisPassed } =
+        let
+            buttonCss =
+                [ Css.backgroundColor <| Css.rgba 50 50 50 0.8
+                , Css.position Css.absolute
+                , Css.color Colors.white
+                , Css.textAlign Css.center
+                , Css.marginBottom <| Css.rem 1
+                , Css.fontSize <| Css.rem 2.5
+                , Css.marginLeft <| Css.rem 2.5
+                , Css.height <| Css.rem 10
+                , Css.width <| Css.rem 10
+                , Css.borderRadius <| Css.rem 1
+                ]
+            reset =
+                Html.button
+                    [ Html.onClick Reset
+                    , Html.css <|
+                        ( Css.marginTop <| Css.rem 8 ) :: buttonCss
+                    ] [Html.text "Reset"]
+
+            pause =
+                Html.button
+                    [ Html.onClick
+                        <| Basic.choose isTicking Pause Continue
+                    , Html.css <|
+                        ( Css.marginTop <| Css.rem 28 ) :: buttonCss
+                    ] [ Html.text
+                        <| Basic.choose isTicking "Pause" "Play"
+                    ]
+
+            clock =
+                Clock.view millisPassed
+
+            mechsView =
+                viewMechs mechs viewConfig
+
+            overflow =
+                Overflow.view viewConfig mechs
+        in
+        Html.div
+            [ Html.css
+                [ Css.displayFlex
+                , Css.paddingTop <| Css.em 2
+                , Css.paddingBottom <| Css.em 1
+                ]
+            ]
+            [ reset
+            , pause
+            , clock
+            , mechsView
+            , overflow
+            ]
+-}

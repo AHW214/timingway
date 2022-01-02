@@ -5301,7 +5301,7 @@ var $rtfeldman$elm_css$Css$rgba = F4(
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
-			isTicking: false,
+			isTicking: true,
 			lastTick: $elm$core$Maybe$Nothing,
 			mechs: _List_fromArray(
 				[
@@ -8181,40 +8181,6 @@ var $author$project$Main$update = F2(
 		}();
 		return _Utils_Tuple2(newModel, newCommand);
 	});
-var $author$project$Main$Continue = {$: 'Continue'};
-var $author$project$Main$Pause = {$: 'Pause'};
-var $author$project$Main$Reset = {$: 'Reset'};
-var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
-var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
-	return {$: 'AppendProperty', a: a};
-};
-var $rtfeldman$elm_css$Css$property = F2(
-	function (key, value) {
-		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(key + (':' + value));
-	});
-var $rtfeldman$elm_css$Css$backgroundColor = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.value);
-};
-var $rtfeldman$elm_css$Css$prop1 = F2(
-	function (key, arg) {
-		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
-	});
-var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
-var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
-	function (a, b, c) {
-		return {$: 'Node', a: a, b: b, c: c};
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$Node;
-var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
-var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
-var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
-var $author$project$Timingway$Util$Basic$choose = F3(
-	function (clause, valTrue, valFalse) {
-		return clause ? valTrue : valFalse;
-	});
-var $rtfeldman$elm_css$Css$color = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'color', c.value);
-};
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
 		return {$: 'Attribute', a: a, b: b, c: c};
@@ -8254,9 +8220,28 @@ var $rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 	return A3($rtfeldman$elm_css$VirtualDom$Styled$Attribute, classProperty, styles, classname);
 };
 var $rtfeldman$elm_css$Html$Styled$Attributes$css = $rtfeldman$elm_css$Html$Styled$Internal$css;
+var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
+	return {$: 'AppendProperty', a: a};
+};
+var $rtfeldman$elm_css$Css$property = F2(
+	function (key, value) {
+		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(key + (':' + value));
+	});
 var $rtfeldman$elm_css$Css$displayFlex = A2($rtfeldman$elm_css$Css$property, 'display', 'flex');
+var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
+	function (a, b, c) {
+		return {$: 'Node', a: a, b: b, c: c};
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$Node;
+var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
 var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
-var $rtfeldman$elm_css$Css$EmUnits = {$: 'EmUnits'};
+var $rtfeldman$elm_css$Css$prop1 = F2(
+	function (key, arg) {
+		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
+	});
+var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
+var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
+var $rtfeldman$elm_css$Css$RemUnits = {$: 'RemUnits'};
 var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 	function (units, unitLabel, numericValue) {
 		return {
@@ -8281,50 +8266,80 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 				unitLabel)
 		};
 	});
-var $rtfeldman$elm_css$Css$em = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$EmUnits, 'em');
-var $rtfeldman$elm_css$Css$fontSize = $rtfeldman$elm_css$Css$prop1('font-size');
-var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
-var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
-var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
-var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
-	function (eventName, handler) {
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
-			_List_Nil,
-			'');
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $rtfeldman$elm_css$Css$paddingBottom = $rtfeldman$elm_css$Css$prop1('padding-bottom');
-var $rtfeldman$elm_css$Css$paddingTop = $rtfeldman$elm_css$Css$prop1('padding-top');
-var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
-var $rtfeldman$elm_css$Css$RemUnits = {$: 'RemUnits'};
 var $rtfeldman$elm_css$Css$rem = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$RemUnits, 'rem');
-var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
-	return {$: 'Unstyled', a: a};
+var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
+var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
+var $rtfeldman$elm_css$Css$backgroundColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.value);
 };
-var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
-	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
-		$elm$virtual_dom$VirtualDom$text(str));
+var $rtfeldman$elm_css$Css$backgroundImage = $rtfeldman$elm_css$Css$prop1('background-image');
+var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
+var $rtfeldman$elm_css$Css$color = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'color', c.value);
 };
-var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
+var $elm$core$Basics$clamp = F3(
+	function (low, high, number) {
+		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
+	});
+var $author$project$Timingway$Mech$computePercent = F2(
+	function (total, current) {
+		return 100 * A3($elm$core$Basics$clamp, 0, 1, current / total);
+	});
+var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
+var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
+var $rtfeldman$elm_css$Css$collectStops = $elm$core$List$map(
+	function (_v0) {
+		var c = _v0.a;
+		var len = _v0.b;
+		return A2(
+			$elm$core$String$append,
+			c.value,
+			A2(
+				$elm$core$Maybe$withDefault,
+				'',
+				A2(
+					$elm$core$Maybe$map,
+					A2(
+						$elm$core$Basics$composeL,
+						$elm$core$String$cons(
+							_Utils_chr(' ')),
+						function ($) {
+							return $.value;
+						}),
+					len)));
+	});
+var $rtfeldman$elm_css$Css$linearGradient2 = F4(
+	function (direction, firstStop, secondStop, otherStops) {
+		return {
+			backgroundImage: $rtfeldman$elm_css$Css$Structure$Compatible,
+			listStyleTypeOrPositionOrImage: $rtfeldman$elm_css$Css$Structure$Compatible,
+			value: A2(
+				$rtfeldman$elm_css$Css$cssFunction,
+				'linear-gradient',
+				A2(
+					$elm$core$List$cons,
+					direction.value,
+					$rtfeldman$elm_css$Css$collectStops(
+						_Utils_ap(
+							_List_fromArray(
+								[firstStop, secondStop]),
+							otherStops))))
+		};
+	});
+var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
+var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
+var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
+var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
+var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
+var $rtfeldman$elm_css$Css$stop = function (c) {
+	return _Utils_Tuple2(c, $elm$core$Maybe$Nothing);
+};
+var $rtfeldman$elm_css$Css$stop2 = F2(
+	function (c, len) {
+		return _Utils_Tuple2(
+			c,
+			$elm$core$Maybe$Just(len));
+	});
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
 	return {$: 'ApplyStyles', a: a};
 };
@@ -8397,42 +8412,22 @@ var $rtfeldman$elm_css$Css$textAlign = function (fn) {
 		'text-align',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
-var $elm$core$String$fromChar = function (_char) {
-	return A2($elm$core$String$cons, _char, '');
+var $rtfeldman$elm_css$Css$toBottomLeft = {angleOrDirection: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'to bottom left'};
+var $rtfeldman$elm_css$Css$bold = {fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'bold'};
+var $rtfeldman$elm_css$Css$fontSize = $rtfeldman$elm_css$Css$prop1('font-size');
+var $rtfeldman$elm_css$Css$fontWeight = function (_v0) {
+	var value = _v0.value;
+	return A2($rtfeldman$elm_css$Css$property, 'font-weight', value);
 };
-var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
-var $elm$core$String$repeatHelp = F3(
-	function (n, chunk, result) {
-		return (n <= 0) ? result : A3(
-			$elm$core$String$repeatHelp,
-			n >> 1,
-			_Utils_ap(chunk, chunk),
-			(!(n & 1)) ? result : _Utils_ap(result, chunk));
-	});
-var $elm$core$String$repeat = F2(
-	function (n, chunk) {
-		return A3($elm$core$String$repeatHelp, n, chunk, '');
-	});
-var $elm$core$String$padLeft = F3(
-	function (n, _char, string) {
-		return _Utils_ap(
-			A2(
-				$elm$core$String$repeat,
-				n - $elm$core$String$length(string),
-				$elm$core$String$fromChar(_char)),
-			string);
-	});
-var $author$project$Timingway$Clock$displayClock = function (millis) {
-	var totalSeconds = (millis / 1000) | 0;
-	var seconds = $elm$core$String$fromInt(totalSeconds % 60);
-	var padTime = A2(
-		$elm$core$String$padLeft,
-		2,
-		_Utils_chr('0'));
-	var minutes = $elm$core$String$fromInt((totalSeconds / 60) | 0);
-	return padTime(minutes) + (' : ' + padTime(seconds));
+var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
+var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
+	return {$: 'Unstyled', a: a};
 };
-var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
+var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
+	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
+		$elm$virtual_dom$VirtualDom$text(str));
+};
+var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
 var $rtfeldman$elm_css$Css$rgb = F3(
 	function (r, g, b) {
 		return {
@@ -8452,56 +8447,7 @@ var $rtfeldman$elm_css$Css$rgb = F3(
 		};
 	});
 var $ursi$elm_css_colors$Css$Colors$white = A3($rtfeldman$elm_css$Css$rgb, 255, 255, 255);
-var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
-var $author$project$Timingway$Clock$view = function (millis) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$div,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-						$rtfeldman$elm_css$Css$marginTop(
-						$rtfeldman$elm_css$Css$rem(1)),
-						$rtfeldman$elm_css$Css$marginLeft(
-						$rtfeldman$elm_css$Css$rem(79)),
-						$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
-						$rtfeldman$elm_css$Css$backgroundColor(
-						A4($rtfeldman$elm_css$Css$rgba, 150, 150, 150, 0.5)),
-						$rtfeldman$elm_css$Css$padding(
-						$rtfeldman$elm_css$Css$rem(1)),
-						$rtfeldman$elm_css$Css$width(
-						$rtfeldman$elm_css$Css$rem(15)),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$rem(0.5)),
-						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$rem(4))
-					]))
-			]),
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$text(
-				$author$project$Timingway$Clock$displayClock(millis))
-			]));
-};
-var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
-	return A3(
-		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
-		'justifyContent',
-		'justify-content',
-		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
-};
-var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
-var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
-var $rtfeldman$elm_css$Css$bold = {fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'bold'};
-var $rtfeldman$elm_css$Css$fontWeight = function (_v0) {
-	var value = _v0.value;
-	return A2($rtfeldman$elm_css$Css$property, 'font-weight', value);
-};
-var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
-var $author$project$Timingway$Overflow$viewMechInfo = function (mech) {
+var $author$project$Timingway$Overlay$viewMechInfo = function (mech) {
 	var resolveType = $rtfeldman$elm_css$Html$Styled$text(mech.resolveType);
 	var divider = $rtfeldman$elm_css$Html$Styled$text(' : ');
 	var attackName = A2(
@@ -8527,7 +8473,7 @@ var $author$project$Timingway$Overflow$viewMechInfo = function (mech) {
 					[
 						$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
 						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$rem(1.5))
+						$rtfeldman$elm_css$Css$rem(1))
 					]))
 			]),
 		_List_fromArray(
@@ -8545,6 +8491,10 @@ var $author$project$Timingway$Overflow$viewMechInfo = function (mech) {
 					]))
 			]));
 };
+var $author$project$Timingway$Util$Basic$choose = F3(
+	function (clause, valTrue, valFalse) {
+		return clause ? valTrue : valFalse;
+	});
 var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$abs = function (n) {
 	return (n < 0) ? (-n) : n;
@@ -8596,6 +8546,22 @@ var $myrho$elm_round$Round$increaseNum = function (_v0) {
 };
 var $elm$core$Basics$isInfinite = _Basics_isInfinite;
 var $elm$core$Basics$isNaN = _Basics_isNaN;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
 var $elm$core$String$padRight = F3(
 	function (n, _char, string) {
 		return _Utils_ap(
@@ -8779,7 +8745,7 @@ var $author$project$Timingway$Mech$displaySeconds = F2(
 		}();
 		return roundedString + 's';
 	});
-var $author$project$Timingway$Overflow$viewMechTime = function (_v0) {
+var $author$project$Timingway$Overlay$viewMechTime = function (_v0) {
 	var millisLeft = _v0.millisLeft;
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
@@ -8790,16 +8756,20 @@ var $author$project$Timingway$Overflow$viewMechTime = function (_v0) {
 					[
 						$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
 						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$rem(1.5))
+						$rtfeldman$elm_css$Css$rem(1))
 					]))
 			]),
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Html$Styled$text(
-				A2($author$project$Timingway$Mech$displaySeconds, 0, millisLeft))
+				A2(
+					$author$project$Timingway$Mech$displaySeconds,
+					(millisLeft < 15000) ? 1 : 0,
+					millisLeft))
 			]));
 };
-var $author$project$Timingway$Overflow$viewMech = function (mech) {
+var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
+var $author$project$Timingway$Overlay$viewMech = function (mech) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
 		_List_fromArray(
@@ -8807,31 +8777,108 @@ var $author$project$Timingway$Overflow$viewMech = function (mech) {
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Css$displayFlex,
-						$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
-						$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
+						$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative),
 						$rtfeldman$elm_css$Css$backgroundColor(
-						A4($rtfeldman$elm_css$Css$rgba, 150, 150, 150, 0.5)),
-						$rtfeldman$elm_css$Css$padding(
-						$rtfeldman$elm_css$Css$rem(0.5)),
-						$rtfeldman$elm_css$Css$marginBottom(
-						$rtfeldman$elm_css$Css$rem(0.5)),
+						A4($rtfeldman$elm_css$Css$rgba, 50, 50, 50, 0.5)),
 						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$rem(0.5)),
-						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$rem(1.5))
+						$rtfeldman$elm_css$Css$rem(0.1)),
+						$rtfeldman$elm_css$Css$width(
+						$rtfeldman$elm_css$Css$rem(20)),
+						$rtfeldman$elm_css$Css$height(
+						$rtfeldman$elm_css$Css$rem(2.5)),
+						$rtfeldman$elm_css$Css$marginBottom(
+						$rtfeldman$elm_css$Css$rem(1)),
+						$rtfeldman$elm_css$Css$displayFlex
 					]))
 			]),
 		_List_fromArray(
 			[
-				$author$project$Timingway$Overflow$viewMechInfo(mech),
-				$author$project$Timingway$Overflow$viewMechTime(mech)
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+								$rtfeldman$elm_css$Css$borderRadius(
+								$rtfeldman$elm_css$Css$rem(0.1)),
+								$rtfeldman$elm_css$Css$backgroundImage(
+								A4(
+									$rtfeldman$elm_css$Css$linearGradient2,
+									$rtfeldman$elm_css$Css$toBottomLeft,
+									A2(
+										$rtfeldman$elm_css$Css$stop2,
+										A4($rtfeldman$elm_css$Css$rgba, 0, 155, 255, 0.7),
+										$rtfeldman$elm_css$Css$pct(20)),
+									$rtfeldman$elm_css$Css$stop(
+										A4($rtfeldman$elm_css$Css$rgba, 250, 0, 255, 0.7)),
+									_List_Nil)),
+								function () {
+								var percentLeft = 100 - A2($author$project$Timingway$Mech$computePercent, 15000, mech.millisLeft);
+								return $rtfeldman$elm_css$Css$width(
+									$rtfeldman$elm_css$Css$rem((20 / 100) * percentLeft));
+							}(),
+								$rtfeldman$elm_css$Css$height(
+								$rtfeldman$elm_css$Css$rem(2.5)),
+								$rtfeldman$elm_css$Css$marginBottom(
+								$rtfeldman$elm_css$Css$rem(1))
+							]))
+					]),
+				_List_Nil),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$pct(100)),
+								$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
+								$rtfeldman$elm_css$Css$marginLeft(
+								$rtfeldman$elm_css$Css$rem(0.3)),
+								$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
+								$rtfeldman$elm_css$Css$marginBottom(
+								$rtfeldman$elm_css$Css$rem(2)),
+								$rtfeldman$elm_css$Css$marginTop(
+								$rtfeldman$elm_css$Css$rem(0.75))
+							]))
+					]),
+				_List_fromArray(
+					[
+						$author$project$Timingway$Overlay$viewMechInfo(mech)
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$pct(98)),
+								$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
+								$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$right),
+								$rtfeldman$elm_css$Css$marginTop(
+								$rtfeldman$elm_css$Css$rem(0.75)),
+								$rtfeldman$elm_css$Css$marginBottom(
+								$rtfeldman$elm_css$Css$rem(2))
+							]))
+					]),
+				_List_fromArray(
+					[
+						$author$project$Timingway$Overlay$viewMechTime(mech)
+					]))
 			]));
 };
+var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
 var $rtfeldman$elm_css$Css$fontStyle = $rtfeldman$elm_css$Css$prop1('font-style');
 var $rtfeldman$elm_css$Css$italic = {fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'italic'};
-var $author$project$Timingway$Overflow$viewPlaceholder = A2(
+var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
+var $author$project$Timingway$Overlay$viewPlaceholder = A2(
 	$rtfeldman$elm_css$Html$Styled$div,
 	_List_fromArray(
 		[
@@ -8844,10 +8891,10 @@ var $author$project$Timingway$Overflow$viewPlaceholder = A2(
 					$rtfeldman$elm_css$Css$padding(
 					$rtfeldman$elm_css$Css$rem(0.5)),
 					$rtfeldman$elm_css$Css$borderRadius(
-					$rtfeldman$elm_css$Css$rem(0.5)),
+					$rtfeldman$elm_css$Css$rem(0.1)),
 					$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 					$rtfeldman$elm_css$Css$fontSize(
-					$rtfeldman$elm_css$Css$rem(2)),
+					$rtfeldman$elm_css$Css$rem(0.75)),
 					$rtfeldman$elm_css$Css$fontStyle($rtfeldman$elm_css$Css$italic)
 				]))
 		]),
@@ -8855,489 +8902,50 @@ var $author$project$Timingway$Overflow$viewPlaceholder = A2(
 		[
 			$rtfeldman$elm_css$Html$Styled$text('No future mechanics known...')
 		]));
-var $author$project$Timingway$Overflow$view = F2(
-	function (_v0, mechs) {
-		var past = _v0.past;
-		var present = _v0.present;
-		var future = _v0.future;
-		var numBeforeOverflow = (past.amount + present.amount) + future.amount;
-		var mechsOverflow = A2(
-			$elm$core$List$take,
-			10,
-			A2($elm$core$List$drop, numBeforeOverflow, mechs));
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$marginLeft(
-							$rtfeldman$elm_css$Css$rem(5)),
-							$rtfeldman$elm_css$Css$marginTop(
-							$rtfeldman$elm_css$Css$rem(14.5)),
-							$rtfeldman$elm_css$Css$padding(
-							$rtfeldman$elm_css$Css$rem(0.5)),
-							$rtfeldman$elm_css$Css$width(
-							$rtfeldman$elm_css$Css$rem(40)),
-							$rtfeldman$elm_css$Css$height(
-							$rtfeldman$elm_css$Css$rem(32.5))
-						]))
-				]),
-			$elm$core$List$isEmpty(mechsOverflow) ? _List_fromArray(
-				[$author$project$Timingway$Overflow$viewPlaceholder]) : A2($elm$core$List$map, $author$project$Timingway$Overflow$viewMech, mechsOverflow));
-	});
-var $elm_community$list_extra$List$Extra$splitAt = F2(
-	function (n, xs) {
-		return _Utils_Tuple2(
-			A2($elm$core$List$take, n, xs),
-			A2($elm$core$List$drop, n, xs));
-	});
-var $rtfeldman$elm_css$Css$fillAvailable = {lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, minMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'fill-available'};
-var $rtfeldman$elm_css$Css$fitContent = _Utils_update(
-	$rtfeldman$elm_css$Css$fillAvailable,
-	{value: 'fit-content'});
-var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
-var $author$project$Timingway$Util$Basic$maybe = F3(
-	function (y, f, mx) {
-		if (mx.$ === 'Just') {
-			var x = mx.a;
-			return f(x);
+var $author$project$Timingway$Overlay$view = function (mechs) {
+	var mechsOverflow = A2(
+		$elm$core$List$take,
+		4,
+		A2($elm$core$List$drop, 1, mechs));
+	var mechPast = function () {
+		var _v0 = $elm$core$List$head(mechs);
+		if (_v0.$ === 'Just') {
+			var m = _v0.a;
+			return _List_fromArray(
+				[m]);
 		} else {
-			return y;
+			return _List_Nil;
 		}
-	});
-var $rtfeldman$elm_css$Css$alignSelf = function (fn) {
-	return A3(
-		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
-		'alignSelf',
-		'align-self',
-		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
-};
-var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
-var $rtfeldman$elm_css$Css$ellipsis = {textOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'ellipsis'};
-var $rtfeldman$elm_css$Css$flexEnd = $rtfeldman$elm_css$Css$prop1('flex-end');
-var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
-var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
-var $rtfeldman$elm_css$Css$noWrap = {flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, flexWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'nowrap', whiteSpace: $rtfeldman$elm_css$Css$Structure$Compatible};
-var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
-var $rtfeldman$elm_css$Css$textOverflow = $rtfeldman$elm_css$Css$prop1('text-overflow');
-var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
-var $author$project$Timingway$Mech$maybeViewNotes = function (_v0) {
-	var optionalNotes = _v0.optionalNotes;
-	var viewNotes = function (notes) {
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
-							$rtfeldman$elm_css$Css$alignSelf($rtfeldman$elm_css$Css$flexEnd),
-							$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
-							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
-							$rtfeldman$elm_css$Css$fontSize(
-							$rtfeldman$elm_css$Css$rem(1.5)),
-							$rtfeldman$elm_css$Css$maxWidth(
-							$rtfeldman$elm_css$Css$rem(12)),
-							$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
-							$rtfeldman$elm_css$Css$textOverflow($rtfeldman$elm_css$Css$ellipsis),
-							$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
-						]))
-				]),
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$text(notes)
-				]));
-	};
-	return A2($elm$core$Maybe$map, viewNotes, optionalNotes);
-};
-var $rtfeldman$elm_css$Css$backgroundImage = $rtfeldman$elm_css$Css$prop1('background-image');
-var $author$project$Timingway$Mech$barWidth = 45;
-var $elm$core$Basics$clamp = F3(
-	function (low, high, number) {
-		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
-	});
-var $author$project$Timingway$Mech$computePercent = F2(
-	function (total, current) {
-		return 100 * A3($elm$core$Basics$clamp, 0, 1, current / total);
-	});
-var $rtfeldman$elm_css$Css$collectStops = $elm$core$List$map(
-	function (_v0) {
-		var c = _v0.a;
-		var len = _v0.b;
-		return A2(
-			$elm$core$String$append,
-			c.value,
-			A2(
-				$elm$core$Maybe$withDefault,
-				'',
+	}();
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_Nil,
+		_List_fromArray(
+			[
 				A2(
-					$elm$core$Maybe$map,
-					A2(
-						$elm$core$Basics$composeL,
-						$elm$core$String$cons(
-							_Utils_chr(' ')),
-						function ($) {
-							return $.value;
-						}),
-					len)));
-	});
-var $rtfeldman$elm_css$Css$linearGradient2 = F4(
-	function (direction, firstStop, secondStop, otherStops) {
-		return {
-			backgroundImage: $rtfeldman$elm_css$Css$Structure$Compatible,
-			listStyleTypeOrPositionOrImage: $rtfeldman$elm_css$Css$Structure$Compatible,
-			value: A2(
-				$rtfeldman$elm_css$Css$cssFunction,
-				'linear-gradient',
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$marginBottom(
+								$rtfeldman$elm_css$Css$rem(2.5))
+							]))
+					]),
+				$elm$core$List$isEmpty(mechsOverflow) ? _List_fromArray(
+					[$author$project$Timingway$Overlay$viewPlaceholder]) : A2($elm$core$List$map, $author$project$Timingway$Overlay$viewMech, mechPast)),
 				A2(
-					$elm$core$List$cons,
-					direction.value,
-					$rtfeldman$elm_css$Css$collectStops(
-						_Utils_ap(
-							_List_fromArray(
-								[firstStop, secondStop]),
-							otherStops))))
-		};
-	});
-var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
-var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
-var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
-var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
-var $rtfeldman$elm_css$Css$stop = function (c) {
-	return _Utils_Tuple2(c, $elm$core$Maybe$Nothing);
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_Nil,
+				A2($elm$core$List$map, $author$project$Timingway$Overlay$viewMech, mechsOverflow))
+			]));
 };
-var $rtfeldman$elm_css$Css$stop2 = F2(
-	function (c, len) {
-		return _Utils_Tuple2(
-			c,
-			$elm$core$Maybe$Just(len));
-	});
-var $rtfeldman$elm_css$Css$toBottom = {angleOrDirection: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'to bottom'};
-var $author$project$Timingway$Mech$viewBar = F3(
-	function (viewConfig, groupConfig, _v0) {
-		var resolveType = _v0.resolveType;
-		var millisLeft = _v0.millisLeft;
-		var barMargin = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 2, 1));
-		var barHeight = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 8, 5));
-		var barFont = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 2.5, 2));
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative),
-							$rtfeldman$elm_css$Css$backgroundImage(
-							A4(
-								$rtfeldman$elm_css$Css$linearGradient2,
-								$rtfeldman$elm_css$Css$toBottom,
-								A2(
-									$rtfeldman$elm_css$Css$stop2,
-									viewConfig.backgroundColor,
-									$rtfeldman$elm_css$Css$pct(80)),
-								$rtfeldman$elm_css$Css$stop(
-									A4($rtfeldman$elm_css$Css$rgba, 55, 55, 55, 0.5)),
-								_List_Nil)),
-							$rtfeldman$elm_css$Css$borderRadius(
-							$rtfeldman$elm_css$Css$rem(0.5)),
-							$rtfeldman$elm_css$Css$width(
-							$rtfeldman$elm_css$Css$rem($author$project$Timingway$Mech$barWidth)),
-							$rtfeldman$elm_css$Css$height(barHeight)
-						]))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$rtfeldman$elm_css$Html$Styled$div,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-									$rtfeldman$elm_css$Css$borderRadius(
-									$rtfeldman$elm_css$Css$rem(0.5)),
-									$rtfeldman$elm_css$Css$backgroundImage(
-									A4(
-										$rtfeldman$elm_css$Css$linearGradient2,
-										$rtfeldman$elm_css$Css$toBottom,
-										A2(
-											$rtfeldman$elm_css$Css$stop2,
-											groupConfig.barColor,
-											$rtfeldman$elm_css$Css$pct(20)),
-										$rtfeldman$elm_css$Css$stop(groupConfig.barGradient),
-										_List_Nil)),
-									function () {
-									var percentLeft = 100 - A2($author$project$Timingway$Mech$computePercent, viewConfig.millisTotal, millisLeft);
-									return $rtfeldman$elm_css$Css$width(
-										$rtfeldman$elm_css$Css$rem(($author$project$Timingway$Mech$barWidth / 100) * percentLeft));
-								}(),
-									$rtfeldman$elm_css$Css$height(barHeight)
-								]))
-						]),
-					_List_Nil),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$div,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-									$rtfeldman$elm_css$Css$width(
-									$rtfeldman$elm_css$Css$pct(100)),
-									$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
-									$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
-									$rtfeldman$elm_css$Css$fontSize(barFont),
-									$rtfeldman$elm_css$Css$marginLeft(
-									$rtfeldman$elm_css$Css$rem(1)),
-									$rtfeldman$elm_css$Css$marginTop(barMargin)
-								]))
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$rtfeldman$elm_css$Html$Styled$div,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$text(resolveType)
-								]))
-						])),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$div,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-									$rtfeldman$elm_css$Css$width(
-									$rtfeldman$elm_css$Css$rem($author$project$Timingway$Mech$barWidth - 1)),
-									$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
-									$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$right),
-									$rtfeldman$elm_css$Css$fontSize(barFont),
-									$rtfeldman$elm_css$Css$marginTop(barMargin)
-								]))
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$rtfeldman$elm_css$Html$Styled$div,
-							_List_Nil,
-							_List_fromArray(
-								[
-									function () {
-									var time = A2(
-										$author$project$Timingway$Mech$displaySeconds,
-										A3(
-											$author$project$Timingway$Util$Basic$choose,
-											_Utils_cmp(millisLeft, viewConfig.millisTotal) < 0,
-											1,
-											0),
-										millisLeft);
-									return $rtfeldman$elm_css$Html$Styled$text(time);
-								}()
-								]))
-						]))
-				]));
-	});
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
-var $author$project$Timingway$Mech$viewName = F2(
-	function (groupConfig, _v0) {
-		var attackName = _v0.attackName;
-		var optionalNotes = _v0.optionalNotes;
-		var maxWidth = $rtfeldman$elm_css$Css$rem(
-			A3(
-				$author$project$Timingway$Util$Basic$maybe,
-				40,
-				$elm$core$Basics$always(25),
-				optionalNotes));
-		var barFont = $rtfeldman$elm_css$Css$rem(
-			A3($author$project$Timingway$Util$Basic$choose, groupConfig.isFocus, 3, 2.5));
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
-							$rtfeldman$elm_css$Css$fontWeight($rtfeldman$elm_css$Css$bold),
-							$rtfeldman$elm_css$Css$alignSelf($rtfeldman$elm_css$Css$flexEnd),
-							$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
-							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left),
-							$rtfeldman$elm_css$Css$fontSize(barFont),
-							$rtfeldman$elm_css$Css$maxWidth(maxWidth),
-							$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
-							$rtfeldman$elm_css$Css$textOverflow($rtfeldman$elm_css$Css$ellipsis),
-							$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
-						]))
-				]),
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$text(attackName)
-				]));
-	});
-var $author$project$Timingway$Mech$view = F3(
-	function (viewConfig, groupConfig, mech) {
-		var optionalNotes = A3(
-			$author$project$Timingway$Util$Basic$maybe,
-			_List_Nil,
-			$elm$core$List$singleton,
-			$author$project$Timingway$Mech$maybeViewNotes(mech));
-		var name = _List_fromArray(
-			[
-				A2($author$project$Timingway$Mech$viewName, groupConfig, mech)
-			]);
-		var cssOutline = groupConfig.isFocus ? _List_fromArray(
-			[
-				$rtfeldman$elm_css$Css$paddingTop(
-				$rtfeldman$elm_css$Css$rem(2)),
-				$rtfeldman$elm_css$Css$paddingBottom(
-				$rtfeldman$elm_css$Css$rem(2))
-			]) : _List_Nil;
-		var cssCommon = _List_fromArray(
-			[
-				$rtfeldman$elm_css$Css$maxWidth($rtfeldman$elm_css$Css$fitContent),
-				$rtfeldman$elm_css$Css$marginBottom(
-				$rtfeldman$elm_css$Css$rem(1.5))
-			]);
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_Utils_ap(cssCommon, cssOutline))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$rtfeldman$elm_css$Html$Styled$div,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$displayFlex,
-									$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
-									$rtfeldman$elm_css$Css$marginBottom(
-									$rtfeldman$elm_css$Css$rem(1))
-								]))
-						]),
-					_Utils_ap(name, optionalNotes)),
-					A3($author$project$Timingway$Mech$viewBar, viewConfig, groupConfig, mech)
-				]));
-	});
-var $author$project$Main$viewMechs = F2(
-	function (mechs, viewConfig) {
-		var viewNextGroup = F2(
-			function (groupConfig, _v1) {
-				var viewList = _v1.a;
-				var mechList = _v1.b;
-				var _v0 = A2($elm_community$list_extra$List$Extra$splitAt, groupConfig.amount, mechList);
-				var groupToView = _v0.a;
-				var restOfGroups = _v0.b;
-				var newViews = A2(
-					$elm$core$List$map,
-					A2($author$project$Timingway$Mech$view, viewConfig, groupConfig),
-					groupToView);
-				return _Utils_Tuple2(
-					_Utils_ap(viewList, newViews),
-					restOfGroups);
-			});
-		var groupsList = _List_fromArray(
-			[viewConfig.past, viewConfig.present, viewConfig.future]);
-		var groupViews = A3(
-			$elm$core$List$foldl,
-			viewNextGroup,
-			_Utils_Tuple2(_List_Nil, mechs),
-			groupsList).a;
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$marginLeft(
-							$rtfeldman$elm_css$Css$rem(18))
-						]))
-				]),
-			groupViews);
-	});
 var $author$project$Main$view = function (_v0) {
 	var viewConfig = _v0.viewConfig;
-	var isTicking = _v0.isTicking;
 	var mechs = _v0.mechs;
 	var millisPassed = _v0.millisPassed;
-	var overflow = A2($author$project$Timingway$Overflow$view, viewConfig, mechs);
-	var mechsView = A2($author$project$Main$viewMechs, mechs, viewConfig);
-	var clock = $author$project$Timingway$Clock$view(millisPassed);
-	var buttonCss = _List_fromArray(
-		[
-			$rtfeldman$elm_css$Css$backgroundColor(
-			A4($rtfeldman$elm_css$Css$rgba, 50, 50, 50, 0.8)),
-			$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-			$rtfeldman$elm_css$Css$color($ursi$elm_css_colors$Css$Colors$white),
-			$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
-			$rtfeldman$elm_css$Css$marginBottom(
-			$rtfeldman$elm_css$Css$rem(1)),
-			$rtfeldman$elm_css$Css$fontSize(
-			$rtfeldman$elm_css$Css$rem(2.5)),
-			$rtfeldman$elm_css$Css$marginLeft(
-			$rtfeldman$elm_css$Css$rem(2.5)),
-			$rtfeldman$elm_css$Css$height(
-			$rtfeldman$elm_css$Css$rem(10)),
-			$rtfeldman$elm_css$Css$width(
-			$rtfeldman$elm_css$Css$rem(10)),
-			$rtfeldman$elm_css$Css$borderRadius(
-			$rtfeldman$elm_css$Css$rem(1))
-		]);
-	var pause = A2(
-		$rtfeldman$elm_css$Html$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Events$onClick(
-				A3($author$project$Timingway$Util$Basic$choose, isTicking, $author$project$Main$Pause, $author$project$Main$Continue)),
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				A2(
-					$elm$core$List$cons,
-					$rtfeldman$elm_css$Css$marginTop(
-						$rtfeldman$elm_css$Css$rem(28)),
-					buttonCss))
-			]),
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$text(
-				A3($author$project$Timingway$Util$Basic$choose, isTicking, 'Pause', 'Play'))
-			]));
-	var reset = A2(
-		$rtfeldman$elm_css$Html$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$Reset),
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				A2(
-					$elm$core$List$cons,
-					$rtfeldman$elm_css$Css$marginTop(
-						$rtfeldman$elm_css$Css$rem(8)),
-					buttonCss))
-			]),
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$text('Reset')
-			]));
+	var overlay = $author$project$Timingway$Overlay$view(mechs);
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
 		_List_fromArray(
@@ -9345,15 +8953,15 @@ var $author$project$Main$view = function (_v0) {
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Css$displayFlex,
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$em(2)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$em(1))
+						$rtfeldman$elm_css$Css$marginLeft(
+						$rtfeldman$elm_css$Css$rem(1)),
+						$rtfeldman$elm_css$Css$marginTop(
+						$rtfeldman$elm_css$Css$rem(1)),
+						$rtfeldman$elm_css$Css$displayFlex
 					]))
 			]),
 		_List_fromArray(
-			[reset, pause, clock, mechsView, overflow]));
+			[overlay]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{

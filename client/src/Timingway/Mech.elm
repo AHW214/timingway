@@ -5,6 +5,7 @@ module Timingway.Mech exposing
     , isExpired
     , tick
     , view
+    , computePercent
     )
 
 import Css
