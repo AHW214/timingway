@@ -1,6 +1,7 @@
 # Timingway
 
 Timingway is designed to seamlessly visualize timelines and mechanics from Google Sheets in timer format.
+<img src="https://static.wikia.nocookie.net/finalfantasy/images/5/5b/Lopporit_official_render_Final_Fantasy_XIV.png" alt="Timingway" width="200"/>
 
 ## How do I use this app?
 
