@@ -2,9 +2,11 @@ module Timingway.Mech exposing
     ( Mech
     , decoder
     , displaySeconds
+    , fromRow
     , isExpired
     , tick
     , view
+    , computePercent
     )
 
 import Css
@@ -13,8 +15,10 @@ import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Json.Decode as Decode exposing (Decoder)
 import Round
-import Timingway.Util.Basic as Basic
 import Timingway.Config exposing (ViewConfig, GroupConfig)
+import Timingway.Sheet exposing (Row)
+import Timingway.Time as Time
+import Timingway.Util.Basic as Basic
 
 type alias Mech =
     { attackName : String
@@ -87,16 +91,17 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
         barHeight =
             Css.rem <| Basic.choose groupConfig.isFocus 8 5
 
-        barFont = Css.rem 2.5
+        barFont =
+            Css.rem <| Basic.choose groupConfig.isFocus 2.5 2
 
         barMargin =
-            Css.rem <| Basic.choose groupConfig.isFocus 2 0.75
+            Css.rem <| Basic.choose groupConfig.isFocus 2 1
 
     in
         Html.div
             [ Html.css
                 [ Css.position Css.relative
-                , Css.backgroundColor viewConfig.backgroundColor
+                , Css.backgroundImage <| Css.linearGradient2 Css.toBottom (Css.stop2 viewConfig.backgroundColor <| Css.pct 80) (Css.stop <| Css.rgba 55 55 55 0.5) []
                 , Css.borderRadius <| Css.rem 0.5
                 , Css.width <| Css.rem barWidth
                 , Css.height barHeight
@@ -106,7 +111,7 @@ viewBar viewConfig groupConfig { resolveType, millisLeft } =
                 [ Html.css
                     [ Css.position Css.absolute
                     , Css.borderRadius <| Css.rem 0.5
-                    , Css.backgroundColor groupConfig.barColor
+                    , Css.backgroundImage <| Css.linearGradient2 Css.toBottom (Css.stop2 groupConfig.barColor <| Css.pct 20) (Css.stop <| groupConfig.barGradient) []
                     , let
                         percentLeft =
                             100 - computePercent viewConfig.millisTotal millisLeft
@@ -228,3 +233,12 @@ clamped between 0 and 100.
 computePercent : Int -> Int -> Float
 computePercent total current =
     100 * clamp 0 1 (toFloat current / toFloat total)
+
+fromRow : Row -> Maybe Mech
+fromRow row =
+    let
+        fromTime =
+            Mech row.attack row.resolve row.notes << Time.toMillis
+    in
+        Time.fromString row.time
+            |> Maybe.map fromTime

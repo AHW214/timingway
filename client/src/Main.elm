@@ -2,11 +2,14 @@ module Main exposing (..)
 
 import Array
 import Browser
+import Browser.Navigation exposing (Key)
 import Css
+import Css.Global
 import Css.Colors as Colors
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Html.Styled.Events as Html
+import Http
 import Json.Decode as Decode
 import List.Extra as List
 import Task
@@ -15,8 +18,14 @@ import Timingway.Clock as Clock
 import Timingway.Config exposing (ViewConfig)
 import Timingway.Mech as Mech exposing (Mech)
 import Timingway.Overflow as Overflow
+import Timingway.Sheet as Sheet exposing (Row)
 import Timingway.Util.Basic as Basic
-import FeatherIcons
+import Timingway.Overlay as Overlay
+import Url as Url exposing (Url)
+import Url.Parser as Url exposing ((</>), (<?>))
+import Url.Parser.Query as Query
+
+-- import FeatherIcons
 
 -- MAIN
 
@@ -25,11 +34,13 @@ type alias Flags =
 
 main : Program Flags Model Msg
 main =
-    Browser.element
+    Browser.application
         { init = init
-        , view = view >> Html.toUnstyled
+        , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlChange = always NoOp
+        , onUrlRequest = always NoOp
         }
 
 -- MODEL
@@ -45,9 +56,16 @@ type alias Model =
     { mechs : List Mech
     , lastTick : Maybe Time.Posix
     , millisPassed : Int
-    , isTicking: Bool
-    , viewConfig: ViewConfig
+    , isTicking : Bool
+    , viewConfig : ViewConfig
+    , route : Route
+    , sheetId : String
     }
+
+type Route
+    = Site
+    | Overlay
+    | NotFound
 
 {-| Given time in MMSS format, returns the number of milliseconds.
 -}
@@ -72,51 +90,56 @@ makeMech attackName resolveType optionalNotes millisLeft =
     Mech attackName resolveType optionalNotes ( timeToMillis millisLeft )
 
 
-init : Flags -> ( Model, Cmd Msg )
-init _ =
-    ( { mechs =
-            [ makeMech "No Previous Mechanics" "" Nothing 0
-            , makeMech "Gaoler's Flail" "Left/Right" Nothing 10
-            , makeMech "Elemental Break" "Fire/Thunder Protean" (Just "3 mins on CD") 15
-            , makeMech "Prismatic Deception" "Sword up = in" Nothing 23
-            , makeMech "Akh Rhai" "Prepare to Move" Nothing 29
-            , makeMech "Burnt Strike" "Any Sides" (Just "1 mins on CD") 42
-            , makeMech "Hell's Judgment" "HP to 1" Nothing 51
-            , makeMech "Decollation" "Raidwide" Nothing 58
-            , makeMech "Ultima" "Tank LB3" Nothing 107
-            , makeMech "Cycle of Faith" "Protean, Sides, Tether" (Just "All buffs, pots") 119
-            , makeMech "Elemental Break" "Any Protean" (Just "All buffs after 3-4 GCDs") 150
-            , makeMech "Error 2002" "Return to Queue" Nothing 155
-            , makeMech "Error 2002" "Return to Queue" Nothing 163
-            , makeMech "Error 2002" "Return to Queue" Nothing 168
-            , makeMech "Error 2002" "Return to Queue" Nothing 183
-            , makeMech "Error 2002" "Return to Queue" Nothing 192
+init : Flags -> Url -> Key -> ( Model, Cmd Msg )
+init _ url _ =
+    let
+        ( route, sheetId ) =
+            parseRouteAndSheet url
+    in
+        ( { initModel | route = route, sheetId = sheetId }
+        , Cmd.batch
+            [ Task.perform Init Time.now
+            , Http.get
+                { url = Sheet.makeQueryUrl sheetId "App"
+                , expect = Http.expectJson GetSheet Sheet.decoder
+                }
             ]
-      , lastTick = Nothing
-      , millisPassed = 0
-      , isTicking = False
-      , viewConfig =
-            { past =
-                { amount = 1
-                , barColor = Css.rgba 0 200 0 0.6
-                , isFocus = False
-                }
-            , present =
-                { amount = 1
-                , barColor = Css.rgba 255 0 0 0.6
-                , isFocus = True
-                }
-            , future =
-                { amount = 2
-                , barColor = Css.rgba 0 100 255 0.6
-                , isFocus = False
-                }
-            , millisTotal = 15000
-            , backgroundColor = Css.rgba 150 150 150 0.5
+        )
+
+prevMech : Mech
+prevMech = makeMech "No Previous Mechanics" "" Nothing 0
+
+initModel : Model
+initModel =
+    { mechs = List.singleton prevMech
+    , lastTick = Nothing
+    , millisPassed = 0
+    , isTicking = False
+    , viewConfig =
+        { past =
+            { amount = 1
+            , barColor = Css.rgba 0 200 0 0.6
+            , barGradient = Css.rgba 0 255 155 0.6
+            , isFocus = False
             }
-      }
-    , Task.perform Init Time.now
-    )
+        , present =
+            { amount = 1
+            , barColor = Css.rgba 255 0 0 0.6
+            , barGradient = Css.rgba 255 155 0 0.6
+            , isFocus = True
+            }
+        , future =
+            { amount = 2
+            , barColor = Css.rgba 0 100 255 0.6
+            , barGradient = Css.rgba 200 100 255 0.6
+            , isFocus = False
+            }
+        , millisTotal = 15000
+        , backgroundColor = Css.rgba 150 150 150 0.5
+        }
+    , route = Site
+    , sheetId = sampleSheet
+    }
 
 -- UPDATE
 
@@ -124,10 +147,11 @@ init _ =
 type Msg
     = Init Time.Posix
     | Tick ViewConfig Time.Posix
-    | Input String
+    | GetSheet (Result Http.Error (List Row))
     | Reset
     | Continue
     | Pause
+    | NoOp
 
 {-| Determines how often the model updates (in milliseconds).
 -}
@@ -160,33 +184,48 @@ update msg model =
                         |> decrementMechs delta
                         |> advanceMechs viewConfig.past.amount
 
-                Input input ->
-                    case decodeMechs input of
-                        Ok mechs ->
-                            { model | mechs = mechs }
+                GetSheet result ->
+                    case result of
+                        Err _ -> model
 
-                        _ ->
-                            model
+                        Ok rows ->
+                            let
+                                mechs =
+                                    List.filterMap Mech.fromRow rows
+                            in
+                                { model | mechs = prevMech :: mechs }
 
                 Reset ->
-                    let
-                        initModel = Tuple.first <| init ()
-                    in
-                        { initModel | isTicking = True }
+                    { initModel
+                        | isTicking = True
+                        , route = model.route
+                    }
 
                 Continue ->
                     { model | isTicking = True }
 
                 Pause ->
                     { model | isTicking = False }
+
+                NoOp ->
+                    model
+
         newCommand =
             case msg of
                 Continue ->
                     Task.perform Init Time.now
+                Reset ->
+                    Cmd.batch
+                        [ Task.perform Init Time.now
+                        , Http.get
+                            { url = Sheet.makeQueryUrl model.sheetId "App"
+                            , expect = Http.expectJson GetSheet Sheet.decoder
+                            }
+                        ]
                 _ ->
                     Cmd.none
     in
-    ( newModel, newCommand )
+        ( newModel, newCommand )
 
 
 decrementMechs : Int -> Model -> Model
@@ -236,6 +275,35 @@ decodeMechs =
     Result.map Array.toList
         << Decode.decodeString (Decode.array Mech.decoder)
 
+parseRouteAndSheet : Url -> ( Route, String )
+parseRouteAndSheet url =
+    Maybe.withDefault ( NotFound, "" ) ( Url.parse routeParser url )
+
+sampleSheet : String
+sampleSheet = "1TvSWwkIJMVdI0k6hoO8YXOeFu1jkyjAw1xy3DVloIJo"
+
+routeParser : Url.Parser ( (Route, String) -> ( a, b ) ) ( a, b )
+routeParser =
+    let
+        rootParser =
+            -- todo: index.html only for development
+            Url.oneOf [ Url.s "index.html", Url.top ]
+
+        tupleParser = Query.map2 Tuple.pair ( Query.string "overlay" ) ( Query.string "url" )
+
+        checkOverlay query =
+            case query of
+                Just overlay ->
+                    if String.toLower overlay == "true" || overlay == "1"
+                        then Overlay
+                        else Site
+                Nothing -> Site
+
+        checkSheet =
+            Maybe.withDefault sampleSheet
+    in
+        Url.map (Tuple.mapBoth checkOverlay checkSheet)
+            <| rootParser <?> tupleParser
 
 
 -- SUBSCRIPTIONS
@@ -281,8 +349,56 @@ viewMechs mechs viewConfig =
             groupViews
 
 
-view : Model -> Html Msg
-view { viewConfig, isTicking, mechs, millisPassed } =
+view : Model -> Browser.Document Msg
+view model =
+    let
+        viewNotFound _ =
+            Html.div [] [ Html.text "not found" ]
+
+        viewRoute =
+            case model.route of
+                Site -> viewSite
+                Overlay -> viewOverlay
+                NotFound -> viewNotFound
+
+        styles =
+            Css.Global.body
+                [ Css.backgroundImage <| Css.url "assets/darkmode.jpg"
+                , Css.backgroundRepeat Css.noRepeat
+                , Css.backgroundAttachment Css.fixed
+                , Css.backgroundSize Css.cover
+                , Css.fontFamilies [ "Lato", "sans-serif" ]
+                ]
+    in
+        { title =
+            "Timingway: a web application for raids."
+
+        , body =
+            List.map Html.toUnstyled
+                [ viewRoute model
+                , Css.Global.global [ styles ]
+                ]
+        }
+
+
+viewOverlay : Model -> Html Msg
+viewOverlay { mechs } =
+    let
+
+        overlay = Overlay.view mechs
+    in
+    Html.div
+        [ Html.css
+            [ Css.marginLeft <| Css.rem 1
+            , Css.marginTop <| Css.rem 1
+            , Css.displayFlex
+            ]
+        ]
+        [ overlay
+        ]
+
+viewSite : Model -> Html Msg
+viewSite { viewConfig, isTicking, mechs, millisPassed } =
     let
         buttonCss =
             [ Css.backgroundColor <| Css.rgba 50 50 50 0.8
@@ -290,7 +406,7 @@ view { viewConfig, isTicking, mechs, millisPassed } =
             , Css.color Colors.white
             , Css.textAlign Css.center
             , Css.marginBottom <| Css.rem 1
-            , Css.fontSize <| Css.rem 6
+            , Css.fontSize <| Css.rem 2.5
             , Css.marginLeft <| Css.rem 2.5
             , Css.height <| Css.rem 10
             , Css.width <| Css.rem 10
@@ -301,7 +417,7 @@ view { viewConfig, isTicking, mechs, millisPassed } =
                 [ Html.onClick Reset
                 , Html.css <|
                     ( Css.marginTop <| Css.rem 8 ) :: buttonCss
-                ] [Html.text "\u{21BB}"]
+                ] [Html.text "Reset"]
 
         pause =
             Html.button
@@ -310,7 +426,7 @@ view { viewConfig, isTicking, mechs, millisPassed } =
                 , Html.css <|
                     ( Css.marginTop <| Css.rem 28 ) :: buttonCss
                 ] [ Html.text
-                    <| Basic.choose isTicking "\u{23F8}" "\u{23F5}"
+                    <| Basic.choose isTicking "Pause" "Play"
                 ]
 
         clock =
@@ -335,3 +451,36 @@ view { viewConfig, isTicking, mechs, millisPassed } =
         , mechsView
         , overflow
         ]
+
+hippokampos : List Mech
+hippokampos =
+    [ makeMech "Murky Depths" "Raidwide" Nothing 15
+    , makeMech "Doubled Impact" "Tank Share" Nothing 27
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 44
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 58
+    , makeMech "Murky Depths" "Raidwide" Nothing 112
+    , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 125
+    , makeMech "Tainted Flood" "Spread" Nothing 151
+    , makeMech "Predatory Sight" "Stack + 1" Nothing 207
+    , makeMech "Shockwave" "Jump + KB" Nothing 217
+    , makeMech "Disassociation" "Head Dive" Nothing 246
+    , makeMech "Coherence" "Flare + Stack" Nothing 258
+    , makeMech "Murky Depths" "Raidwide" Nothing 315
+    , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 329
+    , makeMech "Tainted Flood" "Spread" Nothing 347
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 355
+    , makeMech "Sewage Eruption" "3 Eruptions" Nothing 406
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 419
+    , makeMech "Tainted Flood" "Spread" Nothing 427
+    , makeMech "Predatory Sight" "Stack + 1" Nothing 440
+    , makeMech "Murky Depths" "Raidwide" Nothing 447
+    , makeMech "Disassociation + Shockwave" "Head Dive + KB" Nothing 511
+    , makeMech "Disassociation + Sewage Eruption" "Head Dive + 3 Eruptions" Nothing 542
+    , makeMech "Coherence" "Flare + Stack" Nothing 547
+    , makeMech "Murky Depths" "Raidwide" Nothing 601
+    , makeMech "Murky Depths" "Raidwide" Nothing 612
+    , makeMech "Doubled Impact" "Tank Share" Nothing 623
+    , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 640
+    , makeMech "Tainted Flood" "Spread" Nothing 658
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 706
+    ]
