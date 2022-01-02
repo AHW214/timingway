@@ -9,6 +9,7 @@ import Css.Colors as Colors
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Html.Styled.Events as Html
+import Http
 import Json.Decode as Decode
 import List.Extra as List
 import Task
@@ -17,6 +18,7 @@ import Timingway.Clock as Clock
 import Timingway.Config exposing (ViewConfig)
 import Timingway.Mech as Mech exposing (Mech)
 import Timingway.Overflow as Overflow
+import Timingway.Sheet as Sheet exposing (Row)
 import Timingway.Util.Basic as Basic
 import Timingway.Overlay as Overlay
 import Url as Url exposing (Url)
@@ -54,9 +56,10 @@ type alias Model =
     { mechs : List Mech
     , lastTick : Maybe Time.Posix
     , millisPassed : Int
-    , isTicking: Bool
-    , viewConfig: ViewConfig
-    , route: Route
+    , isTicking : Bool
+    , viewConfig : ViewConfig
+    , route : Route
+    , sheetId : String
     }
 
 type Route
@@ -89,44 +92,26 @@ makeMech attackName resolveType optionalNotes millisLeft =
 
 init : Flags -> Url -> Key -> ( Model, Cmd Msg )
 init _ url _ =
-    ( { initModel | route = parseRoute url }
-    , Task.perform Init Time.now
-    )
+    let
+        ( route, sheetId ) =
+            parseRouteAndSheet url
+    in
+        ( { initModel | route = route, sheetId = sheetId }
+        , Cmd.batch
+            [ Task.perform Init Time.now
+            , Http.get
+                { url = Sheet.makeQueryUrl sheetId "App"
+                , expect = Http.expectJson GetSheet Sheet.decoder
+                }
+            ]
+        )
+
+prevMech : Mech
+prevMech = makeMech "No Previous Mechanics" "" Nothing 0
 
 initModel : Model
 initModel =
-    { mechs =
-        [ makeMech "No Previous Mechanics" "" Nothing 0
-        , makeMech "Murky Depths" "Raidwide" Nothing 15
-        , makeMech "Doubled Impact" "Tank Share" Nothing 27
-        , makeMech "Spoken Cataract" "Head + Body" Nothing 44
-        , makeMech "Spoken Cataract" "Head + Body" Nothing 58
-        , makeMech "Murky Depths" "Raidwide" Nothing 112
-        , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 125
-        , makeMech "Tainted Flood" "Spread" Nothing 151
-        , makeMech "Predatory Sight" "Stack + 1" Nothing 207
-        , makeMech "Shockwave" "Jump + KB" Nothing 217
-        , makeMech "Disassociation" "Head Dive" Nothing 246
-        , makeMech "Coherence" "Flare + Stack" Nothing 258
-        , makeMech "Murky Depths" "Raidwide" Nothing 315
-        , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 329
-        , makeMech "Tainted Flood" "Spread" Nothing 347
-        , makeMech "Spoken Cataract" "Head + Body" Nothing 355
-        , makeMech "Sewage Eruption" "3 Eruptions" Nothing 406
-        , makeMech "Spoken Cataract" "Head + Body" Nothing 419
-        , makeMech "Tainted Flood" "Spread" Nothing 427
-        , makeMech "Predatory Sight" "Stack + 1" Nothing 440
-        , makeMech "Murky Depths" "Raidwide" Nothing 447
-        , makeMech "Disassociation + Shockwave" "Head Dive + KB" Nothing 511
-        , makeMech "Disassociation + Sewage Eruption" "Head Dive + 3 Eruptions" Nothing 542
-        , makeMech "Coherence" "Flare + Stack" Nothing 547
-        , makeMech "Murky Depths" "Raidwide" Nothing 601
-        , makeMech "Murky Depths" "Raidwide" Nothing 612
-        , makeMech "Doubled Impact" "Tank Share" Nothing 623
-        , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 640
-        , makeMech "Tainted Flood" "Spread" Nothing 658
-        , makeMech "Spoken Cataract" "Head + Body" Nothing 706
-        ]
+    { mechs = List.singleton prevMech
     , lastTick = Nothing
     , millisPassed = 0
     , isTicking = False
@@ -153,6 +138,7 @@ initModel =
         , backgroundColor = Css.rgba 150 150 150 0.5
         }
     , route = Site
+    , sheetId = sampleSheet
     }
 
 -- UPDATE
@@ -161,7 +147,7 @@ initModel =
 type Msg
     = Init Time.Posix
     | Tick ViewConfig Time.Posix
-    | Input String
+    | GetSheet (Result Http.Error (List Row))
     | Reset
     | Continue
     | Pause
@@ -198,13 +184,16 @@ update msg model =
                         |> decrementMechs delta
                         |> advanceMechs viewConfig.past.amount
 
-                Input input ->
-                    case decodeMechs input of
-                        Ok mechs ->
-                            { model | mechs = mechs }
+                GetSheet result ->
+                    case result of
+                        Err _ -> model
 
-                        _ ->
-                            model
+                        Ok rows ->
+                            let
+                                mechs =
+                                    List.filterMap Mech.fromRow rows
+                            in
+                                { model | mechs = prevMech :: mechs }
 
                 Reset ->
                     { initModel
@@ -220,14 +209,23 @@ update msg model =
 
                 NoOp ->
                     model
+
         newCommand =
             case msg of
                 Continue ->
                     Task.perform Init Time.now
+                Reset ->
+                    Cmd.batch
+                        [ Task.perform Init Time.now
+                        , Http.get
+                            { url = Sheet.makeQueryUrl model.sheetId "App"
+                            , expect = Http.expectJson GetSheet Sheet.decoder
+                            }
+                        ]
                 _ ->
                     Cmd.none
     in
-    ( newModel, newCommand )
+        ( newModel, newCommand )
 
 
 decrementMechs : Int -> Model -> Model
@@ -277,28 +275,35 @@ decodeMechs =
     Result.map Array.toList
         << Decode.decodeString (Decode.array Mech.decoder)
 
-parseRoute : Url -> Route
-parseRoute url =
-    Maybe.withDefault NotFound
-        <| Url.parse routeParser url
+parseRouteAndSheet : Url -> ( Route, String )
+parseRouteAndSheet url =
+    Maybe.withDefault ( NotFound, "" ) ( Url.parse routeParser url )
 
-routeParser : Url.Parser (Route -> a) a
+sampleSheet : String
+sampleSheet = "1TvSWwkIJMVdI0k6hoO8YXOeFu1jkyjAw1xy3DVloIJo"
+
+routeParser : Url.Parser ( (Route, String) -> ( a, b ) ) ( a, b )
 routeParser =
     let
         rootParser =
             -- todo: index.html only for development
             Url.oneOf [ Url.s "index.html", Url.top ]
 
-        checkOverlayEnabled query =
+        tupleParser = Query.map2 Tuple.pair ( Query.string "overlay" ) ( Query.string "url" )
+
+        checkOverlay query =
             case query of
-                Just str ->
-                    if String.toLower str == "true" || str == "1"
+                Just overlay ->
+                    if String.toLower overlay == "true" || overlay == "1"
                         then Overlay
                         else Site
                 Nothing -> Site
+
+        checkSheet =
+            Maybe.withDefault sampleSheet
     in
-        Url.map checkOverlayEnabled
-            <| rootParser <?> Query.string "overlay"
+        Url.map (Tuple.mapBoth checkOverlay checkSheet)
+            <| rootParser <?> tupleParser
 
 
 -- SUBSCRIPTIONS
@@ -446,3 +451,36 @@ viewSite { viewConfig, isTicking, mechs, millisPassed } =
         , mechsView
         , overflow
         ]
+
+hippokampos : List Mech
+hippokampos =
+    [ makeMech "Murky Depths" "Raidwide" Nothing 15
+    , makeMech "Doubled Impact" "Tank Share" Nothing 27
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 44
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 58
+    , makeMech "Murky Depths" "Raidwide" Nothing 112
+    , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 125
+    , makeMech "Tainted Flood" "Spread" Nothing 151
+    , makeMech "Predatory Sight" "Stack + 1" Nothing 207
+    , makeMech "Shockwave" "Jump + KB" Nothing 217
+    , makeMech "Disassociation" "Head Dive" Nothing 246
+    , makeMech "Coherence" "Flare + Stack" Nothing 258
+    , makeMech "Murky Depths" "Raidwide" Nothing 315
+    , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 329
+    , makeMech "Tainted Flood" "Spread" Nothing 347
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 355
+    , makeMech "Sewage Eruption" "3 Eruptions" Nothing 406
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 419
+    , makeMech "Tainted Flood" "Spread" Nothing 427
+    , makeMech "Predatory Sight" "Stack + 1" Nothing 440
+    , makeMech "Murky Depths" "Raidwide" Nothing 447
+    , makeMech "Disassociation + Shockwave" "Head Dive + KB" Nothing 511
+    , makeMech "Disassociation + Sewage Eruption" "Head Dive + 3 Eruptions" Nothing 542
+    , makeMech "Coherence" "Flare + Stack" Nothing 547
+    , makeMech "Murky Depths" "Raidwide" Nothing 601
+    , makeMech "Murky Depths" "Raidwide" Nothing 612
+    , makeMech "Doubled Impact" "Tank Share" Nothing 623
+    , makeMech "Sewage Deluge" "Raidwide" (Just "Waters rise") 640
+    , makeMech "Tainted Flood" "Spread" Nothing 658
+    , makeMech "Spoken Cataract" "Head + Body" Nothing 706
+    ]

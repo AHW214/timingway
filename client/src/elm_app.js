@@ -4358,6 +4358,181 @@ function _Browser_load(url)
 
 
 
+// SEND REQUEST
+
+var _Http_toTask = F3(function(router, toTask, request)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		function done(response) {
+			callback(toTask(request.expect.a(response)));
+		}
+
+		var xhr = new XMLHttpRequest();
+		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
+		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.expect.b, xhr)); });
+		$elm$core$Maybe$isJust(request.tracker) && _Http_track(router, xhr, request.tracker.a);
+
+		try {
+			xhr.open(request.method, request.url, true);
+		} catch (e) {
+			return done($elm$http$Http$BadUrl_(request.url));
+		}
+
+		_Http_configureRequest(xhr, request);
+
+		request.body.a && xhr.setRequestHeader('Content-Type', request.body.a);
+		xhr.send(request.body.b);
+
+		return function() { xhr.c = true; xhr.abort(); };
+	});
+});
+
+
+// CONFIGURE
+
+function _Http_configureRequest(xhr, request)
+{
+	for (var headers = request.headers; headers.b; headers = headers.b) // WHILE_CONS
+	{
+		xhr.setRequestHeader(headers.a.a, headers.a.b);
+	}
+	xhr.timeout = request.timeout.a || 0;
+	xhr.responseType = request.expect.d;
+	xhr.withCredentials = request.allowCookiesFromOtherDomains;
+}
+
+
+// RESPONSES
+
+function _Http_toResponse(toBody, xhr)
+{
+	return A2(
+		200 <= xhr.status && xhr.status < 300 ? $elm$http$Http$GoodStatus_ : $elm$http$Http$BadStatus_,
+		_Http_toMetadata(xhr),
+		toBody(xhr.response)
+	);
+}
+
+
+// METADATA
+
+function _Http_toMetadata(xhr)
+{
+	return {
+		url: xhr.responseURL,
+		statusCode: xhr.status,
+		statusText: xhr.statusText,
+		headers: _Http_parseHeaders(xhr.getAllResponseHeaders())
+	};
+}
+
+
+// HEADERS
+
+function _Http_parseHeaders(rawHeaders)
+{
+	if (!rawHeaders)
+	{
+		return $elm$core$Dict$empty;
+	}
+
+	var headers = $elm$core$Dict$empty;
+	var headerPairs = rawHeaders.split('\r\n');
+	for (var i = headerPairs.length; i--; )
+	{
+		var headerPair = headerPairs[i];
+		var index = headerPair.indexOf(': ');
+		if (index > 0)
+		{
+			var key = headerPair.substring(0, index);
+			var value = headerPair.substring(index + 2);
+
+			headers = A3($elm$core$Dict$update, key, function(oldValue) {
+				return $elm$core$Maybe$Just($elm$core$Maybe$isJust(oldValue)
+					? value + ', ' + oldValue.a
+					: value
+				);
+			}, headers);
+		}
+	}
+	return headers;
+}
+
+
+// EXPECT
+
+var _Http_expect = F3(function(type, toBody, toValue)
+{
+	return {
+		$: 0,
+		d: type,
+		b: toBody,
+		a: toValue
+	};
+});
+
+var _Http_mapExpect = F2(function(func, expect)
+{
+	return {
+		$: 0,
+		d: expect.d,
+		b: expect.b,
+		a: function(x) { return func(expect.a(x)); }
+	};
+});
+
+function _Http_toDataView(arrayBuffer)
+{
+	return new DataView(arrayBuffer);
+}
+
+
+// BODY and PARTS
+
+var _Http_emptyBody = { $: 0 };
+var _Http_pair = F2(function(a, b) { return { $: 0, a: a, b: b }; });
+
+function _Http_toFormData(parts)
+{
+	for (var formData = new FormData(); parts.b; parts = parts.b) // WHILE_CONS
+	{
+		var part = parts.a;
+		formData.append(part.a, part.b);
+	}
+	return formData;
+}
+
+var _Http_bytesToBlob = F2(function(mime, bytes)
+{
+	return new Blob([bytes], { type: mime });
+});
+
+
+// PROGRESS
+
+function _Http_track(router, xhr, tracker)
+{
+	// TODO check out lengthComputable on loadstart event
+
+	xhr.upload.addEventListener('progress', function(event) {
+		if (xhr.c) { return; }
+		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Sending({
+			sent: event.loaded,
+			size: event.total
+		}))));
+	});
+	xhr.addEventListener('progress', function(event) {
+		if (xhr.c) { return; }
+		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Receiving({
+			received: event.loaded,
+			size: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
+		}))));
+	});
+}
+
+
 function _Time_now(millisToPosix)
 {
 	return _Scheduler_binding(function(callback)
@@ -5249,216 +5424,72 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
+var $author$project$Main$GetSheet = function (a) {
+	return {$: 'GetSheet', a: a};
+};
 var $author$project$Main$Init = function (a) {
 	return {$: 'Init', a: a};
 };
-var $author$project$Main$Site = {$: 'Site'};
-var $author$project$Timingway$Mech$Mech = F4(
-	function (attackName, resolveType, optionalNotes, millisLeft) {
-		return {attackName: attackName, millisLeft: millisLeft, optionalNotes: optionalNotes, resolveType: resolveType};
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$json$Json$Decode$array = _Json_decodeArray;
+var $author$project$Timingway$Sheet$Row = F4(
+	function (attack, notes, resolve, time) {
+		return {attack: attack, notes: notes, resolve: resolve, time: time};
 	});
-var $author$project$Main$timeToMillis = function (time) {
-	var seconds = time % 100;
-	var mins = (time / 100) | 0;
-	return ((mins * 60) + seconds) * 1000;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
 };
-var $author$project$Main$makeMech = F4(
-	function (attackName, resolveType, optionalNotes, millisLeft) {
-		return A4(
-			$author$project$Timingway$Mech$Mech,
-			attackName,
-			resolveType,
-			optionalNotes,
-			$author$project$Main$timeToMillis(millisLeft));
-	});
-var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
-var $rtfeldman$elm_css$Css$cssFunction = F2(
-	function (funcName, args) {
-		return funcName + ('(' + (A2($elm$core$String$join, ', ', args) + ')'));
-	});
-var $elm$core$String$fromFloat = _String_fromNumber;
-var $rtfeldman$elm_css$Css$rgba = F4(
-	function (r, g, b, alpha) {
-		return {
-			alpha: alpha,
-			blue: b,
-			color: $rtfeldman$elm_css$Css$Structure$Compatible,
-			green: g,
-			red: r,
-			value: A2(
-				$rtfeldman$elm_css$Css$cssFunction,
-				'rgba',
-				_Utils_ap(
-					A2(
-						$elm$core$List$map,
-						$elm$core$String$fromInt,
-						_List_fromArray(
-							[r, g, b])),
-					_List_fromArray(
-						[
-							$elm$core$String$fromFloat(alpha)
-						])))
-		};
-	});
-var $author$project$Main$initModel = {
-	isTicking: false,
-	lastTick: $elm$core$Maybe$Nothing,
-	mechs: _List_fromArray(
-		[
-			A4($author$project$Main$makeMech, 'No Previous Mechanics', '', $elm$core$Maybe$Nothing, 0),
-			A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 15),
-			A4($author$project$Main$makeMech, 'Doubled Impact', 'Tank Share', $elm$core$Maybe$Nothing, 27),
-			A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 44),
-			A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 58),
-			A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 112),
-			A4(
-			$author$project$Main$makeMech,
-			'Sewage Deluge',
-			'Raidwide',
-			$elm$core$Maybe$Just('Waters rise'),
-			125),
-			A4($author$project$Main$makeMech, 'Tainted Flood', 'Spread', $elm$core$Maybe$Nothing, 151),
-			A4($author$project$Main$makeMech, 'Predatory Sight', 'Stack + 1', $elm$core$Maybe$Nothing, 207),
-			A4($author$project$Main$makeMech, 'Shockwave', 'Jump + KB', $elm$core$Maybe$Nothing, 217),
-			A4($author$project$Main$makeMech, 'Disassociation', 'Head Dive', $elm$core$Maybe$Nothing, 246),
-			A4($author$project$Main$makeMech, 'Coherence', 'Flare + Stack', $elm$core$Maybe$Nothing, 258),
-			A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 315),
-			A4(
-			$author$project$Main$makeMech,
-			'Sewage Deluge',
-			'Raidwide',
-			$elm$core$Maybe$Just('Waters rise'),
-			329),
-			A4($author$project$Main$makeMech, 'Tainted Flood', 'Spread', $elm$core$Maybe$Nothing, 347),
-			A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 355),
-			A4($author$project$Main$makeMech, 'Sewage Eruption', '3 Eruptions', $elm$core$Maybe$Nothing, 406),
-			A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 419),
-			A4($author$project$Main$makeMech, 'Tainted Flood', 'Spread', $elm$core$Maybe$Nothing, 427),
-			A4($author$project$Main$makeMech, 'Predatory Sight', 'Stack + 1', $elm$core$Maybe$Nothing, 440),
-			A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 447),
-			A4($author$project$Main$makeMech, 'Disassociation + Shockwave', 'Head Dive + KB', $elm$core$Maybe$Nothing, 511),
-			A4($author$project$Main$makeMech, 'Disassociation + Sewage Eruption', 'Head Dive + 3 Eruptions', $elm$core$Maybe$Nothing, 542),
-			A4($author$project$Main$makeMech, 'Coherence', 'Flare + Stack', $elm$core$Maybe$Nothing, 547),
-			A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 601),
-			A4($author$project$Main$makeMech, 'Murky Depths', 'Raidwide', $elm$core$Maybe$Nothing, 612),
-			A4($author$project$Main$makeMech, 'Doubled Impact', 'Tank Share', $elm$core$Maybe$Nothing, 623),
-			A4(
-			$author$project$Main$makeMech,
-			'Sewage Deluge',
-			'Raidwide',
-			$elm$core$Maybe$Just('Waters rise'),
-			640),
-			A4($author$project$Main$makeMech, 'Tainted Flood', 'Spread', $elm$core$Maybe$Nothing, 658),
-			A4($author$project$Main$makeMech, 'Spoken Cataract', 'Head + Body', $elm$core$Maybe$Nothing, 706)
-		]),
-	millisPassed: 0,
-	route: $author$project$Main$Site,
-	viewConfig: {
-		backgroundColor: A4($rtfeldman$elm_css$Css$rgba, 150, 150, 150, 0.5),
-		future: {
-			amount: 2,
-			barColor: A4($rtfeldman$elm_css$Css$rgba, 0, 100, 255, 0.6),
-			barGradient: A4($rtfeldman$elm_css$Css$rgba, 200, 100, 255, 0.6),
-			isFocus: false
-		},
-		millisTotal: 15000,
-		past: {
-			amount: 1,
-			barColor: A4($rtfeldman$elm_css$Css$rgba, 0, 200, 0, 0.6),
-			barGradient: A4($rtfeldman$elm_css$Css$rgba, 0, 255, 155, 0.6),
-			isFocus: false
-		},
-		present: {
-			amount: 1,
-			barColor: A4($rtfeldman$elm_css$Css$rgba, 255, 0, 0, 0.6),
-			barGradient: A4($rtfeldman$elm_css$Css$rgba, 255, 155, 0, 0.6),
-			isFocus: true
-		}
-	}
-};
-var $elm$time$Time$Name = function (a) {
-	return {$: 'Name', a: a};
-};
-var $elm$time$Time$Offset = function (a) {
-	return {$: 'Offset', a: a};
-};
-var $elm$time$Time$Zone = F2(
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Timingway$Sheet$rowDecoder = A5(
+	$elm$json$Json$Decode$map4,
+	$author$project$Timingway$Sheet$Row,
+	A2($elm$json$Json$Decode$field, 'Attack', $elm$json$Json$Decode$string),
+	$elm$json$Json$Decode$maybe(
+		A2($elm$json$Json$Decode$field, 'Notes', $elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'Resolve', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'Time', $elm$json$Json$Decode$string));
+var $author$project$Timingway$Sheet$decoder = A2(
+	$elm$json$Json$Decode$map,
+	$elm$core$Array$toList,
+	$elm$json$Json$Decode$array($author$project$Timingway$Sheet$rowDecoder));
+var $elm$json$Json$Decode$decodeString = _Json_runOnString;
+var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
-		return {$: 'Zone', a: a, b: b};
+		return {$: 'BadStatus_', a: a, b: b};
 	});
-var $elm$time$Time$customZone = $elm$time$Time$Zone;
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
+var $elm$http$Http$BadUrl_ = function (a) {
+	return {$: 'BadUrl_', a: a};
 };
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
-var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
-var $author$project$Main$NotFound = {$: 'NotFound'};
-var $elm$url$Url$Parser$State = F5(
-	function (visited, unvisited, params, frag, value) {
-		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
+var $elm$http$Http$GoodStatus_ = F2(
+	function (a, b) {
+		return {$: 'GoodStatus_', a: a, b: b};
 	});
-var $elm$url$Url$Parser$getFirstMatch = function (states) {
-	getFirstMatch:
-	while (true) {
-		if (!states.b) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var state = states.a;
-			var rest = states.b;
-			var _v1 = state.unvisited;
-			if (!_v1.b) {
-				return $elm$core$Maybe$Just(state.value);
-			} else {
-				if ((_v1.a === '') && (!_v1.b.b)) {
-					return $elm$core$Maybe$Just(state.value);
-				} else {
-					var $temp$states = rest;
-					states = $temp$states;
-					continue getFirstMatch;
-				}
-			}
-		}
-	}
+var $elm$http$Http$NetworkError_ = {$: 'NetworkError_'};
+var $elm$http$Http$Receiving = function (a) {
+	return {$: 'Receiving', a: a};
 };
-var $elm$url$Url$Parser$removeFinalEmpty = function (segments) {
-	if (!segments.b) {
-		return _List_Nil;
+var $elm$http$Http$Sending = function (a) {
+	return {$: 'Sending', a: a};
+};
+var $elm$http$Http$Timeout_ = {$: 'Timeout_'};
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
+var $elm$core$Maybe$isJust = function (maybe) {
+	if (maybe.$ === 'Just') {
+		return true;
 	} else {
-		if ((segments.a === '') && (!segments.b.b)) {
-			return _List_Nil;
-		} else {
-			var segment = segments.a;
-			var rest = segments.b;
-			return A2(
-				$elm$core$List$cons,
-				segment,
-				$elm$url$Url$Parser$removeFinalEmpty(rest));
-		}
+		return false;
 	}
 };
-var $elm$url$Url$Parser$preparePath = function (path) {
-	var _v0 = A2($elm$core$String$split, '/', path);
-	if (_v0.b && (_v0.a === '')) {
-		var segments = _v0.b;
-		return $elm$url$Url$Parser$removeFinalEmpty(segments);
-	} else {
-		var segments = _v0;
-		return $elm$url$Url$Parser$removeFinalEmpty(segments);
-	}
-};
-var $elm$url$Url$Parser$addToParametersHelp = F2(
-	function (value, maybeList) {
-		if (maybeList.$ === 'Nothing') {
-			return $elm$core$Maybe$Just(
-				_List_fromArray(
-					[value]));
-		} else {
-			var list = maybeList.a;
-			return $elm$core$Maybe$Just(
-				A2($elm$core$List$cons, value, list));
-		}
-	});
-var $elm$url$Url$percentDecode = _Url_percentDecode;
+var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$core$Basics$compare = _Utils_compare;
 var $elm$core$Dict$get = F2(
 	function (targetKey, dict) {
@@ -5496,7 +5527,6 @@ var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
 		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
 	});
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var $elm$core$Dict$Red = {$: 'Red'};
 var $elm$core$Dict$balance = F5(
 	function (color, key, value, left, right) {
@@ -5973,6 +6003,444 @@ var $elm$core$Dict$update = F3(
 			return A2($elm$core$Dict$remove, targetKey, dictionary);
 		}
 	});
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var $elm$http$Http$expectStringResponse = F2(
+	function (toMsg, toResult) {
+		return A3(
+			_Http_expect,
+			'',
+			$elm$core$Basics$identity,
+			A2($elm$core$Basics$composeR, toResult, toMsg));
+	});
+var $elm$core$Result$mapError = F2(
+	function (f, result) {
+		if (result.$ === 'Ok') {
+			var v = result.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			var e = result.a;
+			return $elm$core$Result$Err(
+				f(e));
+		}
+	});
+var $elm$http$Http$BadBody = function (a) {
+	return {$: 'BadBody', a: a};
+};
+var $elm$http$Http$BadStatus = function (a) {
+	return {$: 'BadStatus', a: a};
+};
+var $elm$http$Http$BadUrl = function (a) {
+	return {$: 'BadUrl', a: a};
+};
+var $elm$http$Http$NetworkError = {$: 'NetworkError'};
+var $elm$http$Http$Timeout = {$: 'Timeout'};
+var $elm$http$Http$resolve = F2(
+	function (toResult, response) {
+		switch (response.$) {
+			case 'BadUrl_':
+				var url = response.a;
+				return $elm$core$Result$Err(
+					$elm$http$Http$BadUrl(url));
+			case 'Timeout_':
+				return $elm$core$Result$Err($elm$http$Http$Timeout);
+			case 'NetworkError_':
+				return $elm$core$Result$Err($elm$http$Http$NetworkError);
+			case 'BadStatus_':
+				var metadata = response.a;
+				return $elm$core$Result$Err(
+					$elm$http$Http$BadStatus(metadata.statusCode));
+			default:
+				var body = response.b;
+				return A2(
+					$elm$core$Result$mapError,
+					$elm$http$Http$BadBody,
+					toResult(body));
+		}
+	});
+var $elm$http$Http$expectJson = F2(
+	function (toMsg, decoder) {
+		return A2(
+			$elm$http$Http$expectStringResponse,
+			toMsg,
+			$elm$http$Http$resolve(
+				function (string) {
+					return A2(
+						$elm$core$Result$mapError,
+						$elm$json$Json$Decode$errorToString,
+						A2($elm$json$Json$Decode$decodeString, decoder, string));
+				}));
+	});
+var $elm$http$Http$emptyBody = _Http_emptyBody;
+var $elm$http$Http$Request = function (a) {
+	return {$: 'Request', a: a};
+};
+var $elm$http$Http$State = F2(
+	function (reqs, subs) {
+		return {reqs: reqs, subs: subs};
+	});
+var $elm$http$Http$init = $elm$core$Task$succeed(
+	A2($elm$http$Http$State, $elm$core$Dict$empty, _List_Nil));
+var $elm$core$Process$kill = _Scheduler_kill;
+var $elm$core$Process$spawn = _Scheduler_spawn;
+var $elm$http$Http$updateReqs = F3(
+	function (router, cmds, reqs) {
+		updateReqs:
+		while (true) {
+			if (!cmds.b) {
+				return $elm$core$Task$succeed(reqs);
+			} else {
+				var cmd = cmds.a;
+				var otherCmds = cmds.b;
+				if (cmd.$ === 'Cancel') {
+					var tracker = cmd.a;
+					var _v2 = A2($elm$core$Dict$get, tracker, reqs);
+					if (_v2.$ === 'Nothing') {
+						var $temp$router = router,
+							$temp$cmds = otherCmds,
+							$temp$reqs = reqs;
+						router = $temp$router;
+						cmds = $temp$cmds;
+						reqs = $temp$reqs;
+						continue updateReqs;
+					} else {
+						var pid = _v2.a;
+						return A2(
+							$elm$core$Task$andThen,
+							function (_v3) {
+								return A3(
+									$elm$http$Http$updateReqs,
+									router,
+									otherCmds,
+									A2($elm$core$Dict$remove, tracker, reqs));
+							},
+							$elm$core$Process$kill(pid));
+					}
+				} else {
+					var req = cmd.a;
+					return A2(
+						$elm$core$Task$andThen,
+						function (pid) {
+							var _v4 = req.tracker;
+							if (_v4.$ === 'Nothing') {
+								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
+							} else {
+								var tracker = _v4.a;
+								return A3(
+									$elm$http$Http$updateReqs,
+									router,
+									otherCmds,
+									A3($elm$core$Dict$insert, tracker, pid, reqs));
+							}
+						},
+						$elm$core$Process$spawn(
+							A3(
+								_Http_toTask,
+								router,
+								$elm$core$Platform$sendToApp(router),
+								req)));
+				}
+			}
+		}
+	});
+var $elm$http$Http$onEffects = F4(
+	function (router, cmds, subs, state) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (reqs) {
+				return $elm$core$Task$succeed(
+					A2($elm$http$Http$State, reqs, subs));
+			},
+			A3($elm$http$Http$updateReqs, router, cmds, state.reqs));
+	});
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (_v0.$ === 'Just') {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
+		} else {
+			return xs;
+		}
+	});
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
+	});
+var $elm$http$Http$maybeSend = F4(
+	function (router, desiredTracker, progress, _v0) {
+		var actualTracker = _v0.a;
+		var toMsg = _v0.b;
+		return _Utils_eq(desiredTracker, actualTracker) ? $elm$core$Maybe$Just(
+			A2(
+				$elm$core$Platform$sendToApp,
+				router,
+				toMsg(progress))) : $elm$core$Maybe$Nothing;
+	});
+var $elm$http$Http$onSelfMsg = F3(
+	function (router, _v0, state) {
+		var tracker = _v0.a;
+		var progress = _v0.b;
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v1) {
+				return $elm$core$Task$succeed(state);
+			},
+			$elm$core$Task$sequence(
+				A2(
+					$elm$core$List$filterMap,
+					A3($elm$http$Http$maybeSend, router, tracker, progress),
+					state.subs)));
+	});
+var $elm$http$Http$Cancel = function (a) {
+	return {$: 'Cancel', a: a};
+};
+var $elm$http$Http$cmdMap = F2(
+	function (func, cmd) {
+		if (cmd.$ === 'Cancel') {
+			var tracker = cmd.a;
+			return $elm$http$Http$Cancel(tracker);
+		} else {
+			var r = cmd.a;
+			return $elm$http$Http$Request(
+				{
+					allowCookiesFromOtherDomains: r.allowCookiesFromOtherDomains,
+					body: r.body,
+					expect: A2(_Http_mapExpect, func, r.expect),
+					headers: r.headers,
+					method: r.method,
+					timeout: r.timeout,
+					tracker: r.tracker,
+					url: r.url
+				});
+		}
+	});
+var $elm$http$Http$MySub = F2(
+	function (a, b) {
+		return {$: 'MySub', a: a, b: b};
+	});
+var $elm$http$Http$subMap = F2(
+	function (func, _v0) {
+		var tracker = _v0.a;
+		var toMsg = _v0.b;
+		return A2(
+			$elm$http$Http$MySub,
+			tracker,
+			A2($elm$core$Basics$composeR, toMsg, func));
+	});
+_Platform_effectManagers['Http'] = _Platform_createManager($elm$http$Http$init, $elm$http$Http$onEffects, $elm$http$Http$onSelfMsg, $elm$http$Http$cmdMap, $elm$http$Http$subMap);
+var $elm$http$Http$command = _Platform_leaf('Http');
+var $elm$http$Http$subscription = _Platform_leaf('Http');
+var $elm$http$Http$request = function (r) {
+	return $elm$http$Http$command(
+		$elm$http$Http$Request(
+			{allowCookiesFromOtherDomains: false, body: r.body, expect: r.expect, headers: r.headers, method: r.method, timeout: r.timeout, tracker: r.tracker, url: r.url}));
+};
+var $elm$http$Http$get = function (r) {
+	return $elm$http$Http$request(
+		{body: $elm$http$Http$emptyBody, expect: r.expect, headers: _List_Nil, method: 'GET', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
+};
+var $author$project$Main$Site = {$: 'Site'};
+var $author$project$Timingway$Mech$Mech = F4(
+	function (attackName, resolveType, optionalNotes, millisLeft) {
+		return {attackName: attackName, millisLeft: millisLeft, optionalNotes: optionalNotes, resolveType: resolveType};
+	});
+var $author$project$Main$timeToMillis = function (time) {
+	var seconds = time % 100;
+	var mins = (time / 100) | 0;
+	return ((mins * 60) + seconds) * 1000;
+};
+var $author$project$Main$makeMech = F4(
+	function (attackName, resolveType, optionalNotes, millisLeft) {
+		return A4(
+			$author$project$Timingway$Mech$Mech,
+			attackName,
+			resolveType,
+			optionalNotes,
+			$author$project$Main$timeToMillis(millisLeft));
+	});
+var $author$project$Main$prevMech = A4($author$project$Main$makeMech, 'No Previous Mechanics', '', $elm$core$Maybe$Nothing, 0);
+var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
+var $rtfeldman$elm_css$Css$cssFunction = F2(
+	function (funcName, args) {
+		return funcName + ('(' + (A2($elm$core$String$join, ', ', args) + ')'));
+	});
+var $elm$core$String$fromFloat = _String_fromNumber;
+var $rtfeldman$elm_css$Css$rgba = F4(
+	function (r, g, b, alpha) {
+		return {
+			alpha: alpha,
+			blue: b,
+			color: $rtfeldman$elm_css$Css$Structure$Compatible,
+			green: g,
+			red: r,
+			value: A2(
+				$rtfeldman$elm_css$Css$cssFunction,
+				'rgba',
+				_Utils_ap(
+					A2(
+						$elm$core$List$map,
+						$elm$core$String$fromInt,
+						_List_fromArray(
+							[r, g, b])),
+					_List_fromArray(
+						[
+							$elm$core$String$fromFloat(alpha)
+						])))
+		};
+	});
+var $author$project$Main$sampleSheet = '1TvSWwkIJMVdI0k6hoO8YXOeFu1jkyjAw1xy3DVloIJo';
+var $elm$core$List$singleton = function (value) {
+	return _List_fromArray(
+		[value]);
+};
+var $author$project$Main$initModel = {
+	isTicking: false,
+	lastTick: $elm$core$Maybe$Nothing,
+	mechs: $elm$core$List$singleton($author$project$Main$prevMech),
+	millisPassed: 0,
+	route: $author$project$Main$Site,
+	sheetId: $author$project$Main$sampleSheet,
+	viewConfig: {
+		backgroundColor: A4($rtfeldman$elm_css$Css$rgba, 150, 150, 150, 0.5),
+		future: {
+			amount: 2,
+			barColor: A4($rtfeldman$elm_css$Css$rgba, 0, 100, 255, 0.6),
+			barGradient: A4($rtfeldman$elm_css$Css$rgba, 200, 100, 255, 0.6),
+			isFocus: false
+		},
+		millisTotal: 15000,
+		past: {
+			amount: 1,
+			barColor: A4($rtfeldman$elm_css$Css$rgba, 0, 200, 0, 0.6),
+			barGradient: A4($rtfeldman$elm_css$Css$rgba, 0, 255, 155, 0.6),
+			isFocus: false
+		},
+		present: {
+			amount: 1,
+			barColor: A4($rtfeldman$elm_css$Css$rgba, 255, 0, 0, 0.6),
+			barGradient: A4($rtfeldman$elm_css$Css$rgba, 255, 155, 0, 0.6),
+			isFocus: true
+		}
+	}
+};
+var $elm$url$Url$Builder$toQueryPair = function (_v0) {
+	var key = _v0.a;
+	var value = _v0.b;
+	return key + ('=' + value);
+};
+var $elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			$elm$core$String$join,
+			'&',
+			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var $elm$url$Url$Builder$crossOrigin = F3(
+	function (prePath, pathSegments, parameters) {
+		return prePath + ('/' + (A2($elm$core$String$join, '/', pathSegments) + $elm$url$Url$Builder$toQuery(parameters)));
+	});
+var $author$project$Timingway$Sheet$makeQueryUrl = F2(
+	function (sheetId, tabName) {
+		var queryParams = _List_Nil;
+		var path = _List_fromArray(
+			[sheetId, tabName]);
+		var domain = 'https://opensheet.elk.sh';
+		return A3($elm$url$Url$Builder$crossOrigin, domain, path, queryParams);
+	});
+var $elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
+};
+var $elm$time$Time$Offset = function (a) {
+	return {$: 'Offset', a: a};
+};
+var $elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var $elm$time$Time$customZone = $elm$time$Time$Zone;
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
+var $author$project$Main$NotFound = {$: 'NotFound'};
+var $elm$url$Url$Parser$State = F5(
+	function (visited, unvisited, params, frag, value) {
+		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
+	});
+var $elm$url$Url$Parser$getFirstMatch = function (states) {
+	getFirstMatch:
+	while (true) {
+		if (!states.b) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var state = states.a;
+			var rest = states.b;
+			var _v1 = state.unvisited;
+			if (!_v1.b) {
+				return $elm$core$Maybe$Just(state.value);
+			} else {
+				if ((_v1.a === '') && (!_v1.b.b)) {
+					return $elm$core$Maybe$Just(state.value);
+				} else {
+					var $temp$states = rest;
+					states = $temp$states;
+					continue getFirstMatch;
+				}
+			}
+		}
+	}
+};
+var $elm$url$Url$Parser$removeFinalEmpty = function (segments) {
+	if (!segments.b) {
+		return _List_Nil;
+	} else {
+		if ((segments.a === '') && (!segments.b.b)) {
+			return _List_Nil;
+		} else {
+			var segment = segments.a;
+			var rest = segments.b;
+			return A2(
+				$elm$core$List$cons,
+				segment,
+				$elm$url$Url$Parser$removeFinalEmpty(rest));
+		}
+	}
+};
+var $elm$url$Url$Parser$preparePath = function (path) {
+	var _v0 = A2($elm$core$String$split, '/', path);
+	if (_v0.b && (_v0.a === '')) {
+		var segments = _v0.b;
+		return $elm$url$Url$Parser$removeFinalEmpty(segments);
+	} else {
+		var segments = _v0;
+		return $elm$url$Url$Parser$removeFinalEmpty(segments);
+	}
+};
+var $elm$url$Url$Parser$addToParametersHelp = F2(
+	function (value, maybeList) {
+		if (maybeList.$ === 'Nothing') {
+			return $elm$core$Maybe$Just(
+				_List_fromArray(
+					[value]));
+		} else {
+			var list = maybeList.a;
+			return $elm$core$Maybe$Just(
+				A2($elm$core$List$cons, value, list));
+		}
+	});
+var $elm$url$Url$percentDecode = _Url_percentDecode;
 var $elm$url$Url$Parser$addParam = F2(
 	function (segment, dict) {
 		var _v0 = A2($elm$core$String$split, '=', segment);
@@ -6001,7 +6469,6 @@ var $elm$url$Url$Parser$addParam = F2(
 			return dict;
 		}
 	});
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$url$Url$Parser$prepareQuery = function (maybeQuery) {
 	if (maybeQuery.$ === 'Nothing') {
 		return $elm$core$Dict$empty;
@@ -6063,6 +6530,29 @@ var $elm$url$Url$Parser$map = F2(
 						A5($elm$url$Url$Parser$State, visited, unvisited, params, frag, subValue)));
 			});
 	});
+var $elm$url$Url$Parser$Internal$Parser = function (a) {
+	return {$: 'Parser', a: a};
+};
+var $elm$url$Url$Parser$Query$map2 = F3(
+	function (func, _v0, _v1) {
+		var a = _v0.a;
+		var b = _v1.a;
+		return $elm$url$Url$Parser$Internal$Parser(
+			function (dict) {
+				return A2(
+					func,
+					a(dict),
+					b(dict));
+			});
+	});
+var $elm$core$Tuple$mapBoth = F3(
+	function (funcA, funcB, _v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return _Utils_Tuple2(
+			funcA(x),
+			funcB(y));
+	});
 var $elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -6091,6 +6581,10 @@ var $elm$url$Url$Parser$oneOf = function (parsers) {
 				parsers);
 		});
 };
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
 var $elm$url$Url$Parser$query = function (_v0) {
 	var queryParser = _v0.a;
 	return $elm$url$Url$Parser$Parser(
@@ -6158,9 +6652,6 @@ var $elm$url$Url$Parser$s = function (str) {
 			}
 		});
 };
-var $elm$url$Url$Parser$Internal$Parser = function (a) {
-	return {$: 'Parser', a: a};
-};
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
 		if (maybe.$ === 'Just') {
@@ -6201,43 +6692,56 @@ var $elm$url$Url$Parser$top = $elm$url$Url$Parser$Parser(
 			[state]);
 	});
 var $author$project$Main$routeParser = function () {
+	var tupleParser = A3(
+		$elm$url$Url$Parser$Query$map2,
+		$elm$core$Tuple$pair,
+		$elm$url$Url$Parser$Query$string('overlay'),
+		$elm$url$Url$Parser$Query$string('url'));
 	var rootParser = $elm$url$Url$Parser$oneOf(
 		_List_fromArray(
 			[
 				$elm$url$Url$Parser$s('index.html'),
 				$elm$url$Url$Parser$top
 			]));
-	var checkOverlayEnabled = function (query) {
+	var checkSheet = $elm$core$Maybe$withDefault($author$project$Main$sampleSheet);
+	var checkOverlay = function (query) {
 		if (query.$ === 'Just') {
-			var str = query.a;
-			return (($elm$core$String$toLower(str) === 'true') || (str === '1')) ? $author$project$Main$Overlay : $author$project$Main$Site;
+			var overlay = query.a;
+			return (($elm$core$String$toLower(overlay) === 'true') || (overlay === '1')) ? $author$project$Main$Overlay : $author$project$Main$Site;
 		} else {
 			return $author$project$Main$Site;
 		}
 	};
 	return A2(
 		$elm$url$Url$Parser$map,
-		checkOverlayEnabled,
-		A2(
-			$elm$url$Url$Parser$questionMark,
-			rootParser,
-			$elm$url$Url$Parser$Query$string('overlay')));
+		A2($elm$core$Tuple$mapBoth, checkOverlay, checkSheet),
+		A2($elm$url$Url$Parser$questionMark, rootParser, tupleParser));
 }();
-var $author$project$Main$parseRoute = function (url) {
+var $author$project$Main$parseRouteAndSheet = function (url) {
 	return A2(
 		$elm$core$Maybe$withDefault,
-		$author$project$Main$NotFound,
+		_Utils_Tuple2($author$project$Main$NotFound, ''),
 		A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, url));
 };
 var $author$project$Main$init = F3(
 	function (_v0, url, _v1) {
+		var _v2 = $author$project$Main$parseRouteAndSheet(url);
+		var route = _v2.a;
+		var sheetId = _v2.b;
 		return _Utils_Tuple2(
 			_Utils_update(
 				$author$project$Main$initModel,
-				{
-					route: $author$project$Main$parseRoute(url)
-				}),
-			A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now));
+				{route: route, sheetId: sheetId}),
+			$elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now),
+						$elm$http$Http$get(
+						{
+							expect: A2($elm$http$Http$expectJson, $author$project$Main$GetSheet, $author$project$Timingway$Sheet$decoder),
+							url: A2($author$project$Timingway$Sheet$makeQueryUrl, sheetId, 'App')
+						})
+					])));
 	});
 var $author$project$Main$Tick = F2(
 	function (a, b) {
@@ -6274,7 +6778,6 @@ var $elm$time$Time$addMySub = F2(
 				state);
 		}
 	});
-var $elm$core$Process$kill = _Scheduler_kill;
 var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
@@ -6361,9 +6864,7 @@ var $elm$core$Dict$merge = F6(
 			intermediateResult,
 			leftovers);
 	});
-var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$time$Time$setInterval = _Time_setInterval;
-var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$time$Time$spawnHelp = F3(
 	function (router, intervals, processes) {
 		if (!intervals.b) {
@@ -6561,47 +7062,6 @@ var $author$project$Main$advanceMechs = F2(
 			model,
 			{mechs: newMechs});
 	});
-var $elm$json$Json$Decode$array = _Json_decodeArray;
-var $elm$json$Json$Decode$decodeString = _Json_runOnString;
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map4 = _Json_map4;
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $elm$json$Json$Decode$maybe = function (decoder) {
-	return $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
-				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
-			]));
-};
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$Timingway$Mech$decoder = A5(
-	$elm$json$Json$Decode$map4,
-	$author$project$Timingway$Mech$Mech,
-	A2($elm$json$Json$Decode$field, 'attackName', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'resolveType', $elm$json$Json$Decode$string),
-	A2(
-		$elm$json$Json$Decode$field,
-		'notes',
-		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)),
-	A2($elm$json$Json$Decode$field, 'millisLeft', $elm$json$Json$Decode$int));
-var $elm$core$Result$map = F2(
-	function (func, ra) {
-		if (ra.$ === 'Ok') {
-			var a = ra.a;
-			return $elm$core$Result$Ok(
-				func(a));
-		} else {
-			var e = ra.a;
-			return $elm$core$Result$Err(e);
-		}
-	});
-var $author$project$Main$decodeMechs = A2(
-	$elm$core$Basics$composeL,
-	$elm$core$Result$map($elm$core$Array$toList),
-	$elm$json$Json$Decode$decodeString(
-		$elm$json$Json$Decode$array($author$project$Timingway$Mech$decoder)));
 var $author$project$Timingway$Mech$tick = F2(
 	function (delta, mech) {
 		return _Utils_update(
@@ -6618,13 +7078,57 @@ var $author$project$Main$decrementMechs = F2(
 				mechs: decrementList(model.mechs)
 			});
 	});
+var $author$project$Timingway$Time$Time = F2(
+	function (minutes, seconds) {
+		return {minutes: minutes, seconds: seconds};
+	});
+var $elm$core$Basics$ge = _Utils_ge;
+var $author$project$Timingway$Time$fromString = function (str) {
+	var components = A2(
+		$elm$core$List$map,
+		$elm$core$String$toInt,
+		A2($elm$core$String$split, ':', str));
+	if ((((components.b && (components.a.$ === 'Just')) && components.b.b) && (components.b.a.$ === 'Just')) && (!components.b.b.b)) {
+		var mm = components.a.a;
+		var _v1 = components.b;
+		var ss = _v1.a.a;
+		return ((mm >= 0) && ((ss >= 0) && (ss <= 60))) ? $elm$core$Maybe$Just(
+			A2($author$project$Timingway$Time$Time, mm, ss)) : $elm$core$Maybe$Nothing;
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Timingway$Time$toMillis = function (_v0) {
+	var minutes = _v0.minutes;
+	var seconds = _v0.seconds;
+	return (60000 * minutes) + (1000 * seconds);
+};
+var $author$project$Timingway$Mech$fromRow = function (row) {
+	var fromTime = A2(
+		$elm$core$Basics$composeL,
+		A3($author$project$Timingway$Mech$Mech, row.attack, row.resolve, row.notes),
+		$author$project$Timingway$Time$toMillis);
+	return A2(
+		$elm$core$Maybe$map,
+		fromTime,
+		$author$project$Timingway$Time$fromString(row.time));
+};
 var $author$project$Main$incrementTimer = F2(
 	function (millis, model) {
 		return _Utils_update(
 			model,
 			{millisPassed: model.millisPassed + millis});
 	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$time$Time$posixToMillis = function (_v0) {
 	var millis = _v0.a;
@@ -6667,16 +7171,18 @@ var $author$project$Main$update = F2(
 								$author$project$Main$incrementTimer,
 								delta,
 								A2($author$project$Main$setLastTick, time, model))));
-				case 'Input':
-					var input = msg.a;
-					var _v3 = $author$project$Main$decodeMechs(input);
-					if (_v3.$ === 'Ok') {
-						var mechs = _v3.a;
+				case 'GetSheet':
+					var result = msg.a;
+					if (result.$ === 'Err') {
+						return model;
+					} else {
+						var rows = result.a;
+						var mechs = A2($elm$core$List$filterMap, $author$project$Timingway$Mech$fromRow, rows);
 						return _Utils_update(
 							model,
-							{mechs: mechs});
-					} else {
-						return model;
+							{
+								mechs: A2($elm$core$List$cons, $author$project$Main$prevMech, mechs)
+							});
 					}
 				case 'Reset':
 					return _Utils_update(
@@ -6695,10 +7201,22 @@ var $author$project$Main$update = F2(
 			}
 		}();
 		var newCommand = function () {
-			if (msg.$ === 'Continue') {
-				return A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now);
-			} else {
-				return $elm$core$Platform$Cmd$none;
+			switch (msg.$) {
+				case 'Continue':
+					return A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now);
+				case 'Reset':
+					return $elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A2($elm$core$Task$perform, $author$project$Main$Init, $elm$time$Time$now),
+								$elm$http$Http$get(
+								{
+									expect: A2($elm$http$Http$expectJson, $author$project$Main$GetSheet, $author$project$Timingway$Sheet$decoder),
+									url: A2($author$project$Timingway$Sheet$makeQueryUrl, model.sheetId, 'App')
+								})
+							]));
+				default:
+					return $elm$core$Platform$Cmd$none;
 			}
 		}();
 		return _Utils_Tuple2(newModel, newCommand);
@@ -6918,16 +7436,6 @@ var $rtfeldman$elm_css$Css$Structure$compactStylesheet = function (_v0) {
 	var finalDeclarations = A2($rtfeldman$elm_css$Css$Structure$withKeyframeDeclarations, keyframesByName, compactedDeclarations);
 	return {charset: charset, declarations: finalDeclarations, imports: imports, namespaces: namespaces};
 };
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $rtfeldman$elm_css$Css$Structure$Output$charsetToString = function (charset) {
 	return A2(
 		$elm$core$Maybe$withDefault,
@@ -7851,10 +8359,6 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$resolveFontFeatureValues = functio
 		[
 			$rtfeldman$elm_css$Css$Structure$FontFeatureValues(newTuples)
 		]);
-};
-var $elm$core$List$singleton = function (value) {
-	return _List_fromArray(
-		[value]);
 };
 var $rtfeldman$elm_css$Css$Structure$styleBlockToMediaRule = F2(
 	function (mediaQueries, declaration) {
@@ -9248,7 +9752,6 @@ var $author$project$Timingway$Util$Basic$choose = F3(
 	function (clause, valTrue, valFalse) {
 		return clause ? valTrue : valFalse;
 	});
-var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$abs = function (n) {
 	return (n < 0) ? (-n) : n;
 };

@@ -2,6 +2,7 @@ module Timingway.Mech exposing
     ( Mech
     , decoder
     , displaySeconds
+    , fromRow
     , isExpired
     , tick
     , view
@@ -14,8 +15,10 @@ import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Html
 import Json.Decode as Decode exposing (Decoder)
 import Round
-import Timingway.Util.Basic as Basic
 import Timingway.Config exposing (ViewConfig, GroupConfig)
+import Timingway.Sheet exposing (Row)
+import Timingway.Time as Time
+import Timingway.Util.Basic as Basic
 
 type alias Mech =
     { attackName : String
@@ -230,3 +233,12 @@ clamped between 0 and 100.
 computePercent : Int -> Int -> Float
 computePercent total current =
     100 * clamp 0 1 (toFloat current / toFloat total)
+
+fromRow : Row -> Maybe Mech
+fromRow row =
+    let
+        fromTime =
+            Mech row.attack row.resolve row.notes << Time.toMillis
+    in
+        Time.fromString row.time
+            |> Maybe.map fromTime
