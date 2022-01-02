@@ -8,7 +8,7 @@ Simply open http://timingway.app/?url=your-sheet-here, replacing "your-sheet-her
 
 Google sheets urls look like this:  https://docs.google.com/spreadsheets/d/sheet-id/somethingsomething. What you want is the **sheet-id** part.
 
-For example, if I have a sharing link of https://docs.google.com/spreadsheets/d/1TvSWwkIJMVdI0k6hoO8YXOeFu1jkyjAw1xy3DVloIJo/edit#gid=0, my app url would be http://timingway.app/?url=1TvSWwkIJMVdI0k6hoO8YXOeFu1jkyjAw1xy3DVloIJo.
+For example, if I have a sharing link of https://docs.google.com/spreadsheets/d/1WaKmZOOsJudBZGCwdennHxKa2W36i5iqPtwBVfBQtHU/edit#gid=2120318740, my app url would be http://timingway.app/?url=1WaKmZOOsJudBZGCwdennHxKa2W36i5iqPtwBVfBQtHU.
 
 Finally, **make sure** that the sheet you want Timingway to read from is called **App**. By default, Google Sheets names the first sheet you create Sheet1; be sure to rename it if you want Timingway to work!
 
