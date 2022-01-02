@@ -4,7 +4,7 @@ Timingway is designed to seamlessly visualize timelines and mechanics from Googl
 
 ## How do I use this app?
 
-Simply open http://timingway.app/?url=your-sheet-here, replacing "your-sheet-here" with the url of your Google Sheets (make sure that sheet sharing permissions are set so that everyone with the url can see it!)
+Simply open http://timingway.app/?url=your-sheet-here, replacing "your-sheet-here" with the sheet-id of your Google Sheets (make sure that sheet sharing permissions are set so that everyone with the url can see it!)
 
 Google sheets urls look like this:  https://docs.google.com/spreadsheets/d/sheet-id/somethingsomething. What you want is the **sheet-id** part.
 
@@ -18,7 +18,7 @@ You can also use this app in overlay mode! Use this url instead: http://timingwa
 
 If you want the app to appear as an overlay, you might need something to open a browser window as a transparent overlay. I recommend using the Pennywise browser (https://github.com/kamranahmedse/pennywise).
 
-There's no reset button for the overlay mode; you can reset with Alt + 2, and pause/continue with Alt + 1.
+There's no reset button for the overlay mode; you need to use hotkeys.
 
 ## Generating HTML for testing
 
