@@ -234,8 +234,6 @@ update msg model =
                 newKeyMap =
                     Dict.insert key enabled model.keyMap
 
-                _ = Debug.log "keyMap" newKeyMap
-
                 isPressed k =
                     Maybe.withDefault False <| Dict.get k newKeyMap
             in

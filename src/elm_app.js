@@ -7348,7 +7348,6 @@ var $author$project$Main$incrementTimer = F2(
 			model,
 			{millisPassed: model.millisPassed + millis});
 	});
-var $elm$core$Debug$log = _Debug_log;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Basics$not = _Basics_not;
 var $elm$time$Time$posixToMillis = function (_v0) {
@@ -7449,7 +7448,6 @@ var $author$project$Main$update = F2(
 						false,
 						A2($elm$core$Dict$get, k, newKeyMap));
 				};
-				var _v3 = A2($elm$core$Debug$log, 'keyMap', newKeyMap);
 				return isPressed('1') ? _Utils_Tuple2(
 					_Utils_update(
 						model,
